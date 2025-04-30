@@ -53,6 +53,8 @@
     "release-patch": "standard-version --release-as patch"
   },
   "dependencies": {
+    "@alova/adapter-uniapp": "^2.0.11",
+    "@alova/shared": "^1.1.2",
     "@dcloudio/uni-app": "3.0.0-4050720250324001",
     "@dcloudio/uni-app-harmony": "3.0.0-4050720250324001",
     "@dcloudio/uni-app-plus": "3.0.0-4050720250324001",
@@ -70,7 +72,9 @@
     "@dcloudio/uni-quickapp-webview": "3.0.0-4050720250324001",
     "@uni-helper/uni-use": "^0.19.14",
     "@vueuse/core": "9.13.0",
+    "alova": "^3.2.10",
     "pinia": "2.3.1",
+    "pinia-plugin-persistedstate": "^4.2.0",
     "vue": "3.4.21",
     "vue-i18n": "9.6.2"
   },
