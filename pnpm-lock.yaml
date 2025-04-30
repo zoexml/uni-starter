@@ -80,6 +80,9 @@ importers:
       vue-i18n:
         specifier: 9.6.2
         version: 9.6.2(vue@3.4.21(typescript@5.8.3))
+      wot-design-uni:
+        specifier: ^1.8.0
+        version: 1.8.0(vue@3.4.21(typescript@5.8.3))
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.8.0
@@ -195,6 +198,12 @@ importers:
       typescript:
         specifier: ^5.8.2
         version: 5.8.3
+      uni-mini-router:
+        specifier: ^0.1.6
+        version: 0.1.6
+      uni-read-pages-vite:
+        specifier: ^0.0.6
+        version: 0.0.6
       unocss:
         specifier: ^66.0.0
         version: 66.0.0(postcss@8.5.3)(vite@5.2.8(@types/node@22.15.3)(sass@1.64.2)(terser@5.39.0))(vue@3.4.21(typescript@5.8.3))
@@ -5798,6 +5807,12 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
+  uni-mini-router@0.1.6:
+    resolution: {integrity: sha512-dgeEYCv00yTkiX3gVAQXrx4IAzAVtZv+2lVtVaixH6J/IHfZP7R3wqUwBvy4eFD0vP20p+QWNNE2c5LuHbPSiQ==}
+
+  uni-read-pages-vite@0.0.6:
+    resolution: {integrity: sha512-x86B6RcueeCKzLujbnv53WrzD/bTm2aQclXR7tXrLQzky0TKKihfWRgTS2qOC2ARXntoN07rD9jfZbGfYj28yQ==}
+
   unicode-canonical-property-names-ecmascript@2.0.1:
     resolution: {integrity: sha512-dA8WbNeb2a6oQzAQ55YlT5vQAWGV9WXOsi3SskE3bcCdM0P4SDd+24zS/OCacdRq5BkdsRj9q3Pg6YyQoxIGqg==}
     engines: {node: '>=4'}
@@ -6064,6 +6079,12 @@ packages:
   word-wrap@1.2.5:
     resolution: {integrity: sha512-BN22B5eaMMI9UMtjrGd5g5eCYPpCPDUy0FJXbYsaT5zYxjFOckS53SQDE3pWkVoWpHXVb3BrYcEN4Twa55B5cA==}
     engines: {node: '>=0.10.0'}
+
+  wot-design-uni@1.8.0:
+    resolution: {integrity: sha512-JSfOVGtvBnXVnaf8/2Fsh/aMkZPoFFt6t8wBRhpDaEPoOndTHBR68Ro+ctP3JKgyVATHaYc4v63TJca55SV1Iw==}
+    engines: {HBuilderX: ^3.8.7}
+    peerDependencies:
+      vue: '>=3.2.47'
 
   wrap-ansi@7.0.0:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
@@ -13218,6 +13239,10 @@ snapshots:
 
   undici-types@6.21.0: {}
 
+  uni-mini-router@0.1.6: {}
+
+  uni-read-pages-vite@0.0.6: {}
+
   unicode-canonical-property-names-ecmascript@2.0.1: {}
 
   unicode-match-property-ecmascript@2.0.0:
@@ -13538,6 +13563,10 @@ snapshots:
       isexe: 2.0.0
 
   word-wrap@1.2.5: {}
+
+  wot-design-uni@1.8.0(vue@3.4.21(typescript@5.8.3)):
+    dependencies:
+      vue: 3.4.21(typescript@5.8.3)
 
   wrap-ansi@7.0.0:
     dependencies:

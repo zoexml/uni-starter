@@ -17,7 +17,8 @@
       "@dcloudio/types",
       "@mini-types/alipay",
       "miniprogram-api-typings",
-      "@uni-helper/uni-types"
+      "@uni-helper/uni-types",
+      "wot-design-uni/global"
     ],
     "strict": true,
     "noImplicitThis": true,

@@ -6,6 +6,7 @@ import UniMiddleware from '@uni-helper/vite-plugin-uni-middleware'
 import UniPages from '@uni-helper/vite-plugin-uni-pages'
 import UniPlatform from '@uni-helper/vite-plugin-uni-platform'
 import UniPlatformModifier from '@uni-helper/vite-plugin-uni-platform-modifier'
+import TransformPages from 'uni-read-pages-vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig } from 'vite'
 import ViteRestart from 'vite-plugin-restart'
@@ -58,6 +59,9 @@ export default defineConfig(async () => {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
         '@img': fileURLToPath(new URL('./src/static/images', import.meta.url)), // 图片路径别名
       },
+    },
+    define: {
+      ROUTES: new TransformPages().routes,
     },
     build: {
       target: 'es6',
