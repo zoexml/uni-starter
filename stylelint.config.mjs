@@ -1,10 +1,9 @@
 export default {
   extends: [
-    'stylelint-config-recommended',
-    'stylelint-config-recommended-scss',
-    'stylelint-config-recommended-vue/scss',
-    'stylelint-config-html/vue',
+    'stylelint-config-standard-scss',
+    'stylelint-config-standard-vue/scss',
     'stylelint-config-recess-order',
+    '@stylistic/stylelint-config',
   ],
   plugins: [
     'stylelint-scss',

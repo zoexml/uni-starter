@@ -1,7 +1,7 @@
 <route lang="json5" type="page">
 {
-  layout: 'default',
-  name: '',
+  layout: 'tabbar',
+  name: 'my',
   style: {
     navigationBarTitleText: '我的',
   },

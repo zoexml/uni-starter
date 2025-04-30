@@ -4,17 +4,17 @@
 
 // 单行省略，优先使用 unocss: text-ellipsis
 .ellipsis {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  
-  // 两行省略
-  .ellipsis-2 {
-    @include line-clamp(2);
-  }
-  
-  // 三行省略
-  .ellipsis-2 {
-    @include line-clamp(3);
-  }
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 两行省略
+.ellipsis-2 {
+  @include line-clamp(2);
+}
+
+// 三行省略
+.ellipsis-2 {
+  @include line-clamp(3);
+}

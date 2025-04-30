@@ -2,11 +2,11 @@ import { defineUniPages } from '@uni-helper/vite-plugin-uni-pages'
 
 export default defineUniPages({
   globalStyle: {
-    backgroundColor: '@bgColor',
-    backgroundColorBottom: '@bgColorBottom',
-    backgroundColorTop: '@bgColorTop',
-    backgroundTextStyle: '@bgTxtStyle',
-    navigationBarBackgroundColor: '#000000',
+    // backgroundColor: '@bgColor',
+    // backgroundColorBottom: '@bgColorBottom',
+    // backgroundColorTop: '@bgColorTop',
+    // backgroundTextStyle: '@bgTxtStyle',
+    // navigationBarBackgroundColor: '#000000',
     navigationBarTextStyle: '@navTxtStyle',
     navigationBarTitleText: 'uni-temp',
     navigationStyle: 'custom',
