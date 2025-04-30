@@ -48,6 +48,7 @@
     "lint:fix": "eslint . --fix",
     "postinstall": "npx simple-git-hooks",
     "commit": "git-cz",
+    "preinstall": "npx only-allow pnpm",
     "release-major": "standard-version --release-as major",
     "release-minor": "standard-version --release-as minor",
     "release-patch": "standard-version --release-as patch"
@@ -79,6 +80,8 @@
     "vue-i18n": "9.6.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
     "@dcloudio/types": "3.4.8",
     "@dcloudio/uni-automator": "3.0.0-4050720250324001",
     "@dcloudio/uni-cli-shared": "3.0.0-4050720250324001",
@@ -99,8 +102,10 @@
     "@vue/runtime-core": "3.4.21",
     "@vue/tsconfig": "^0.7.0",
     "eslint": "^9.23.0",
+    "git-cz": "^4.9.0",
     "lint-staged": "^15.5.1",
     "miniprogram-api-typings": "^4.0.5",
+    "only-allow": "^1.2.1",
     "sass": "1.64.2",
     "simple-git-hooks": "^2.13.0",
     "typescript": "^5.8.2",
