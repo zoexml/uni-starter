@@ -1,7 +1,8 @@
 {
+  // 配置语言的文件关联
   "files.associations": {
-    "pages.json": "jsonc",
-    "manifest.json": "jsonc"
+    "pages.json": "jsonc", // pages.json 可以写注释
+    "manifest.json": "jsonc"// manifest.json 可以写注释
   },
 
   // Auto fix
@@ -40,6 +41,8 @@
     "pcss",
     "postcss"
   ],
+
+  "stylelint.validate": ["css", "less", "postcss", "scss", "vue", "sass", "vue", "html"],
 
   // Enable file nesting
   "explorer.fileNesting.enabled": true,

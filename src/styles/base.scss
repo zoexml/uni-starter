@@ -1,0 +1,54 @@
+/* stylelint-disable selector-type-no-unknown */
+
+:root,
+page {
+  --wot-color-theme: #01b26a;
+  // --wot-color-success: red;
+  // --wot-color-warning: yellow;
+}
+
+view,
+navigator,
+input,
+scroll-view {
+  box-sizing: border-box;
+}
+
+view,
+text,
+navigator,
+input,
+image,
+swiper,
+swiper-item,
+scroll-view,
+page {
+  padding: 0;
+  margin: 0;
+}
+
+page {
+  font-size: 28rpx;
+}
+
+button::after {
+  border: none;
+}
+
+swiper,
+scroll-view {
+  flex: 1;
+  height: 100%;
+  overflow: hidden;
+}
+
+image {
+  width: 100%;
+  height: 100%;
+  vertical-align: middle;
+
+
+  
+}
+
+

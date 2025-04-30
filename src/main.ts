@@ -7,6 +7,8 @@ import 'core-js/actual/object/assign'
 import 'core-js/actual/promise/finally'
 import 'uno.css'
 
+import '@/styles/index.scss'
+
 export function createApp() {
   const app = createSSRApp(App)
   app.use(store)

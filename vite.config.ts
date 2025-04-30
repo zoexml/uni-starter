@@ -14,12 +14,6 @@ export default defineConfig(async () => {
   const UnoCSS = (await import('unocss/vite')).default
 
   return {
-    resolve: {
-      alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url)),
-        '@img': fileURLToPath(new URL('./src/static/images', import.meta.url)), // 图片路径别名
-      },
-    },
     plugins: [
       // https://github.com/uni-helper/vite-plugin-uni-pages
       UniPages({
@@ -59,6 +53,12 @@ export default defineConfig(async () => {
         restart: ['vite.config.js'],
       }),
     ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+        '@img': fileURLToPath(new URL('./src/static/images', import.meta.url)), // 图片路径别名
+      },
+    },
     build: {
       target: 'es6',
       cssTarget: 'chrome61',
