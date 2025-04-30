@@ -6,7 +6,7 @@
       items-center
       hover-class="drop-shadow-md drop-shadow-color-green5"
     >
-      <image inline-block h-18 w-18 src="/static/logo.svg" />
+      <image inline-block h-18 w-18 src="@img/logo.svg" />
       <text mt--2 text-green5>
         uni-helper
       </text>
@@ -17,7 +17,7 @@
       i-carbon-add transform transition-all-500 hover:rotate-135
     />
     <view flex flex-col hover-class="drop-shadow-md drop-shadow-color-purple5">
-      <image inline-block h-18 w-18 src="/static/vite.png" />
+      <image inline-block h-18 w-18 src="@img/vite.png" />
       <text mt--2 text-purple5>
         Vite
       </text>

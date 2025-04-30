@@ -31,7 +31,7 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.jsx",
-    "src/**/*.vue",
+    "src/**/*.vue"
   ],
   "exclude": ["node_modules"],
   "vueCompilerOptions": {

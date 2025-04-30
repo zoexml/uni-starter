@@ -1,5 +1,10 @@
+<route lang="json5" type="page">
+  {
+    name: 'home',
+  }
+  </route>
+
 <script setup lang="ts">
-import AppFooter from '@/components/AppFooter.vue'
 import AppLogos from '@/components/AppLogos.vue'
 import InputEntry from '@/components/InputEntry.vue'
 </script>
@@ -8,6 +13,7 @@ import InputEntry from '@/components/InputEntry.vue'
   <view px-10 py-20 text-center>
     <AppLogos />
     <InputEntry />
-    <AppFooter />
   </view>
 </template>
+
+<style lang="scss" scoped></style>
