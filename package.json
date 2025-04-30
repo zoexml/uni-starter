@@ -45,7 +45,12 @@
     "build:quickapp-webview-union": "uni build -p quickapp-webview-union",
     "type-check": "vue-tsc --noEmit",
     "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "postinstall": "npx simple-git-hooks",
+    "commit": "git-cz",
+    "release-major": "standard-version --release-as major",
+    "release-minor": "standard-version --release-as minor",
+    "release-patch": "standard-version --release-as patch"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-4050720250324001",
@@ -87,7 +92,6 @@
     "@uni-helper/vite-plugin-uni-pages": "^0.2.28",
     "@uni-helper/vite-plugin-uni-platform": "^0.0.4",
     "@uni-helper/vite-plugin-uni-platform-modifier": "^0.0.2",
-    "@uni-ku/root": "^1.1.2",
     "@vue/runtime-core": "3.4.21",
     "@vue/tsconfig": "^0.7.0",
     "eslint": "^9.23.0",

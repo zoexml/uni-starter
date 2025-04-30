@@ -13,8 +13,6 @@ export default uniHelper({
   ignores: [
     '**/node_modules',
     'pnpm-lock.yaml',
-    'src/uni_modules/**/*',
-    '.hbuilderx/**/*',
     // ...globs
   ],
 })

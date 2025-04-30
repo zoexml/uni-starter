@@ -3,12 +3,18 @@
     "pages.json": "jsonc",
     "manifest.json": "jsonc"
   },
+
+  // Auto fix
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit",
     "source.organizeImports": "never"
   },
+
+  // Disable the default formatter, use eslint instead
   "prettier.enable": false,
   "editor.formatOnSave": false,
+
+  // Enable eslint for all supported languages
   "eslint.validate": [
     "javascript",
     "javascriptreact",
@@ -34,10 +40,12 @@
     "pcss",
     "postcss"
   ],
+
+  // Enable file nesting
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
     "tsconfig.json": "tsconfig.*.json, env.d.ts",
-    "vite.config.*": "jsconfig*, vitest.config.*, cypress.config.*, playwright.config.*",
+    "vite.config.*": "pages.config.*, manifest.config.*, uno.config.*, volar.config.*, *.env, .env.*",
     "package.json": "package-lock.json, pnpm*, .yarnrc*, yarn*, .eslint*, eslint*, .prettier*, prettier*, .editorconfig"
   }
 }
