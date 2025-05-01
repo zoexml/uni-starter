@@ -47,6 +47,7 @@ declare global {
   const makeDestructurable: typeof import('@vueuse/core')['makeDestructurable']
   const markRaw: typeof import('vue')['markRaw']
   const nextTick: typeof import('vue')['nextTick']
+  const objectToQueryParams: typeof import('../utils/index')['objectToQueryParams']
   const onActivated: typeof import('vue')['onActivated']
   const onAddToFavorites: typeof import('@dcloudio/uni-app')['onAddToFavorites']
   const onBackPress: typeof import('@dcloudio/uni-app')['onBackPress']
@@ -89,6 +90,7 @@ declare global {
   const onUnmounted: typeof import('vue')['onUnmounted']
   const onUpdated: typeof import('vue')['onUpdated']
   const onWatcherCleanup: typeof import('vue')['onWatcherCleanup']
+  const parseQuery: typeof import('../utils/index')['parseQuery']
   const pausableWatch: typeof import('@vueuse/core')['pausableWatch']
   const provide: typeof import('vue')['provide']
   const reactify: typeof import('@vueuse/core')['reactify']
@@ -114,6 +116,7 @@ declare global {
   const syncRef: typeof import('@vueuse/core')['syncRef']
   const syncRefs: typeof import('@vueuse/core')['syncRefs']
   const templateRef: typeof import('@vueuse/core')['templateRef']
+  const textImageConvert: typeof import('../utils/index')['textImageConvert']
   const throttledRef: typeof import('@vueuse/core')['throttledRef']
   const throttledWatch: typeof import('@vueuse/core')['throttledWatch']
   const toRaw: typeof import('vue')['toRaw']
@@ -310,6 +313,9 @@ declare global {
   // @ts-ignore
   export type { Component, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
+  // @ts-ignore
+  export type { TabbarItem } from '../composables/useTabbar'
+  import('../composables/useTabbar')
 }
 
 // for vue template auto import
@@ -358,6 +364,7 @@ declare module 'vue' {
     readonly makeDestructurable: UnwrapRef<typeof import('@vueuse/core')['makeDestructurable']>
     readonly markRaw: UnwrapRef<typeof import('vue')['markRaw']>
     readonly nextTick: UnwrapRef<typeof import('vue')['nextTick']>
+    readonly objectToQueryParams: UnwrapRef<typeof import('../utils/index')['objectToQueryParams']>
     readonly onActivated: UnwrapRef<typeof import('vue')['onActivated']>
     readonly onAddToFavorites: UnwrapRef<typeof import('@dcloudio/uni-app')['onAddToFavorites']>
     readonly onBackPress: UnwrapRef<typeof import('@dcloudio/uni-app')['onBackPress']>
@@ -400,6 +407,7 @@ declare module 'vue' {
     readonly onUnmounted: UnwrapRef<typeof import('vue')['onUnmounted']>
     readonly onUpdated: UnwrapRef<typeof import('vue')['onUpdated']>
     readonly onWatcherCleanup: UnwrapRef<typeof import('vue')['onWatcherCleanup']>
+    readonly parseQuery: UnwrapRef<typeof import('../utils/index')['parseQuery']>
     readonly pausableWatch: UnwrapRef<typeof import('@vueuse/core')['pausableWatch']>
     readonly provide: UnwrapRef<typeof import('vue')['provide']>
     readonly reactify: UnwrapRef<typeof import('@vueuse/core')['reactify']>
@@ -425,6 +433,7 @@ declare module 'vue' {
     readonly syncRef: UnwrapRef<typeof import('@vueuse/core')['syncRef']>
     readonly syncRefs: UnwrapRef<typeof import('@vueuse/core')['syncRefs']>
     readonly templateRef: UnwrapRef<typeof import('@vueuse/core')['templateRef']>
+    readonly textImageConvert: UnwrapRef<typeof import('../utils/index')['textImageConvert']>
     readonly throttledRef: UnwrapRef<typeof import('@vueuse/core')['throttledRef']>
     readonly throttledWatch: UnwrapRef<typeof import('@vueuse/core')['throttledWatch']>
     readonly toRaw: UnwrapRef<typeof import('vue')['toRaw']>
