@@ -16,7 +16,7 @@ export default defineUniPages({
     custom: {
       '^(?!z-paging-refresh|z-paging-load-more)z-paging(.*)': 'z-paging/components/z-paging$1/z-paging$1.vue',
       '^wd-(.*)': 'wot-design-uni/components/wd-$1/wd-$1.vue',
-      // '^Yhc(.*)': '@/components/Yhc$1.vue',
+      '^E(.*)': '@/components/E$1.vue',
     },
   },
   tabBar: {
