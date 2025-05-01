@@ -35,7 +35,7 @@ export const http = createAlova({
     //   // 在请求头中添加 token
     //   config.header = {
     //     ...config.header, // 展开运算符，保留请求头原本的参数
-    //     Authorization: `Bearer ${store.token}`, // 注意：Bearer 后面有个空格
+    //     Authorization: `Bearer ${store.token}`,
     //   }
     // }
   },

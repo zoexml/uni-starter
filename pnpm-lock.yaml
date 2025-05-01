@@ -83,6 +83,9 @@ importers:
       wot-design-uni:
         specifier: ^1.8.0
         version: 1.8.0(vue@3.4.21(typescript@5.8.3))
+      z-paging:
+        specifier: ^2.8.6
+        version: 2.8.6
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.8.0
@@ -6251,6 +6254,10 @@ packages:
   yocto-queue@1.2.1:
     resolution: {integrity: sha512-AyeEbWOu/TAXdxlV9wmGcR0+yh2j3vYPGOECcIj2S7MkrLyC7ne+oye2BKTItt0ii2PHk4cDy+95+LshzbXnGg==}
     engines: {node: '>=12.20'}
+
+  z-paging@2.8.6:
+    resolution: {integrity: sha512-UdmHuu08p0TFQQX+JVW5vj2/VKyBb0g3NWJkCjIzWcCwdWQjaNOCOjodISvfpriDdjB2IvFo0cdWc6XYkyg3DA==}
+    engines: {HBuilderX: ^3.0.7}
 
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
@@ -13754,5 +13761,7 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   yocto-queue@1.2.1: {}
+
+  z-paging@2.8.6: {}
 
   zwitch@2.0.4: {}

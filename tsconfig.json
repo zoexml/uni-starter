@@ -18,7 +18,8 @@
       "@mini-types/alipay",
       "miniprogram-api-typings",
       "@uni-helper/uni-types",
-      "wot-design-uni/global"
+      "wot-design-uni/global",
+      "z-paging/types"
     ],
     "strict": true,
     "noImplicitThis": true,

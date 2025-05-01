@@ -1,8 +1,9 @@
 <route lang="json5" type="page">
 {
-  name: 'my',
+  layout: 'default',
+  name: 'demo',
   style: {
-    navigationBarTitleText: '我的',
+    navigationBarTitleText: 'demo',
   },
 }
 </route>
@@ -12,8 +13,8 @@
 </script>
 
 <template>
-  <view class="">
-    my
+  <view class="demo">
+    demo
   </view>
 </template>
 

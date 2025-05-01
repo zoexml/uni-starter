@@ -9,7 +9,6 @@ export interface TabbarItem {
 const tabbarItems = ref<TabbarItem[]>([
   { name: 'home', value: null, active: true, title: 'home', icon: 'home' },
   { name: 'my', value: null, active: false, title: 'my', icon: 'app' },
-  // { name: 'setting', value: null, active: false, title: 'setting', icon: 'setting' },
 ])
 
 export function useTabbar() {

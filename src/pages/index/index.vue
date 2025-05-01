@@ -1,22 +1,28 @@
 <route lang="json5" type="page">
   {
-    name: 'home',
+    "name": "home",
+    "style": {
+      "navigationBarTitleText": "home"
+    }
   }
-  </route>
+</route>
 
 <script setup lang="ts">
 import { getHomeHotAPI } from '@/apis/home'
-import AppLogos from '@/components/AppLogos.vue'
-import InputEntry from '@/components/InputEntry.vue'
 import { useRequest } from 'alova/client'
 
 const { loading, data: hotList } = useRequest(getHomeHotAPI) //  { immediate: false }
 </script>
 
 <template>
-  <view px-10 py-20 text-center>
-    <AppLogos />
-    <InputEntry />
+  <view>
+    <wd-button>主要按钮</wd-button>
+    <wd-button type="success">
+      成功按钮
+    </wd-button>
+    <wd-button type="info">
+      信息按钮
+    </wd-button>
 
     <view v-if="loading">
       加载中...
@@ -25,4 +31,4 @@ const { loading, data: hotList } = useRequest(getHomeHotAPI) //  { immediate: fa
   </view>
 </template>
 
-<style lang="scss" scoped></style>
+<style lang="scss"></style>
