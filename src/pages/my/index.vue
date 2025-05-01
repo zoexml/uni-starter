@@ -13,7 +13,8 @@
 
 <template>
   <view class="">
-    my
+    我的
+    <Eloading />
   </view>
 </template>
 
