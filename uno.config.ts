@@ -24,9 +24,10 @@ export default defineConfig({
    * 自定义快捷语句
    * @see https://github.com/unocss/unocss#shortcuts
    */
-
   shortcuts: [
     ['flex-center', 'flex justify-center items-center'],
+    ['flex-between', 'flex justify-between items-center'],
+    ['flex-around', 'flex justify-around items-center'],
   ],
   transformers: [
     // 启用 @apply 功能
