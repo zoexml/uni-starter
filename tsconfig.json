@@ -19,10 +19,12 @@
       "miniprogram-api-typings",
       "@uni-helper/uni-types",
       "wot-design-uni/global",
-      "z-paging/types"
+      "z-paging/types",
+      "./src/typings.d.ts"
     ],
     "strict": true,
     "noImplicitThis": true,
+    "sourceMap": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "verbatimModuleSyntax": true,

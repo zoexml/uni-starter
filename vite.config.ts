@@ -14,6 +14,9 @@ import ViteRestart from 'vite-plugin-restart'
 export default defineConfig(async () => {
   const UnoCSS = (await import('unocss/vite')).default
 
+  const { UNI_PLATFORM } = process.env
+  console.log('UNI_PLATFORM -> ', UNI_PLATFORM) // 得到 mp-weixin, h5, app 等
+
   return {
     plugins: [
       // https://github.com/uni-helper/vite-plugin-uni-pages
@@ -62,6 +65,8 @@ export default defineConfig(async () => {
     },
     define: {
       ROUTES: new TransformPages().routes,
+      __UNI_PLATFORM__: JSON.stringify(UNI_PLATFORM),
+      // __VITE_APP_PROXY__: JSON.stringify(VITE_APP_PROXY),
     },
     build: {
       target: 'es6',
