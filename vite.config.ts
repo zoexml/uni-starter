@@ -11,8 +11,11 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig } from 'vite'
 import ViteRestart from 'vite-plugin-restart'
 
-export default defineConfig(async () => {
+export default defineConfig(async ({ command, mode }) => {
   const UnoCSS = (await import('unocss/vite')).default
+  // const mode = process.env.NODE_ENV
+  // mode: 区分生产环境还是开发环境
+  console.log('command, mode -> ', command, mode)
 
   const { UNI_PLATFORM } = process.env
   console.log('UNI_PLATFORM -> ', UNI_PLATFORM) // 得到 mp-weixin, h5, app 等
@@ -78,6 +81,14 @@ export default defineConfig(async () => {
     build: {
       target: 'es6',
       cssTarget: 'chrome61',
+      // 开发环境不用压缩
+      minify: mode !== 'development',
+      terserOptions: {
+        compress: {
+          // 禁用字段名压缩
+          properties: false,
+        },
+      },
     },
     optimizeDeps: {
       exclude: [

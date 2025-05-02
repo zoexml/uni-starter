@@ -9,8 +9,8 @@
 
 <script setup lang="ts">
 import { getHomeHotAPI } from '@/apis/home'
-import { useRequest } from 'alova/client'
 
+// 自动请求
 const { loading, data: hotList } = useRequest(getHomeHotAPI) //  { immediate: false }
 </script>
 
