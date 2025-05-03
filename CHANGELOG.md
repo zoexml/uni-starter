@@ -1,11 +1,5 @@
 # 更新日志 
 
-
-### [0.0.3](https://gitee.com/learn_15/uni-temp/compare/v0.0.2...v0.0.3) (2025-05-03)
-
-### 0.0.2 (2025-05-03)
-
-
 ### ✨ Features | 新功能
 
 * ✨ 基础模板不使用tabbar ([eda4232](https://gitee.com/learn_15/uni-temp/commit/eda42329973cfcd98c8632da0db2734e86e79b13))
