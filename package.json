@@ -56,7 +56,8 @@
     "openapi": "openapi-ts",
     "release-major": "standard-version --release-as major",
     "release-minor": "standard-version --release-as minor",
-    "release-patch": "standard-version --release-as patch"
+    "release-patch": "standard-version --release-as patch",
+    "ncu": "ncu -i"
   },
   "dependencies": {
     "@alova/adapter-uniapp": "^2.0.11",
