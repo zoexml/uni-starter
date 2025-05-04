@@ -28,6 +28,8 @@ const { loading, data: hotList } = useRequest(getHomeHotAPI) //  { immediate: fa
       加载中...
     </view>
     <view>请求数据为：{{ hotList }}</view>
+
+    <view class="iconfont icon-peisongjindu text-50rpx" />
   </view>
 </template>
 

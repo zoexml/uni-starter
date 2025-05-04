@@ -54,5 +54,6 @@ export default {
   ignoreFiles: [
     'node_modules/**/*',
     'dist*/**/*',
+    'src/styles/iconfont/*',
   ],
 }
