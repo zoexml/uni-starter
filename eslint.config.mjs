@@ -8,5 +8,5 @@ export default uniHelper({
     'vue/attribute-hyphenation': 'off', // 属性允许使用驼峰命名
     'style/brace-style': ['error', '1tbs', { allowSingleLine: true }], // if-else 格式
   },
-  ignores: ['**/node_modules', 'pnpm-lock.yaml'],
+  ignores: ['**/node_modules', 'pnpm-lock.yaml', 'src/styles/iconfont/*'],
 })
