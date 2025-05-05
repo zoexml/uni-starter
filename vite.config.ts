@@ -79,6 +79,16 @@ export default defineConfig(async ({ command, mode }) => {
         restart: ['vite.config.js'],
       }),
     ],
+    css: {
+      postcss: {
+        plugins: [
+          // autoprefixer({
+          //   // 指定目标浏览器
+          //   overrideBrowserslist: ['> 1%', 'last 2 versions'],
+          // }),
+        ],
+      },
+    },
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),

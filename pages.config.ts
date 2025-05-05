@@ -6,7 +6,7 @@ export default defineUniPages({
     // backgroundColorBottom: '@bgColorBottom',
     // backgroundColorTop: '@bgColorTop',
     // backgroundTextStyle: '@bgTxtStyle',
-    // navigationBarBackgroundColor: '#000000',
+    // navigationBarBackgroundColor: '#000000', // 导航栏背景颜色（同状态栏背景色）
     navigationBarTextStyle: '@navTxtStyle',
     navigationBarTitleText: 'uni-temp',
     navigationStyle: 'custom',

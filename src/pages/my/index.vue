@@ -14,7 +14,7 @@
 <template>
   <view class="">
     我的
-    <Eloading />
+    <ELoading />
   </view>
 </template>
 

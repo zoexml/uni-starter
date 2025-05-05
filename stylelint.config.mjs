@@ -50,6 +50,7 @@ export default {
     'selector-class-pattern': null,
     'font-family-no-missing-generic-family-keyword': null,
     'declaration-property-value-no-unknown': null,
+    'keyframes-name-pattern': null,
   },
   ignoreFiles: [
     'node_modules/**/*',
