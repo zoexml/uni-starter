@@ -1,3 +1,4 @@
+import path from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import uni from '@dcloudio/vite-plugin-uni'
 import UniLayouts from '@uni-helper/vite-plugin-uni-layouts'
@@ -8,7 +9,7 @@ import UniPlatform from '@uni-helper/vite-plugin-uni-platform'
 import UniPlatformModifier from '@uni-helper/vite-plugin-uni-platform-modifier'
 import TransformPages from 'uni-read-pages-vite'
 import AutoImport from 'unplugin-auto-import/vite'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import ViteRestart from 'vite-plugin-restart'
 
 export default defineConfig(async ({ command, mode }) => {
@@ -19,6 +20,17 @@ export default defineConfig(async ({ command, mode }) => {
 
   const { UNI_PLATFORM } = process.env
   console.log('UNI_PLATFORM -> ', UNI_PLATFORM) // 得到 mp-weixin, h5, app 等
+  const env = loadEnv(mode, path.resolve(process.cwd()))
+
+  const {
+    VITE_APP_PORT,
+    // VITE_SERVER_BASEURL,
+    VITE_DELETE_CONSOLE,
+    VITE_SHOW_SOURCEMAP,
+    // VITE_APP_PROXY,
+    // VITE_APP_PROXY_PREFIX,
+  } = env
+  console.log('环境变量 env -> ', env)
 
   return {
     plugins: [
@@ -67,11 +79,36 @@ export default defineConfig(async ({ command, mode }) => {
         restart: ['vite.config.js'],
       }),
     ],
+    css: {
+      postcss: {
+        plugins: [
+          // autoprefixer({
+          //   // 指定目标浏览器
+          //   overrideBrowserslist: ['> 1%', 'last 2 versions'],
+          // }),
+        ],
+      },
+    },
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('./src', import.meta.url)),
         '@img': fileURLToPath(new URL('./src/static/images', import.meta.url)), // 图片路径别名
       },
+    },
+    server: {
+      host: '0.0.0.0',
+      hmr: true,
+      port: Number.parseInt(VITE_APP_PORT, 10),
+      // 仅 H5 端生效，其他端不生效（其他端走build，不走devServer)
+      // proxy: JSON.parse(VITE_APP_PROXY)
+      //   ? {
+      //       [VITE_APP_PROXY_PREFIX]: {
+      //         target: VITE_SERVER_BASEURL,
+      //         changeOrigin: true,
+      //         rewrite: path => path.replace(new RegExp(`^${VITE_APP_PROXY_PREFIX}`), ''),
+      //       },
+      //     }
+      //   : undefined,
     },
     define: {
       ROUTES: new TransformPages().routes,
@@ -79,6 +116,8 @@ export default defineConfig(async ({ command, mode }) => {
       // __VITE_APP_PROXY__: JSON.stringify(VITE_APP_PROXY),
     },
     build: {
+      // 方便非h5端调试
+      sourcemap: VITE_SHOW_SOURCEMAP === 'true', // 默认是false
       target: 'es6',
       cssTarget: 'chrome61',
       // 开发环境不用压缩
@@ -87,6 +126,8 @@ export default defineConfig(async ({ command, mode }) => {
         compress: {
           // 禁用字段名压缩
           properties: false,
+          drop_console: VITE_DELETE_CONSOLE === 'true',
+          drop_debugger: true,
         },
       },
     },

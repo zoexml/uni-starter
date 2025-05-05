@@ -12,24 +12,31 @@ import { getHomeHotAPI } from '@/apis/home'
 
 // 自动请求
 const { loading, data: hotList } = useRequest(getHomeHotAPI) //  { immediate: false }
+
+const router = useRouter()
+const goDemoPage = () => {
+  router.push({ name: 'demo' })
+}
 </script>
 
 <template>
   <view>
-    <wd-button>主要按钮</wd-button>
-    <wd-button type="success">
-      成功按钮
-    </wd-button>
-    <wd-button type="info">
-      信息按钮
-    </wd-button>
-
     <view v-if="loading">
       加载中...
     </view>
     <view>请求数据为：{{ hotList }}</view>
 
     <view class="iconfont icon-peisongjindu text-50rpx" />
+
+    <wd-button @click="goDemoPage">
+      进入demo页
+    </wd-button>
+    <wd-button type="success">
+      成功按钮
+    </wd-button>
+    <wd-button type="info">
+      信息按钮
+    </wd-button>
   </view>
 </template>
 
