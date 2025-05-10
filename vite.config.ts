@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import uni from '@dcloudio/vite-plugin-uni'
+import UniComponents from '@uni-helper/vite-plugin-uni-components'
 import UniLayouts from '@uni-helper/vite-plugin-uni-layouts'
 import UniManifest from '@uni-helper/vite-plugin-uni-manifest'
 import UniMiddleware from '@uni-helper/vite-plugin-uni-middleware'
@@ -11,6 +12,7 @@ import TransformPages from 'uni-read-pages-vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig, loadEnv } from 'vite'
 import ViteRestart from 'vite-plugin-restart'
+// import vitePluginDirectives from './vite-plugin/vite-plugin-directives'
 
 export default defineConfig(async ({ command, mode }) => {
   const UnoCSS = (await import('unocss/vite')).default
@@ -34,6 +36,9 @@ export default defineConfig(async ({ command, mode }) => {
 
   return {
     plugins: [
+      // vitePluginDirectives({
+      //   directives: 'v-perms', // 自定义指令名称（默认：v-perms）
+      // }),
       // https://github.com/uni-helper/vite-plugin-uni-pages
       UniPages({
         exclude: ['**/components/**/**.*', '**/C/**.*'],
@@ -54,6 +59,12 @@ export default defineConfig(async ({ command, mode }) => {
       UniPlatformModifier(),
       // https://github.com/uni-helper/vite-plugin-uni-middleware
       UniMiddleware(),
+      // https://github.com/uni-helper/vite-plugin-uni-components
+      UniComponents({
+        // resolvers: [WotResolver()],
+        dts: 'src/types/components.d.ts',
+        directoryAsNamespace: true,
+      }),
       // UniXXX 需要在 Uni 之前引入
       uni(),
       // https://github.com/antfu/unplugin-auto-import
