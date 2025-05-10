@@ -120,3 +120,41 @@ pnpm build
 ## 🤝 贡献
 
 ## 📄 开源协议
+
+完全免费开源
+
+[MIT © 2025-present, Joet桀](./LICENSE)
+
+## 😄 维护者
+
+[Joet桀](https://gitee.com/joetoo_admin)
+
+## 🤔 如何贡献
+
+非常欢迎您的加入！[提一个 Issue](https://gitee.com/learn_15/uni-temp/issues) 或者提交一个 `Pull Request`
+
+**Pull Request:**
+
+1. `Fork` 代码到自己的项目下，不要直接在仓库下建分支
+2. 请选择 `dev` 分支，进行 `PR`
+3. 提交 `PR` 前请 `rebase`，确保 `commit` 记录的整洁
+4. 注意 `commit` 信息规范，要以 `emoji type: 描述信息` 的形式填写，注意 `type` 得是下面规范之中的一个
+5. 示例 `commit` 信息：`🐞 fix: 修复 无感刷新 重试失败问题`
+6. 可以使用项目中的 `pnpm commit` 进行 `commit` 提交，这样就会默认为 `type` 前面添加 `emoji`
+7. 等待作者 `review` 通过后，即可合并
+
+## ⌛ Git 贡献提交规范
+
+- `✨ feat` 新增功能
+- `🐞 fix` 修复 bug
+- `📃 docs` 文档变更
+- `🌈 style` 代码格式（仅仅修改了空格、缩进、逗号等等，不改变代码逻辑）
+- `🦄 refactor` 代码重构，没有加新功能或修复 bug
+- `🎈 perf` 代码优化，比如提升性能、体验
+- `🔧 build` 构建流程、外部依赖变更 (如升级 npm 包、修改打包配置等)
+- `🐳 chore` 对构建过程或辅助工具和库的更改 (不影响源文件、测试用例)
+- `⏳️ workflow` 工作流程改进
+
+## ⭐ Star
+
+非常感谢留下星星的 `小哥哥 、小姐姐`，感谢您的支持 ❤
