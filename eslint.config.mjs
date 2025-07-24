@@ -17,7 +17,7 @@ export default uniHelper({
     // computedPropertySpacing: true, // 计算属性方括号内加空格
     // restSpreadSpacing: true, // Rest/Spread 操作符周围加空格
   },
-  // unocss: true,
+  unocss: true,
   // formatters: true, // 使用外部格式化工具（如 Prettier）
   rules: {
     'no-console': 'off',
