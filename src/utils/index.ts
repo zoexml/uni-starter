@@ -36,8 +36,7 @@ export const parseQuery = (url: string) => {
  * @return {*}
  */
 export const textImageConvert = (platform: string, content?: string): any => {
-  // eslint-disable-next-line style/max-statements-per-line
-  if (!content) { return content }
+  if (!content) return content
 
   switch (platform) {
     case 'mp-weixin':

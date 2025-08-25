@@ -11,3 +11,12 @@ export default {
     // json: 'iconfont.json',
   },
 }
+
+// TODO: 待优化自动更新iconfront
+// module.exports = {
+//   iconfontUrl: '//at.alicdn.com/t/c/font_4227835_d6w9wq4r0y.js', // 矢量图标库Symbol地址
+//   dirName: 'iconfont', // 需要生成的css对应文件夹
+//   fileName: 'color-fonts', // css文件名称
+//   icon: 'iconfont', // Font Family
+//   fontSize: '16px', // 默认大小
+// }
