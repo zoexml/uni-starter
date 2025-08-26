@@ -26,5 +26,5 @@ export default uniHelper({
     'style/brace-style': ['error', '1tbs', { allowSingleLine: true }], // if-else 格式
     'curly': ['error', 'multi-line'], // 允许单行 if/else 无 {}
   },
-  ignores: ['**/node_modules', 'pnpm-lock.yaml', 'src/styles/iconfont/*'],
+  ignores: ['**/node_modules', 'dist*', 'pnpm-lock.yaml', 'src/styles/iconfont/*'],
 })

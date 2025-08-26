@@ -1,5 +1,5 @@
 import type { HotItem } from '@/types/home'
-import { http } from '@/utils/http'
+import { http } from '@/http'
 
 /**
  * 首页-广告区域-小程序

@@ -1,10 +1,12 @@
-<route lang="json5" type="page">
-  {
-    "name": "home",
-    "style": {
-      "navigationBarTitleText": "home"
-    }
-  }
+<!-- 使用 type="home" 属性设置首页，其他页面不需要设置，默认为page -->
+<route lang="json5" type="home">
+{
+  layout: 'default',
+  name: 'home',
+  style: {
+    navigationBarTitleText: 'home',
+  },
+}
 </route>
 
 <script setup lang="ts">
@@ -40,4 +42,6 @@ const goDemoPage = () => {
   </view>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+//
+</style>

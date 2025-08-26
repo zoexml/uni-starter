@@ -45,10 +45,19 @@
   "stylelint.validate": ["css", "less", "postcss", "scss", "vue", "sass", "vue", "html"],
 
   // Enable file nesting
-  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.enabled": true, // 开启文件嵌套
   "explorer.fileNesting.patterns": {
-    "tsconfig.json": "tsconfig.*.json, env.d.ts",
-    "vite.config.*": "pages.config.*, manifest.config.*, uno.config.*, volar.config.*, *.env, .env.*",
-    "package.json": "package-lock.json, pnpm*, .editorconfig"
-  }
+    ".env": ".env.*",
+    "tsconfig.json": "tsconfig.*.json, env.d.ts, .npmrc, .nvmrc",
+    "vite.config.*": "pages.config.*, manifest.config.*, uno.config.*, volar.config.*,",
+    "package.json": "package-lock.json, pnpm*",
+    "eslint.config.mjs": "commitlint.config.js, stylelint.config.mjs, .git-cz.json, .editorconfig",
+    "README.md": "index.html,favicon.ico,robots.txt,CHANGELOG.md,LICENSE*,.versionrc"
+  },
+  "cSpell.words": [
+    "alova",
+    "autoscan",
+    "easycom",
+    "Uniapp"
+  ]
 }
