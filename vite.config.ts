@@ -17,11 +17,9 @@ import ViteRestart from 'vite-plugin-restart'
 export default defineConfig(async ({ command, mode }) => {
   const UnoCSS = (await import('unocss/vite')).default
   // const mode = process.env.NODE_ENV
-  // mode: 区分生产环境还是开发环境
-  console.log('command, mode -> ', command, mode)
-
   const { UNI_PLATFORM } = process.env
-  console.log('UNI_PLATFORM -> ', UNI_PLATFORM) // 得到 mp-weixin, h5, app 等
+  // mode: 区分生产环境还是开发环境
+  console.log('command, mode -> ', command, mode, 'UNI_PLATFORM -> ', UNI_PLATFORM) // 得到 mp-weixin, h5, app 等
   const env = loadEnv(mode, path.resolve(process.cwd()))
 
   const {
@@ -61,7 +59,6 @@ export default defineConfig(async ({ command, mode }) => {
       UniMiddleware(),
       // https://github.com/uni-helper/vite-plugin-uni-components
       UniComponents({
-        // resolvers: [WotResolver()],
         dts: 'src/types/components.d.ts',
         directoryAsNamespace: true,
       }),
