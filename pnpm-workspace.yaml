@@ -1,0 +1,8 @@
+onlyBuiltDependencies:
+  - '@uni-helper/unocss-preset-uni'
+  - core-js
+  - es5-ext
+  - esbuild
+  - simple-git-hooks
+  - unrs-resolver
+  - vue-demi
