@@ -14,6 +14,11 @@
 - 🔷 [typescript](https://www.typescriptlang.org/) - JavaScript 超集
 - 🔧 [antfu eslint config](https://github.com/antfu/eslint-config) - 代码规范
 
+## 待使用的优化方案
+
+- [root](https://github.com/uni-ku/root) - root
+- [bundle-optimizer](https://github.com/uni-ku/bundle-optimizer) - 分包优化
+
 ## 🔨 快速开始
 
 ```bash
