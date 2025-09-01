@@ -11,11 +11,6 @@ export default uniHelper({
     blockSpacing: true, // 代码块内加空格，如 `function foo() {}`
     multilineComments: true, // 多行注释风格
     preferArrowFunctions: true, // 优先使用箭头函数
-    // spaceBeforeFunctionParen: "always", // 函数名和参数括号间加空格
-    // spaceInParens: "never", // 括号内不加空格
-    // spacesInAngles: true, // 尖括号内加空格
-    // computedPropertySpacing: true, // 计算属性方括号内加空格
-    // restSpreadSpacing: true, // Rest/Spread 操作符周围加空格
   },
   unocss: true,
   // formatters: true, // 使用外部格式化工具（如 Prettier）
@@ -26,5 +21,5 @@ export default uniHelper({
     'style/brace-style': ['error', '1tbs', { allowSingleLine: true }], // if-else 格式
     'curly': ['error', 'multi-line'], // 允许单行 if/else 无 {}
   },
-  ignores: ['**/node_modules', 'dist*', 'pnpm-lock.yaml', 'src/styles/iconfont/*'],
+  ignores: ['**/node_modules', 'dist*', 'pnpm-lock.yaml', 'src/styles/iconfont/*', 'src/apis'],
 })

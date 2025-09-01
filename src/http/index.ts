@@ -1,21 +1,16 @@
+import type { Method } from 'alova'
 // import type { uniappRequestAdapter } from '@alova/adapter-uniapp'
-// import type { IResponse } from './types'
+import type { IResponse } from './types'
 import { useUserStore } from '@/stores'
 import AdapterUniapp from '@alova/adapter-uniapp'
 import { createAlova } from 'alova'
 // import { createServerTokenAuthentication } from 'alova/client'
 import VueHook from 'alova/vue'
-// import { ContentTypeEnum, ResultEnum, ShowMessage } from './enum'
+import { ResultEnum, ShowMessage } from './enum'
 
 // 接口白名单(无需携带token)
 // eslint-disable-next-line unused-imports/no-unused-vars
 const whiteList = ['/login']
-
-interface ApiResponse<T> {
-  code: string
-  message: string
-  result: T
-}
 
 // 配置动态Tag
 export const API_DOMAINS = {
@@ -64,9 +59,9 @@ const alovaInstance = createAlova({
     // const token = userStore?.userInfo?.Token
 
     // if (store.token && whiteList.includes(config.url!) === false) {
-    //   // 在请求头中添加 token
+    // 在请求头中添加 token
     //   config.header = {
-    //     ...config.header, // 展开运算符，保留请求头原本的参数
+    //     ...config.header,
     //     Authorization: `Bearer ${store.token}`,
     //   }
     // }
@@ -75,32 +70,32 @@ const alovaInstance = createAlova({
   responded: {
     // 请求成功的拦截器
     // 第二个参数为当前请求的method实例
-    onSuccess: async <T>(response: UniappResponse) => {
-      const { data, statusCode } = response as UniNamespace.RequestSuccessCallbackResult
-      // console.log('🚀 ~ response:', response)
-      const { code, message, result } = data as ApiResponse<T>
-      if (statusCode >= 200 && statusCode < 300) {
-        // ✅ 判断业务 code 是否为 '1'
-        if (code === '1') {
-          return result as T
-        } else {
-          uni.showToast({
-            icon: 'none',
-            title: message || '业务错误',
-          })
-          return Promise.reject(new Error(message || '业务错误'))
-        }
-      } else if (statusCode === 401) {
-        return Promise.reject(new Error('Unauthorized'))
-      } else {
-        // 其他错误 -> 根据后端错误信息轻提示
-        uni.showToast({
-          icon: 'none',
-          title: message || '请求错误',
-        })
+    onSuccess: async <T>(response: UniappResponse, method: Method) => {
+      const { config } = method
+      const { data: rawData, statusCode, errMsg } = response as UniNamespace.RequestSuccessCallbackResult
 
-        return Promise.reject(new Error(message || 'Request failed'))
+      // 处理特殊请求类型（上传/下载）
+      if (['upload', 'download'].includes(config.requestType)) return response
+
+      // 处理 HTTP 状态码错误
+      if (!(statusCode >= 200 && statusCode < 300)) {
+        const errorMessage = ShowMessage(statusCode) || `HTTP请求错误[${statusCode}]`
+        console.error('errorMessage===>', errorMessage)
+        uni.showToast({ title: errorMessage, icon: 'error' })
+        return Promise.reject(new Error(`${errorMessage}：${errMsg}`))
       }
+
+      // 处理业务逻辑错误
+      const { code, message, data } = rawData as IResponse<T>
+      if (code !== ResultEnum.Success) {
+        if (config.meta?.toast !== false) {
+          uni.showToast({ title: message, icon: 'none' })
+        }
+        return Promise.reject(new Error(`请求错误[${code}]：${message}`))
+      }
+
+      // 处理成功响应，返回业务数据
+      return data as T
     },
 
     // 请求失败的拦截器
