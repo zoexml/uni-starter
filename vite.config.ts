@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import uni from '@dcloudio/vite-plugin-uni'
+// import UniDevTools from '@uni-helper/devtools'
 import UniComponents from '@uni-helper/vite-plugin-uni-components'
 import UniLayouts from '@uni-helper/vite-plugin-uni-layouts'
 import UniManifest from '@uni-helper/vite-plugin-uni-manifest'
@@ -64,6 +65,8 @@ export default async ({ command, mode }) => {
         dts: 'src/types/components.d.ts',
         directoryAsNamespace: true,
       }),
+      // pnpm add -D @uni-helper/devtools
+      // UniDevTools(),
       // UniXXX 需要在 Uni 之前引入
       uni(),
       // https://github.com/antfu/unplugin-auto-import
