@@ -68,19 +68,18 @@ export default async ({ command, mode }) => {
       uni(),
       // https://github.com/antfu/unplugin-auto-import
       AutoImport({
-        imports: [
-          'vue',
-          '@vueuse/core',
-          'uni-app',
-          'pinia',
-          {
-            from: 'uni-mini-router',
-            imports: ['createRouter', 'useRouter', 'useRoute'],
-          },
-          { 'alova/client': ['useRequest', 'usePagination', 'useAutoRequest', 'useWatcher'] },
-        ],
+        imports: ['vue', '@vueuse/core', 'uni-app', 'pinia', {
+          from: 'uni-mini-router',
+          imports: ['createRouter', 'useRouter', 'useRoute'],
+        }, {
+          from: 'wot-design-uni',
+          imports: ['useToast', 'useMessage', 'useNotify', 'CommonUtil'],
+        }, {
+          from: 'alova/client',
+          imports: ['useRequest', 'usePagination', 'useAutoRequest', 'useWatcher'],
+        }],
         dts: 'src/types/auto-imports.d.ts',
-        dirs: ['src/composables', 'src/stores', 'src/utils'],
+        dirs: ['src/composables', 'src/stores', 'src/utils'], // 'src/apis'
         vueTemplate: true,
       }),
       UnoCSS(),
