@@ -12,10 +12,13 @@
 </script>
 
 <template>
-  <view class="">
-    我的
+  <z-paging>
+    <template #top>
+      <ENavbar title="我的" :leftArrow="false" />
+    </template>
+    <!-- 页面内容 -->
     <ELoading />
-  </view>
+  </z-paging>
 </template>
 
 <style lang="scss" scoped>

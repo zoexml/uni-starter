@@ -1,5 +1,4 @@
 /*
- * @FilePath: /uni-temp/src/utils/checkUpdate.ts
  * @Description: 检查小程序更新
  */
 

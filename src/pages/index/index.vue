@@ -10,10 +10,10 @@
 </route>
 
 <script setup lang="ts">
-import { getHomeHotAPI } from '@/apis/home'
+// import { getHomeHotAPI } from '@/apis/home'
 
 // 自动请求
-const { loading, data: hotList } = useRequest(getHomeHotAPI) //  { immediate: false }
+// const { loading, data: hotList } = useRequest(getHomeHotAPI)
 
 const router = useRouter()
 const goDemoPage = () => {
@@ -22,12 +22,11 @@ const goDemoPage = () => {
 </script>
 
 <template>
-  <view>
-    <view v-if="loading">
-      加载中...
-    </view>
-    <view>请求数据为：{{ hotList }}</view>
-
+  <z-paging>
+    <template #top>
+      <ENavbar title="home" :leftArrow="false" />
+    </template>
+    <!-- 页面内容 -->
     <view class="iconfont icon-peisongjindu text-50rpx" />
 
     <wd-button @click="goDemoPage">
@@ -39,7 +38,7 @@ const goDemoPage = () => {
     <wd-button type="info">
       信息按钮
     </wd-button>
-  </view>
+  </z-paging>
 </template>
 
 <style lang="scss">
