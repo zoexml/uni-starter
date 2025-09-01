@@ -8,6 +8,7 @@ import UniMiddleware from '@uni-helper/vite-plugin-uni-middleware'
 import UniPages from '@uni-helper/vite-plugin-uni-pages'
 import UniPlatform from '@uni-helper/vite-plugin-uni-platform'
 import UniPlatformModifier from '@uni-helper/vite-plugin-uni-platform-modifier'
+import optimizer from '@uni-ku/bundle-optimizer'
 import { visualizer } from 'rollup-plugin-visualizer'
 import TransformPages from 'uni-read-pages-vite'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -83,6 +84,11 @@ export default async ({ command, mode }) => {
         vueTemplate: true,
       }),
       UnoCSS(),
+      // https://github.com/uni-ku/bundle-optimizer
+      optimizer({
+        dts: { base: 'src/types' },
+        // logger: true,
+      }),
 
       // 打包分析插件
       mode === 'production'

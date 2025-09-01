@@ -23,15 +23,13 @@ dist
 
 .hbuilderx
 
-# unplugin-auto-import 生成的类型文件
+# 插件自动生成的类型文件
 auto-imports.d.ts
-# unplugin-vue-components 生成的类型文件
 components.d.ts
-# vite-plugin-uni-pages 生成的类型文件
 uni-pages.d.ts
-
-# 插件生成的文件
 src/pages.json
+async-component.d.ts
+async-import.d.ts
 
 # TIPS：如果某些文件已经加入了版本管理，现在重新加入 .gitignore 是不生效的，需要执行下面的操作
 # `git rm -r --cached .` 然后提交 commit 即可。
