@@ -110,7 +110,7 @@ pnpm build
 - 关于 public 文件夹，原则上来说静态图片都应该放在 static 下面，public 的存在是为了放一些需要在web服务器根目录的给某些app嵌套h5要求放一些文件
 - 关于 hooks，拥有自动导入，定义的 hooks 只要使用 export 导出，就可以自动导入
 - 组件库使用 wot-design(开发体验最好用的组件库)
-- 环境变量配置在 .env 和 .env.\* 文件
+- 环境变量配置在 .env 和 .env.* 文件
 - 分包配置在 vite.config.ts，分包优化在 pages.config.ts
 - 如果自动格式化 eslint 插件没生效。请安装依赖后重启 vscode
 - 如果 ts 服务出现异常，请使用 ctrl + shift + p 然后输入 ts server restart，或者重启 vscode
@@ -119,9 +119,7 @@ pnpm build
 
 ### 项目结构
 
-```bash
-
-```
+请查看 src 目录下的文件结构
 
 ## 🤝 贡献
 
