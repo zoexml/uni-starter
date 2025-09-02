@@ -1,12 +1,12 @@
-import type { Method } from 'alova'
 // import type { uniappRequestAdapter } from '@alova/adapter-uniapp'
-import type { IResponse } from './types'
+import type { IResponse } from '@/types/index'
+import type { Method } from 'alova'
 import { useUserStore } from '@/stores'
 import AdapterUniapp from '@alova/adapter-uniapp'
 import { createAlova } from 'alova'
 // import { createServerTokenAuthentication } from 'alova/client'
 import VueHook from 'alova/vue'
-import { ResultEnum, ShowMessage } from './enum'
+import { ResultEnum, ShowMessage } from '../common/enum'
 
 // 接口白名单(无需携带token)
 // eslint-disable-next-line unused-imports/no-unused-vars
