@@ -1,7 +1,7 @@
+import type { ConfigEnv } from 'vite'
 import path from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import uni from '@dcloudio/vite-plugin-uni'
-// import UniDevTools from '@uni-helper/devtools'
 import UniComponents from '@uni-helper/vite-plugin-uni-components'
 import UniLayouts from '@uni-helper/vite-plugin-uni-layouts'
 import UniManifest from '@uni-helper/vite-plugin-uni-manifest'
@@ -17,7 +17,7 @@ import { defineConfig, loadEnv } from 'vite'
 import ViteRestart from 'vite-plugin-restart'
 // import vitePluginDirectives from './vite-plugin/vite-plugin-directives'
 
-export default async ({ command, mode }) => {
+export default async ({ command, mode }: ConfigEnv) => {
   const UnoCSS = (await import('unocss/vite')).default
   // const mode = process.env.NODE_ENV
   const { UNI_PLATFORM } = process.env
@@ -35,7 +35,7 @@ export default async ({ command, mode }) => {
   } = env
   console.log('环境变量 env -> ', env)
 
-  return defineConfig ({
+  return defineConfig({
     plugins: [
       // vitePluginDirectives({
       //   directives: 'v-perms', // 自定义指令名称（默认：v-perms）
@@ -65,8 +65,6 @@ export default async ({ command, mode }) => {
         dts: 'src/types/components.d.ts',
         directoryAsNamespace: true,
       }),
-      // pnpm add -D @uni-helper/devtools
-      // UniDevTools(),
       // UniXXX 需要在 Uni 之前引入
       uni(),
       // https://github.com/antfu/unplugin-auto-import
@@ -133,7 +131,7 @@ export default async ({ command, mode }) => {
             [VITE_APP_PROXY_PREFIX]: {
               target: VITE_SERVER_BASEURL,
               changeOrigin: true,
-              rewrite: path => path.replace(new RegExp(`^${VITE_APP_PROXY_PREFIX}`), ''),
+              rewrite: (path: string) => path.replace(new RegExp(`^${VITE_APP_PROXY_PREFIX}`), ''),
             },
           }
         : undefined,
