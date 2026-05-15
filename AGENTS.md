@@ -62,7 +62,6 @@
 - `manifest.config.ts`: uni-app manifest 配置
 - `vite.config.ts`: Vite 和 uni 插件配置
 - `uno.config.ts`: UnoCSS 配置
-- `openapi-ts-request.config.ts`: OpenAPI 生成配置
 
 ## 编码约定
 

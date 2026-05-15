@@ -13,7 +13,6 @@
 - 📦 [pinia](https://pinia.vuejs.org/) - 状态管理
 - 🔷 [typescript](https://www.typescriptlang.org/) - JavaScript 超集
 - 🔧 [antfu eslint config](https://github.com/antfu/eslint-config) - 代码规范
-- 📦 [openapi-ts-request](https://github.com/openapi-ui/openapi-ts-request) - api自动生成
 
 ## 待使用的优化方案
 
