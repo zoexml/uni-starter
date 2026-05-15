@@ -130,26 +130,25 @@ function getImageByIndex(index: number, item: CustomTabBarItem) {
   left: 0;
   box-sizing: border-box;
   border-top: 1px solid #eee;
-}
 
-// 中间鼓包的样式
-.bulge {
-  position: absolute;
-  top: -20px;
-  left: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 250rpx;
-  height: 250rpx;
-  background-color: #fff;
-  border-radius: 50%;
-  box-shadow: inset 0 0 0 1px #fefefe;
-  transform: translateX(-50%) scale(0.5) translateY(-33%);
-  transform-origin: top center;
+  .bulge {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 250rpx;
+    height: 250rpx;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px #fefefe;
+    transform: translateX(-50%) scale(0.5) translateY(-33%);
+    transform-origin: top center;
 
-  &:active {
-    // opacity: 0.8;
+    &:active {
+      // opacity: 0.8;
+    }
   }
 }
 </style>
