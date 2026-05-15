@@ -1,10 +1,10 @@
 // import en from '@/locale/en.json'
 // import zh from '@/locale/zh-Hans.json'
 // import { useUserStore } from '@/store'
-// import { Locale, useCurrentLang } from 'wot-design-uni'
+// import { Locale, useCurrentLang } from '@wot-ui/ui'
 
-// import enUS from 'wot-design-uni/locale/lang/en-US'
-// import zhCN from 'wot-design-uni/locale/lang/zh-CN'
+// import enUS from '@wot-ui/ui/locale/lang/en-US'
+// import zhCN from '@wot-ui/ui/locale/lang/zh-CN'
 
 // export const useI18n = () => {
 //   const store = useUserStore()

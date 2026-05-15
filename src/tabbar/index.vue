@@ -49,7 +49,7 @@ onLoad(() => {
     },
   })
 })
-const activeColor = 'var(--wot-color-theme, #1890ff)'
+const activeColor = 'var(--wot-primary-6, #1890ff)'
 const inactiveColor = '#666'
 function getColorByIndex(index: number) {
   return tabbarStore.curIdx === index ? activeColor : inactiveColor
@@ -88,7 +88,7 @@ function getImageByIndex(index: number, item: CustomTabBarItem) {
             </template>
             <template v-if="item.iconType === 'uiLib'">
               <!-- TODO: 以下内容请根据选择的UI库自行替换 -->
-              <!-- 如：<wd-icon name="home" /> (https://wot-design-uni.cn/component/icon.html) -->
+              <!-- 如：<wd-icon name="home" /> (https://wot-ui.cn/component/icon.html) -->
               <!-- 如：<uv-icon name="home" /> (https://www.uvui.cn/components/icon.html) -->
               <!-- 如：<sar-icon name="image" /> (https://sard.wzt.zone/sard-uniapp-docs/components/icon)(sar没有home图标^_^) -->
               <wd-icon :name="item.icon" size="20" />

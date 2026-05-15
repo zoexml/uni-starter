@@ -8,7 +8,7 @@
 - 🎨 [unocss](https://unocss.dev/) - 原子化 CSS 引擎
 - 🚦 [uni-mini-router](https://github.com/uni-helper/uni-mini-router) - 小程序路由管理器
 - 🚀 [alova](https://alova.js.org/) - 轻量级请求策略库
-- 🎯 [wot-design](https://wot-design-uni.cn/) - Vue3 UI 框架
+- 🎯 [Wot UI](https://wot-ui.cn/) - Vue3 UI 框架
 - 📜 [z-paging](https://z-paging.zxlee.cn/) - 上拉加载下拉刷新组件
 - 📦 [pinia](https://pinia.vuejs.org/) - 状态管理
 - 🔷 [typescript](https://www.typescriptlang.org/) - JavaScript 超集

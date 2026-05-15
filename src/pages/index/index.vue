@@ -24,7 +24,7 @@ const goDemoPage = () => {
 <template>
   <z-paging>
     <template #top>
-      <ENavbar title="home" :leftArrow="false" />
+      <ENavbar title="home" :left-arrow="false" />
     </template>
     <!-- 页面内容 -->
     <view class="iconfont icon-peisongjindu text-50rpx" />

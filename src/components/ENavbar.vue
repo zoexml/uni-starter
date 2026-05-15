@@ -19,7 +19,7 @@ const clickLeft = () => {
 </script>
 
 <template>
-  <wd-navbar :title="props.title" :leftArrow="props?.leftArrow" safe-area-inset-top placeholder fixed :bordered="false" v-bind="attrs" @click-left="clickLeft">
+  <wd-navbar :title="props.title" :left-arrow="props?.leftArrow" safe-area-inset-top placeholder fixed :bordered="false" v-bind="attrs" @click-left="clickLeft">
     <!-- <template v-for="(_, name) in $slots" #[name]="slotData">
       <slot v-bind="slotData || {}" :name="name" />
     </template> -->

@@ -1,4 +1,4 @@
-import type { ConfigProviderThemeVars } from 'wot-design-uni'
+import type { ConfigProviderThemeVars } from '@wot-ui/ui'
 /* 默认的主题list */
 export const colorColumns = [
   {
@@ -18,5 +18,5 @@ export const colorColumns = [
 export const initThemState = 'light'
 /* 默认的主题 */
 export const initThemeVars: ConfigProviderThemeVars = {
-  colorTheme: colorColumns[0].value,
+  primary6: colorColumns[0].value,
 }

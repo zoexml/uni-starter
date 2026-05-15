@@ -1,13 +1,10 @@
 import type { ConfigEnv } from 'vite'
+import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
-import uni from '@dcloudio/vite-plugin-uni'
 import UniComponents from '@uni-helper/vite-plugin-uni-components'
-import UniLayouts from '@uni-helper/vite-plugin-uni-layouts'
 import UniManifest from '@uni-helper/vite-plugin-uni-manifest'
 import UniMiddleware from '@uni-helper/vite-plugin-uni-middleware'
-import UniPages from '@uni-helper/vite-plugin-uni-pages'
-import UniPlatform from '@uni-helper/vite-plugin-uni-platform'
 import UniPlatformModifier from '@uni-helper/vite-plugin-uni-platform-modifier'
 import optimizer from '@uni-ku/bundle-optimizer'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -16,6 +13,12 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { defineConfig, loadEnv } from 'vite'
 import ViteRestart from 'vite-plugin-restart'
 // import vitePluginDirectives from './vite-plugin/vite-plugin-directives'
+
+const require = createRequire(import.meta.url)
+const uni = require('@dcloudio/vite-plugin-uni').default
+const UniLayouts = require('@uni-helper/vite-plugin-uni-layouts').default
+const UniPages = require('@uni-helper/vite-plugin-uni-pages').default
+const UniPlatform = require('@uni-helper/vite-plugin-uni-platform').default
 
 export default async ({ command, mode }: ConfigEnv) => {
   const UnoCSS = (await import('unocss/vite')).default
@@ -73,8 +76,8 @@ export default async ({ command, mode }: ConfigEnv) => {
           from: 'uni-mini-router',
           imports: ['createRouter', 'useRouter', 'useRoute'],
         }, {
-          from: 'wot-design-uni',
-          imports: ['useToast', 'useMessage', 'useNotify', 'CommonUtil'],
+          from: '@wot-ui/ui',
+          imports: ['useToast', 'useDialog', 'useNotify', 'CommonUtil'],
         }, {
           from: 'alova/client',
           imports: ['useRequest', 'usePagination', 'useAutoRequest', 'useWatcher'],
@@ -112,6 +115,12 @@ export default async ({ command, mode }: ConfigEnv) => {
           //   overrideBrowserslist: ['> 1%', 'last 2 versions'],
           // }),
         ],
+      },
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',
+          silenceDeprecations: ['legacy-js-api'],
+        },
       },
     },
     resolve: {

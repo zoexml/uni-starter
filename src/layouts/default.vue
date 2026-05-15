@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type { ConfigProviderThemeVars } from 'wot-design-uni'
+import type { ConfigProviderThemeVars } from '@wot-ui/ui'
 
 const themeVars = reactive<ConfigProviderThemeVars>({
-  // colorTheme: '#FF5454',
+  // primary6: '#FF5454',
   // tabsNavLineBgColor: 'red',
   // navbarColor: '#ffffff',
 })
@@ -23,7 +23,7 @@ export default {
     <slot />
     <wd-notify />
     <wd-toast />
-    <wd-message-box />
+    <wd-dialog />
     <!-- <privacy-popup /> -->
   </wd-config-provider>
 </template>

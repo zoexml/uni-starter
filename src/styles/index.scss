@@ -1,6 +1,6 @@
-@import "./base";
-@import "./iconfont/fonts";
-@import "./mixin";
+@use "./base";
+@use "./iconfont/fonts";
+@use "./mixin";
 
 // 单行省略，优先使用 unocss: text-ellipsis
 .ellipsis {
@@ -11,12 +11,12 @@
 
 // 两行省略
 .ellipsis-2 {
-  @include line-clamp(2);
+  @include mixin.line-clamp(2);
 }
 
 // 三行省略
-.ellipsis-2 {
-  @include line-clamp(3);
+.ellipsis-3 {
+  @include mixin.line-clamp(3);
 }
 
 .test {

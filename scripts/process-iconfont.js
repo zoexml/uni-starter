@@ -1,7 +1,10 @@
-const fs = require('node:fs')
-const https = require('node:https')
-const path = require('node:path')
-const { pathToFileURL } = require('node:url')
+import fs from 'node:fs'
+import https from 'node:https'
+import path from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const CONFIG_FILE = path.resolve(__dirname, '../iconfont.config.mjs')
 

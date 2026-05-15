@@ -2,7 +2,7 @@
 // # 在升级完后，会自动添加很多无用依赖，这需要删除以减小依赖包体积
 // # 只需要执行下面的命令即可
 
-const { exec } = require('node:child_process')
+import { exec } from 'node:child_process'
 
 // TODO: 如果需要某个平台的小程序，请手动删除或注释掉
 const dependencies = [

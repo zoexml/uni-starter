@@ -14,7 +14,7 @@
 <template>
   <z-paging>
     <template #top>
-      <ENavbar title="我的" :leftArrow="false" />
+      <ENavbar title="我的" :left-arrow="false" />
     </template>
     <!-- 页面内容 -->
     <ELoading />

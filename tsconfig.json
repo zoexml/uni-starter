@@ -17,7 +17,7 @@
       "@mini-types/alipay",
       "miniprogram-api-typings",
       "@uni-helper/uni-types",
-      "wot-design-uni/global",
+      "@wot-ui/ui/global",
       "z-paging/types",
       "./src/typings.d.ts"
     ],
