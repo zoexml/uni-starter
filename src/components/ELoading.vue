@@ -9,32 +9,38 @@
 </template>
 
 <style lang="scss" scoped>
-.loader {
+.flex-center {
   position: relative;
-  width: 2.5em;
-  height: 2.5em;
-  transform: rotate(165deg);
-}
 
-.loader::before,
-.loader::after {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: block;
-  width: 0.5em;
-  height: 0.5em;
-  content: "";
-  border-radius: 0.25em;
-  transform: translate(-50%, -50%);
-}
+  .loader {
+    position: absolute;
+    top: calc(50% - 1.25em);
+    left: calc(50% - 1.25em);
+    width: 2.5em;
+    height: 2.5em;
+    transform: rotate(165deg);
 
-.loader::before {
-  animation: before8 2s infinite;
-}
+    &::before,
+    &::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: block;
+      width: 0.5em;
+      height: 0.5em;
+      content: "";
+      border-radius: 0.25em;
+      transform: translate(-50%, -50%);
+    }
 
-.loader::after {
-  animation: after6 2s infinite;
+    &::before {
+      animation: before8 2s infinite;
+    }
+
+    &::after {
+      animation: after6 2s infinite;
+    }
+  }
 }
 
 @keyframes before8 {
@@ -77,11 +83,5 @@
   100% {
     box-shadow: 0.5em 1em rgb(61 184 143 / 75%), -0.5em -1em rgb(233 169 32 / 75%);
   }
-}
-
-.loader {
-  position: absolute;
-  top: calc(50% - 1.25em);
-  left: calc(50% - 1.25em);
 }
 </style>

@@ -62,33 +62,33 @@ function goLoginEntry() {
   min-height: 100%;
   padding: 32rpx;
   background: #f6f8f7;
-}
 
-.home-panel {
-  padding: 36rpx 32rpx;
-  background: #fff;
-  border: 1rpx solid #edf1ef;
-  border-radius: 16rpx;
-}
+  .home-panel {
+    padding: 36rpx 32rpx;
+    background: #fff;
+    border: 1rpx solid #edf1ef;
+    border-radius: 16rpx;
 
-.home-title {
-  font-size: 40rpx;
-  font-weight: 700;
-  line-height: 1.35;
-  color: #17211d;
-}
+    .home-title {
+      font-size: 40rpx;
+      font-weight: 700;
+      line-height: 1.35;
+      color: #17211d;
+    }
 
-.home-desc {
-  margin-top: 16rpx;
-  font-size: 26rpx;
-  line-height: 1.6;
-  color: #66736e;
-}
+    .home-desc {
+      margin-top: 16rpx;
+      font-size: 26rpx;
+      line-height: 1.6;
+      color: #66736e;
+    }
 
-.home-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-  margin-top: 36rpx;
+    .home-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 20rpx;
+      margin-top: 36rpx;
+    }
+  }
 }
 </style>

@@ -179,84 +179,84 @@ onUnmounted(clearCountdown)
   min-height: 100%;
   padding: 48rpx 32rpx 80rpx;
   background: #f6f8f7;
-}
 
-.login-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 36rpx 0 48rpx;
-}
+  .login-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 36rpx 0 48rpx;
 
-.login-logo {
-  width: 120rpx;
-  height: 120rpx;
-  margin-bottom: 24rpx;
-}
+    .login-logo {
+      width: 120rpx;
+      height: 120rpx;
+      margin-bottom: 24rpx;
+    }
 
-.login-title {
-  font-size: 42rpx;
-  font-weight: 700;
-  line-height: 1.3;
-  color: #17211d;
-}
+    .login-title {
+      font-size: 42rpx;
+      font-weight: 700;
+      line-height: 1.3;
+      color: #17211d;
+    }
 
-.login-desc {
-  max-width: 560rpx;
-  margin-top: 16rpx;
-  font-size: 26rpx;
-  line-height: 1.5;
-  color: #66736e;
-  text-align: center;
-}
+    .login-desc {
+      max-width: 560rpx;
+      margin-top: 16rpx;
+      font-size: 26rpx;
+      line-height: 1.5;
+      color: #66736e;
+      text-align: center;
+    }
+  }
 
-.login-panel {
-  padding: 28rpx;
-  background: #fff;
-  border: 1rpx solid #edf1ef;
-  border-radius: 16rpx;
-}
+  .login-panel {
+    padding: 28rpx;
+    background: #fff;
+    border: 1rpx solid #edf1ef;
+    border-radius: 16rpx;
 
-:deep(.login-submit) {
-  margin-top: 36rpx;
-}
+    :deep(.login-submit) {
+      margin-top: 36rpx;
+    }
 
-:deep(.wechat-submit) {
-  margin-top: 20rpx;
-}
+    :deep(.wechat-submit) {
+      margin-top: 20rpx;
+    }
 
-.agreement-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  margin-top: 28rpx;
-  font-size: 24rpx;
-  line-height: 1.7;
-  color: #77827e;
-}
+    .agreement-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 28rpx;
+      font-size: 24rpx;
+      line-height: 1.7;
+      color: #77827e;
 
-.agreement-check {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28rpx;
-  height: 28rpx;
-  margin-right: 12rpx;
-  border: 2rpx solid #b7c2bd;
-  border-radius: 50%;
-}
+      .agreement-check {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 28rpx;
+        height: 28rpx;
+        margin-right: 12rpx;
+        border: 2rpx solid #b7c2bd;
+        border-radius: 50%;
 
-.agreement-check--active {
-  color: #fff;
-  background: #01b26a;
-  border-color: #01b26a;
-}
+        &--active {
+          color: #fff;
+          background: #01b26a;
+          border-color: #01b26a;
+        }
+      }
 
-.agreement-text {
-  margin-right: 4rpx;
-}
+      .agreement-text {
+        margin-right: 4rpx;
+      }
 
-.agreement-link {
-  color: #018d71;
+      .agreement-link {
+        color: #018d71;
+      }
+    }
+  }
 }
 </style>
