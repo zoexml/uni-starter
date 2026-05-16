@@ -1,6 +1,10 @@
 <route lang="json5" type="page">
 {
   name: 'my',
+  meta: {
+    requiresAuth: true,
+    permissions: ['profile:view'],
+  },
   style: {
     navigationBarTitleText: '我的',
   },
@@ -10,6 +14,7 @@
 <script lang="ts" setup>
 import { mockLogout } from '@/mocks/auth'
 import { useUserStore } from '@/stores'
+// import { buildWebViewPageUrl } from '@/utils/webview'
 
 interface UserMenuItem {
   key: string
@@ -63,6 +68,13 @@ const menuItems = computed<UserMenuItem[]>(() => [
     permission: 'about:view',
   },
   {
+    key: 'webview',
+    title: 'WebView 示例',
+    desc: '打开外部网页容器',
+    icon: '网',
+    permission: 'webview:view',
+  },
+  {
     key: 'cache',
     title: '清缓存',
     desc: `当前约 ${cacheSize.value}`,
@@ -95,6 +107,16 @@ function showTemplateModal(title: string, content: string) {
 }
 
 function handleMenuClick(item: UserMenuItem) {
+  // if (item.key === 'webview') {
+  //   uni.navigateTo({
+  //     url: buildWebViewPageUrl({
+  //       title: 'uni-app 文档',
+  //       url: 'https://uniapp.dcloud.net.cn/component/web-view.html',
+  //     }),
+  //   })
+  //   return
+  // }
+
   if (item.key === 'cache') {
     handleClearCache()
     return
@@ -154,9 +176,9 @@ onShow(refreshCacheSize)
 </script>
 
 <template>
-  <z-paging>
+  <z-paging :show-scrollbar="true">
     <template #top>
-      <ENavbar title="我的" :left-arrow="false" />
+      <Navbar title="我的" :left-arrow="false" />
     </template>
 
     <view class="my-page">
