@@ -7,6 +7,7 @@
  * 3: 'CUSTOM_TABBAR_WITHOUT_CACHE' `无缓存自定义 tabbar`
  * 温馨提示：本文件的任何代码更改了之后，都需要重新运行，否则 pages.json 不会更新导致配置不生效
  */
+import type { CustomTabBarItem } from '@/types/tabbar'
 import type { TabBar } from '@uni-helper/vite-plugin-uni-pages'
 
 // tabbar 策略枚举
@@ -46,19 +47,6 @@ export const nativeTabbarList: NativeTabBarItem[] = [
     selectedIconPath: 'static/tabs/my-active.png',
   },
 ]
-
-// badge 显示一个数字或 小红点（样式可以直接在 tabbar/index.vue 里面修改）
-export type CustomTabBarItemBadge = number | 'dot'
-
-export interface CustomTabBarItem {
-  text?: string
-  pagePath: string
-  iconType?: 'uniUi' | 'uiLib' | 'unocss' | 'iconfont' | 'image' // 不建议用 image 模式，需要配置2张图
-  icon?: any // 其实是 string 类型，这里是为了避免 ts 报错 (tabbar/index.vue 里面 uni-icons 那行)
-  iconActive?: string // 只有在 image 模式下才需要，传递的是高亮的图片（PS： 不建议用 image 模式）
-  badge?: CustomTabBarItemBadge
-  isBulge?: boolean // 是否是中间的鼓包tabbarItem
-}
 
 // TODO: 3/3. 使用 CUSTOM_TABBAR(2,3) 时，更新下面的 tabbar 配置
 // 如果需要配置鼓包，需要在 'tabbar/store.ts' 里面设置，最后在 [tabbar/index.vue](file:///Users/joet/code/uni-temp/src/tabbar/index.vue) 里面更改鼓包的图片
