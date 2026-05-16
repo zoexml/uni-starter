@@ -123,7 +123,7 @@ onUnmounted(clearCountdown)
 <template>
   <z-paging>
     <template #top>
-      <ENavbar title="登录注册" />
+      <Navbar title="登录注册" />
     </template>
 
     <view class="login-page">

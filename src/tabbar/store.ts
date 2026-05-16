@@ -1,4 +1,4 @@
-import type { CustomTabBarItem, CustomTabBarItemBadge } from './config'
+import type { CustomTabBarItem, CustomTabBarItemBadge } from '@/types/tabbar'
 import { tabbarList as _tabbarList, customTabbarEnable } from './config'
 
 // TODO 1/2: 中间的鼓包tabbarItem的开关
