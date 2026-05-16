@@ -36,7 +36,7 @@ const queryList = async (pageNo: number, pageSize: number) => {
 <template>
   <z-paging ref="paging" @query="queryList">
     <template #top>
-      <ENavbar title="标题" />
+      <Navbar title="标题" />
     </template>
     <!-- 页面内容 -->
 

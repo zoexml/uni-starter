@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CustomTabBarItem } from './config'
+import type { CustomTabBarItem } from '@/types/tabbar'
 import { customTabbarEnable, needHideNativeTabbar, tabbarCacheEnable } from './config'
 import { tabbarList, tabbarStore } from './store'
 
