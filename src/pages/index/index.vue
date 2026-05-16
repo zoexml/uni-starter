@@ -11,6 +11,7 @@
 
 <script setup lang="ts">
 import { useUserStore } from '@/stores'
+// import { buildWebViewPageUrl } from '@/utils/webview'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -20,7 +21,16 @@ const goDemoPage = () => {
   router.push({ name: 'demo' })
 }
 
-function goLoginEntry() {
+const goWebViewDemo = () => {
+  // uni.navigateTo({
+  //   url: buildWebViewPageUrl({
+  //     title: 'uni-app 文档',
+  //     url: 'https://uniapp.dcloud.net.cn/component/web-view.html',
+  //   }),
+  // })
+}
+
+const goLoginEntry = () => {
   if (userStore.isLogin) {
     uni.switchTab({ url: '/pages/my/index' })
     return
@@ -31,9 +41,9 @@ function goLoginEntry() {
 </script>
 
 <template>
-  <z-paging>
+  <z-paging :show-scrollbar="true">
     <template #top>
-      <ENavbar title="home" :left-arrow="false" />
+      <Navbar title="home" :left-arrow="false" />
     </template>
     <view class="home-page">
       <view class="home-panel">
@@ -50,6 +60,9 @@ function goLoginEntry() {
           </wd-button>
           <wd-button plain block @click="goDemoPage">
             进入 demo 页
+          </wd-button>
+          <wd-button plain block @click="goWebViewDemo">
+            打开 WebView 示例
           </wd-button>
         </view>
       </view>
