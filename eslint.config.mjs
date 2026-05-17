@@ -20,6 +20,7 @@ export default uniHelper({
     'vue/attribute-hyphenation': 'off', // 属性允许使用驼峰命名
     'style/brace-style': ['error', '1tbs', { allowSingleLine: true }], // if-else 格式
     'curly': ['error', 'multi-line'], // 允许单行 if/else 无 {}
+    'perfectionist/sort-imports': 'off',
   },
   ignores: ['**/node_modules', 'dist*', 'pnpm-lock.yaml', 'src/styles/iconfont/*', 'src/apis'],
 })
