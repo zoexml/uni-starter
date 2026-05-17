@@ -97,6 +97,7 @@ pnpm build
 - 支持 `component is` 动态组件
 - 内置 `z-paging` 列表组件
 - 优化的自定义 TabBar
+- 自定义组件使用说明见 [src/components/README.md](./src/components/README.md)
 
 ### 工具函数
 
