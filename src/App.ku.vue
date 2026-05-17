@@ -1,39 +1,23 @@
 <script setup lang="ts">
-import type { ConfigProviderThemeVars } from '@wot-ui/ui'
-// import { useNetworkStatus } from '@/composables/useNetworkStatus'
+import { useTheme } from '@/composables/useTheme'
+import Tabbar from '@/tabbar/index.vue'
 
-const themeVars = reactive<ConfigProviderThemeVars>({
-  // primary6: '#FF5454',
-  // tabsNavLineBgColor: 'red',
-  // navbarColor: '#ffffff',
-})
-
-// const { isOffline, isOnline, networkType } = useNetworkStatus()
-
-// watch(isOnline, (online, previousOnline) => {
-//   if (online && previousOnline === false) {
-//     uni.showToast({
-//       title: '网络已恢复',
-//       icon: 'none',
-//     })
-//   }
-// })
+const { appThemeStyle, wotThemeVars } = useTheme()
 </script>
 
 <script lang="ts">
 export default {
   options: {
     addGlobalClass: true,
-    virtualHost: true,
     styleIsolation: 'shared',
   },
 }
 </script>
 
 <template>
-  <wd-config-provider :theme-vars="themeVars" custom-style="background-color: #F9F9F8;min-height: 100vh">
-    <!-- <OfflineBanner :visible="isOffline" :network-type="networkType" /> -->
+  <wd-config-provider :theme-vars="wotThemeVars" :custom-style="appThemeStyle">
     <KuRootView />
+    <Tabbar />
     <wd-notify />
     <wd-toast />
     <wd-dialog />

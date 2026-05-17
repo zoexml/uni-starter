@@ -244,8 +244,8 @@ onUnmounted(clearCountdown)
 
         &--active {
           color: #fff;
-          background: #01b26a;
-          border-color: #01b26a;
+          background: var(--wot-primary-6);
+          border-color: var(--wot-primary-6);
         }
       }
 
@@ -254,7 +254,7 @@ onUnmounted(clearCountdown)
       }
 
       .agreement-link {
-        color: #018d71;
+        color: var(--wot-primary-6);
       }
     }
   }

@@ -12,6 +12,7 @@
 </route>
 
 <script lang="ts" setup>
+import { useTheme } from '@/composables/useTheme'
 import { mockLogout } from '@/mocks/auth'
 import { useUserStore } from '@/stores'
 // import { buildWebViewPageUrl } from '@/utils/webview'
@@ -28,6 +29,7 @@ const userStore = useUserStore()
 
 const logoutLoading = shallowRef(false)
 const cacheSize = shallowRef('0KB')
+const { currentPrimaryColor, currentPrimaryColorLabel, setPrimaryColor, themeColorOptions } = useTheme()
 
 const userInfo = computed(() => userStore.userInfo)
 const isLogin = computed(() => userStore.isLogin)
@@ -44,6 +46,13 @@ const menuItems = computed<UserMenuItem[]>(() => [
     title: '设置',
     desc: '账号资料、通知偏好',
     icon: '设',
+    permission: 'settings:view',
+  },
+  {
+    key: 'theme',
+    title: '主题色',
+    desc: `当前 ${currentPrimaryColorLabel.value}`,
+    icon: '色',
     permission: 'settings:view',
   },
   {
@@ -106,7 +115,28 @@ function showTemplateModal(title: string, content: string) {
   })
 }
 
+const handleThemeSelect = () => {
+  uni.showActionSheet({
+    itemList: themeColorOptions.map(item => item.label),
+    success: ({ tapIndex }) => {
+      const selectedTheme = themeColorOptions[tapIndex]
+      if (!selectedTheme) return
+
+      setPrimaryColor(selectedTheme.value)
+      uni.showToast({
+        title: `已切换为${selectedTheme.label}`,
+        icon: 'none',
+      })
+    },
+  })
+}
+
 function handleMenuClick(item: UserMenuItem) {
+  if (item.key === 'theme') {
+    handleThemeSelect()
+    return
+  }
+
   // if (item.key === 'webview') {
   //   uni.navigateTo({
   //     url: buildWebViewPageUrl({
@@ -243,7 +273,15 @@ onShow(refreshCacheSize)
             @click="handleMenuClick(item)"
           >
             <view class="menu-icon">
-              {{ item.icon }}
+              <template v-if="item.key === 'theme'">
+                <view
+                  class="menu-color"
+                  :style="{ backgroundColor: currentPrimaryColor }"
+                />
+              </template>
+              <template v-else>
+                {{ item.icon }}
+              </template>
             </view>
             <view class="menu-main">
               <view class="menu-title">
@@ -365,9 +403,9 @@ onShow(refreshCacheSize)
             text-overflow: ellipsis;
             font-size: 22rpx;
             line-height: 1.4;
-            color: #018d71;
+            color: var(--wot-primary-6);
             white-space: nowrap;
-            background: #e8f8f1;
+            background: var(--app-primary-soft);
             border-radius: 999rpx;
 
             &--muted {
@@ -436,9 +474,17 @@ onShow(refreshCacheSize)
           height: 56rpx;
           margin-right: 20rpx;
           font-size: 30rpx;
-          color: #018d71;
-          background: #e8f8f1;
+          color: var(--wot-primary-6);
+          background: var(--app-primary-soft);
           border-radius: 50%;
+
+          .menu-color {
+            width: 30rpx;
+            height: 30rpx;
+            border: 4rpx solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 1rpx var(--wot-primary-6);
+          }
         }
 
         .menu-main {

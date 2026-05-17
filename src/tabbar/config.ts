@@ -7,8 +7,9 @@
  * 3: 'CUSTOM_TABBAR_WITHOUT_CACHE' `无缓存自定义 tabbar`
  * 温馨提示：本文件的任何代码更改了之后，都需要重新运行，否则 pages.json 不会更新导致配置不生效
  */
-import type { CustomTabBarItem } from '@/types/tabbar'
 import type { TabBar } from '@uni-helper/vite-plugin-uni-pages'
+import type { CustomTabBarItem } from '@/types/tabbar'
+import { DEFAULT_PRIMARY_COLOR } from '@/common/constants'
 
 // tabbar 策略枚举
 export const TABBAR_STRATEGY_MAP = {
@@ -22,7 +23,7 @@ export const TABBAR_STRATEGY_MAP = {
 // 如果是使用 NO_TABBAR(0)，nativeTabbarList 和 customTabbarList 都不生效(里面的配置不用管)
 // 如果是使用 NATIVE_TABBAR(1)，只需要配置 nativeTabbarList，customTabbarList 不生效
 // 如果是使用 CUSTOM_TABBAR(2,3)，只需要配置 customTabbarList，nativeTabbarList 不生效
-export const selectedTabbarStrategy = TABBAR_STRATEGY_MAP.NATIVE_TABBAR
+export const selectedTabbarStrategy = TABBAR_STRATEGY_MAP.CUSTOM_TABBAR_WITH_CACHE
 
 type NativeTabBarItem = TabBar['list'][number]
 
@@ -54,11 +55,9 @@ export const customTabbarList: CustomTabBarItem[] = [
   {
     text: '首页',
     pagePath: 'pages/index/index',
-    // 本框架内置了 uniapp 官方UI库 （uni-ui)的图标库
-    // 使用方式如：<uni-icons type="home" size="30"/>
-    // 图标列表地址：https://uniapp.dcloud.net.cn/component/uniui/uni-icons.html
-    iconType: 'uniUi',
-    icon: 'home',
+    iconType: 'image',
+    icon: '/static/tabs/home-default.png',
+    iconActive: '/static/tabs/home-active.png',
     // badge: 'dot',
   },
   // {
@@ -74,8 +73,9 @@ export const customTabbarList: CustomTabBarItem[] = [
   {
     pagePath: 'pages/my/index',
     text: '我的',
-    iconType: 'uniUi',
-    icon: 'contact',
+    iconType: 'image',
+    icon: '/static/tabs/my-default.png',
+    iconActive: '/static/tabs/my-active.png',
     // badge: 100,
   },
   // 其他类型演示
@@ -130,7 +130,7 @@ const _tabbar: TabBar = {
   // 只有微信小程序支持 custom。App 和 H5 不生效
   custom: selectedTabbarStrategy === TABBAR_STRATEGY_MAP.CUSTOM_TABBAR_WITH_CACHE,
   color: '#999999',
-  selectedColor: '#018d71',
+  selectedColor: DEFAULT_PRIMARY_COLOR,
   backgroundColor: '#F8F8F8',
   borderStyle: 'black',
   height: '50px',
