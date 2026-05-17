@@ -1,31 +1,14 @@
-export interface MockUserInfo {
-  id: string
-  name: string
-  nickname: string
-  phone: string
-  avatar: string
-  roleName: string
-  orgName: string
-  openid?: string
-}
+import type { MockAuthSession, MockVerifyCodeResult } from '@/types/user'
 
-export interface MockAuthSession {
-  token: string
-  userInfo: MockUserInfo
-  roles: string[]
-  permissions: string[]
-}
-
-export interface MockVerifyCodeResult {
-  verifyCode: string
-  expiresIn: number
-}
+export type { MockAuthSession, MockUserInfo, MockVerifyCodeResult } from '@/types/user'
 
 const MOCK_VERIFY_CODE = '123456'
 const MOCK_DELAY = 400
 
 const basePermissions = [
   'profile:view',
+  'demo:view',
+  'webview:view',
   'settings:view',
   'agreement:view',
   'about:view',
@@ -53,6 +36,7 @@ function createPhoneUser(phone: string): MockAuthSession {
 
   return {
     token: createToken('mock_phone_token'),
+    refreshToken: createToken('mock_phone_refresh'),
     roles: ['member'],
     permissions: [...basePermissions],
     userInfo: {
@@ -89,6 +73,7 @@ export async function mockLoginByPhone(phone: string, verifyCode: string): Promi
 export async function mockLoginByWechat(): Promise<MockAuthSession> {
   return wait({
     token: createToken('mock_wechat_token'),
+    refreshToken: createToken('mock_wechat_refresh'),
     roles: ['member', 'wechat_user'],
     permissions: [...basePermissions, 'wechat:profile'],
     userInfo: {

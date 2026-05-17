@@ -43,6 +43,8 @@ pnpm lint:stylelint          # Stylelint 修复
 
 路由表通过 `uni-read-pages-vite` 读取后以 `ROUTES` 全局常量注入，供 `uni-mini-router` 使用。
 
+通用业务分包目录为 `src/pages-business/`，在 `vite.config.ts` 的 `UniPages({ subPackages: ['src/pages-business'] })` 中注册。不要再新增或引用旧的 `src/pages-sub/` 目录。
+
 ### 状态管理
 
 Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStorageSync` 实现跨端持久化。
@@ -61,9 +63,19 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 
 ### 主题系统
 
-- `src/composables/theme/theme.ts` — `useTheme()` composable 控制明暗模式切换
-- `src/theme.json` — 明暗模式配色，`wd-config-provider` 消费
+- `src/composables/useTheme.ts` — `useTheme()` composable 控制主题色和明暗模式切换
+- `src/styles/base.scss` — 应用级 CSS 语义色变量，例如 `--app-color-text`、`--app-color-border`、`--app-primary-soft`
+- `src/App.ku.vue` — 通过 `wd-config-provider` 注入 Wot UI 主题变量
 - 支持小程序和 H5 的 CSS 变量主题
+
+### WebView 容器
+
+- 页面入口：`src/pages-business/webview/index.vue`
+- 统一逻辑入口：`src/composables/useWebView.ts`
+- `useWebView.ts` 同时维护 WebView 页面路径、访问白名单、URL 构造、桥接 payload 校验和容器运行时状态，避免在 `utils` 和 `composables` 两处维护同一套逻辑。
+- 所有外部 WebView 统一通过 `src/pages-business/webview/index.vue` 公共页面打开，不为单个链接新增页面。
+- 页面跳转优先使用 `buildWebViewPageRoute({ title, url })` 配合 `uni-mini-router` 的 name 模式；无 router 上下文时可用 `openWebView({ title, url })`。当前页面路径常量为 `/pages-business/webview/index`。
+- 访问控制通过 `DEFAULT_WEBVIEW_ACCESS_RULES` 配置；默认公共规则允许 HTTPS 链接，特定业务域名规则应放在通配规则之前。
 
 ### TabBar 策略
 
@@ -80,6 +92,7 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 
 - Vue SFC 使用 `<script setup lang="ts">`，块顺序：`<script>` → `<template>` → `<style>`
 - 页面组件负责编排，可复用 UI 放 `src/components/`，可复用逻辑放 `src/composables/`
+- 主包页面放 `src/pages/`，通用业务分包页面放 `src/pages-business/`
 - Props 和 emits 必须类型明确
 - SCSS 必须使用嵌套选择器（`&`），禁止平铺顶层类名
 - 请求层复用现有 alova 模式，不引入新的 HTTP 客户端

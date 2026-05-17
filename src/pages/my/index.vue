@@ -12,9 +12,10 @@
 </route>
 
 <script lang="ts" setup>
+import { useTheme } from '@/composables/useTheme'
+import { buildWebViewPageRoute } from '@/composables/useWebView'
 import { mockLogout } from '@/mocks/auth'
 import { useUserStore } from '@/stores'
-// import { buildWebViewPageUrl } from '@/utils/webview'
 
 interface UserMenuItem {
   key: string
@@ -25,9 +26,11 @@ interface UserMenuItem {
 }
 
 const userStore = useUserStore()
+const router = useRouter()
 
 const logoutLoading = shallowRef(false)
 const cacheSize = shallowRef('0KB')
+const { currentPrimaryColor, currentPrimaryColorLabel, setPrimaryColor, themeColorOptions } = useTheme()
 
 const userInfo = computed(() => userStore.userInfo)
 const isLogin = computed(() => userStore.isLogin)
@@ -43,42 +46,49 @@ const menuItems = computed<UserMenuItem[]>(() => [
     key: 'settings',
     title: '设置',
     desc: '账号资料、通知偏好',
-    icon: '设',
+    icon: 'settings',
+    permission: 'settings:view',
+  },
+  {
+    key: 'theme',
+    title: '主题色',
+    desc: `当前 ${currentPrimaryColorLabel.value}`,
+    icon: 'brush',
     permission: 'settings:view',
   },
   {
     key: 'agreement',
     title: '用户协议',
     desc: '查看服务条款',
-    icon: '协',
+    icon: 'edit',
     permission: 'agreement:view',
   },
   {
     key: 'privacy',
     title: '隐私政策',
     desc: '查看隐私说明',
-    icon: '私',
+    icon: 'lock',
     permission: 'agreement:view',
   },
   {
     key: 'about',
     title: '关于我们',
     desc: '模板版本与项目介绍',
-    icon: '关',
+    icon: 'info-circle',
     permission: 'about:view',
   },
   {
     key: 'webview',
     title: 'WebView 示例',
     desc: '打开外部网页容器',
-    icon: '网',
+    icon: 'link',
     permission: 'webview:view',
   },
   {
     key: 'cache',
     title: '清缓存',
     desc: `当前约 ${cacheSize.value}`,
-    icon: '清',
+    icon: 'delete',
     permission: 'cache:clear',
   },
 ])
@@ -86,7 +96,7 @@ const menuItems = computed<UserMenuItem[]>(() => [
 const visibleMenuItems = computed(() => menuItems.value.filter(item => userStore.hasPermission(item.permission)))
 
 function goLogin() {
-  uni.navigateTo({ url: '/pages/login/index' })
+  router.push({ name: 'login' })
 }
 
 function refreshCacheSize() {
@@ -106,16 +116,37 @@ function showTemplateModal(title: string, content: string) {
   })
 }
 
+const handleThemeSelect = () => {
+  uni.showActionSheet({
+    itemList: themeColorOptions.map(item => item.label),
+    success: ({ tapIndex }) => {
+      const selectedTheme = themeColorOptions[tapIndex]
+      if (!selectedTheme) return
+
+      setPrimaryColor(selectedTheme.value)
+      uni.showToast({
+        title: `已切换为${selectedTheme.label}`,
+        icon: 'none',
+      })
+    },
+  })
+}
+
 function handleMenuClick(item: UserMenuItem) {
-  // if (item.key === 'webview') {
-  //   uni.navigateTo({
-  //     url: buildWebViewPageUrl({
-  //       title: 'uni-app 文档',
-  //       url: 'https://uniapp.dcloud.net.cn/component/web-view.html',
-  //     }),
-  //   })
-  //   return
-  // }
+  if (item.key === 'theme') {
+    handleThemeSelect()
+    return
+  }
+
+  if (item.key === 'webview') {
+    router.push(
+      buildWebViewPageRoute({
+        title: '百度移动版',
+        url: 'https://m.baidu.com',
+      }),
+    )
+    return
+  }
 
   if (item.key === 'cache') {
     handleClearCache()
@@ -243,7 +274,15 @@ onShow(refreshCacheSize)
             @click="handleMenuClick(item)"
           >
             <view class="menu-icon">
-              {{ item.icon }}
+              <template v-if="item.key === 'theme'">
+                <view
+                  class="menu-color"
+                  :style="{ backgroundColor: currentPrimaryColor }"
+                />
+              </template>
+              <template v-else>
+                <wd-icon :name="item.icon" size="32rpx" />
+              </template>
             </view>
             <view class="menu-main">
               <view class="menu-title">
@@ -254,7 +293,7 @@ onShow(refreshCacheSize)
               </view>
             </view>
             <view class="menu-arrow">
-              ›
+              <wd-icon name="arrow-right" size="28rpx" />
             </view>
           </view>
         </view>
@@ -365,9 +404,9 @@ onShow(refreshCacheSize)
             text-overflow: ellipsis;
             font-size: 22rpx;
             line-height: 1.4;
-            color: #018d71;
+            color: var(--wot-primary-6);
             white-space: nowrap;
-            background: #e8f8f1;
+            background: var(--app-primary-soft);
             border-radius: 999rpx;
 
             &--muted {
@@ -435,10 +474,17 @@ onShow(refreshCacheSize)
           width: 56rpx;
           height: 56rpx;
           margin-right: 20rpx;
-          font-size: 30rpx;
-          color: #018d71;
-          background: #e8f8f1;
+          color: var(--wot-primary-6);
+          background: var(--app-primary-soft);
           border-radius: 50%;
+
+          .menu-color {
+            width: 30rpx;
+            height: 30rpx;
+            border: 4rpx solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 0 1rpx var(--wot-primary-6);
+          }
         }
 
         .menu-main {
@@ -464,9 +510,10 @@ onShow(refreshCacheSize)
         }
 
         .menu-arrow {
+          display: flex;
+          align-items: center;
+          justify-content: center;
           margin-left: 20rpx;
-          font-size: 40rpx;
-          line-height: 1;
           color: #a8b2ae;
         }
       }

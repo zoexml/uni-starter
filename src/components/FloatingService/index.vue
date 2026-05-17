@@ -166,8 +166,8 @@ onMounted(() => {
   justify-content: center;
   width: 112rpx;
   height: 112rpx;
-  background: #fff;
-  border: 1rpx solid #edf1ef;
+  background: var(--app-color-surface);
+  border: 1rpx solid var(--app-color-border);
   border-radius: 999rpx;
   box-shadow: 0 12rpx 36rpx rgb(23 33 29 / 14%);
 
@@ -181,7 +181,7 @@ onMounted(() => {
     margin-top: 4rpx;
     font-size: 20rpx;
     line-height: 1.2;
-    color: #2f7d54;
+    color: var(--wot-primary-6);
   }
 }
 </style>

@@ -12,4 +12,12 @@ declare global {
 
 }
 
+interface ImportMetaEnv {
+  readonly VITE_APP_ENV?: string
+  readonly VITE_ENABLE_ERROR_REPORT?: string
+  readonly VITE_ERROR_REPORT_URL?: string
+  readonly VITE_SENTRY_DSN?: string
+  readonly VITE_SENTRY_RELEASE?: string
+}
+
 export {} // 防止模块污染

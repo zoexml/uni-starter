@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { CustomTabBarItem } from '@/types/tabbar'
+import { onShow } from '@dcloudio/uni-app'
+import { useTheme } from '@/composables/useTheme'
 import { customTabbarEnable, needHideNativeTabbar, tabbarCacheEnable } from './config'
-import { tabbarList, tabbarStore } from './store'
+import { isPageTabbar, tabbarList, tabbarStore } from './store'
 
 // #ifdef MP-WEIXIN
 // 将自定义节点设置成虚拟的（去掉自定义组件包裹层），更加接近Vue组件的表现，能更好的使用flex属性
@@ -10,17 +12,20 @@ defineOptions({
 })
 // #endif
 
+const { currentPrimaryColor } = useTheme()
+const isCurrentTabbarPage = shallowRef(false)
+
 /**
  * 中间的鼓包tabbarItem的点击事件
  */
-function handleClickBulge() {
+const handleClickBulge = () => {
   uni.showToast({
     title: '点击了中间的鼓包tabbarItem',
     icon: 'none',
   })
 }
 
-function handleClick(index: number) {
+const handleClick = (index: number) => {
   // 点击原来的不做操作
   if (index === tabbarStore.curIdx) {
     return
@@ -37,35 +42,72 @@ function handleClick(index: number) {
     uni.navigateTo({ url })
   }
 }
-onLoad(() => {
-  // 解决原生 tabBar 未隐藏导致有2个 tabBar 的问题
-  needHideNativeTabbar
-  && uni.hideTabBar({
+
+const getCurrentPagePath = () => {
+  const currentPage = getCurrentPages().at(-1)
+  if (!currentPage?.route) return ''
+
+  return currentPage.route.startsWith('/') ? currentPage.route : `/${currentPage.route}`
+}
+
+const updateCurrentTabbarState = () => {
+  const currentPath = getCurrentPagePath()
+  isCurrentTabbarPage.value = isPageTabbar(currentPath)
+
+  if (isCurrentTabbarPage.value) {
+    tabbarStore.setAutoCurIdx(currentPath)
+  }
+}
+
+const hideNativeTabbar = () => {
+  if (!needHideNativeTabbar) return
+
+  // #ifndef MP-WEIXIN
+  uni.hideTabBar({
     fail(err) {
       console.log('hideTabBar fail: ', err)
     },
-    success(res) {
-      console.log('hideTabBar success: ', res)
-    },
   })
-})
-const activeColor = 'var(--wot-primary-6, #1890ff)'
-const inactiveColor = '#666'
-function getColorByIndex(index: number) {
-  return tabbarStore.curIdx === index ? activeColor : inactiveColor
+  // #endif
 }
 
-function getImageByIndex(index: number, item: CustomTabBarItem) {
+onLoad(() => {
+  updateCurrentTabbarState()
+  hideNativeTabbar()
+})
+
+onShow(updateCurrentTabbarState)
+
+const inactiveColor = '#666'
+const isActiveTabbarItem = (index: number) => {
+  return tabbarStore.curIdx === index
+}
+
+const getColorByIndex = (index: number) => {
+  return isActiveTabbarItem(index) ? currentPrimaryColor.value : inactiveColor
+}
+
+const getImageByIndex = (index: number, item: CustomTabBarItem) => {
   if (!item.iconActive) {
     console.warn('image 模式下，需要配置 iconActive (高亮时的图片），否则无法切换高亮图片')
     return item.icon
   }
   return tabbarStore.curIdx === index ? item.iconActive : item.icon
 }
+
+const getImageMaskStyle = (item: CustomTabBarItem) => {
+  const icon = item.iconActive || item.icon
+
+  return [
+    `background-color: ${currentPrimaryColor.value}`,
+    `-webkit-mask-image: url(${icon})`,
+    `mask-image: url(${icon})`,
+  ].join(';')
+}
 </script>
 
 <template>
-  <view v-if="customTabbarEnable" class="h-50px pb-safe">
+  <view v-if="customTabbarEnable && isCurrentTabbarPage" class="h-50px pb-safe">
     <view class="border-and-fixed bg-white" @touchmove.stop.prevent>
       <view class="h-50px flex items-center">
         <view
@@ -87,17 +129,27 @@ function getImageByIndex(index: number, item: CustomTabBarItem) {
               <uni-icons :type="item.icon" size="20" :color="getColorByIndex(index)" />
             </template>
             <template v-if="item.iconType === 'uiLib'">
-              <!-- TODO: 以下内容请根据选择的UI库自行替换 -->
-              <!-- 如：<wd-icon name="home" /> (https://wot-ui.cn/component/icon.html) -->
-              <!-- 如：<uv-icon name="home" /> (https://www.uvui.cn/components/icon.html) -->
-              <!-- 如：<sar-icon name="image" /> (https://sard.wzt.zone/sard-uniapp-docs/components/icon)(sar没有home图标^_^) -->
-              <wd-icon :name="item.icon" size="20" />
+              <wd-icon :name="item.icon" :color="getColorByIndex(index)" size="20" />
             </template>
             <template v-if="item.iconType === 'unocss' || item.iconType === 'iconfont'">
               <view :class="item.icon" class="text-20px" />
             </template>
             <template v-if="item.iconType === 'image'">
-              <image :src="getImageByIndex(index, item)" mode="scaleToFill" class="h-20px w-20px" />
+              <view class="tabbar-image-icon-wrap">
+                <view
+                  v-if="isActiveTabbarItem(index)"
+                  class="tabbar-image-icon tabbar-image-icon--active"
+                  :style="getImageMaskStyle(item)"
+                >
+                  <image :src="getImageByIndex(index, item)" mode="scaleToFill" class="tabbar-image-icon-fallback" />
+                </view>
+                <image
+                  v-else
+                  :src="getImageByIndex(index, item)"
+                  mode="scaleToFill"
+                  class="tabbar-image-icon"
+                />
+              </view>
             </template>
             <view class="mt-2px text-12px">
               {{ item.text }}
@@ -147,7 +199,33 @@ function getImageByIndex(index: number, item: CustomTabBarItem) {
     transform-origin: top center;
 
     &:active {
-      // opacity: 0.8;
+      opacity: 0.8;
+    }
+  }
+
+  .tabbar-image-icon-wrap {
+    display: flex;
+    justify-content: center;
+    height: 20px;
+  }
+
+  .tabbar-image-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .tabbar-image-icon--active {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px 20px;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    mask-size: 20px 20px;
+
+    .tabbar-image-icon-fallback {
+      width: 20px;
+      height: 20px;
+      opacity: 0;
     }
   }
 }

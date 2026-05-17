@@ -1,9 +1,10 @@
-import type { MockAuthSession, MockUserInfo } from '@/mocks/auth'
+import type { MockAuthSession, MockUserInfo } from '@/types/user'
 
 export const useUserStore = defineStore(
   'user',
   () => {
     const token = shallowRef('')
+    const refreshToken = shallowRef('')
     const userInfo = ref<MockUserInfo | null>(null)
     const roles = ref<string[]>([])
     const permissions = ref<string[]>([])
@@ -12,9 +13,18 @@ export const useUserStore = defineStore(
 
     function setLoginSession(session: MockAuthSession) {
       token.value = session.token
+      refreshToken.value = session.refreshToken ?? ''
       userInfo.value = session.userInfo
       roles.value = session.roles
       permissions.value = session.permissions
+    }
+
+    function setToken(newToken: string) {
+      token.value = newToken
+    }
+
+    function setRefreshToken(newRefreshToken: string) {
+      refreshToken.value = newRefreshToken
     }
 
     function setUserInfo(info: Partial<MockUserInfo>) {
@@ -31,6 +41,7 @@ export const useUserStore = defineStore(
 
     function logout() {
       token.value = ''
+      refreshToken.value = ''
       userInfo.value = null
       roles.value = []
       permissions.value = []
@@ -38,11 +49,14 @@ export const useUserStore = defineStore(
 
     return {
       token,
+      refreshToken,
       userInfo,
       roles,
       permissions,
       isLogin,
       setLoginSession,
+      setToken,
+      setRefreshToken,
       setUserInfo,
       hasPermission,
       logout,

@@ -10,8 +10,8 @@
 </route>
 
 <script setup lang="ts">
+import { buildWebViewPageRoute } from '@/composables/useWebView'
 import { useUserStore } from '@/stores'
-// import { buildWebViewPageUrl } from '@/utils/webview'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -22,21 +22,21 @@ const goDemoPage = () => {
 }
 
 const goWebViewDemo = () => {
-  // uni.navigateTo({
-  //   url: buildWebViewPageUrl({
-  //     title: 'uni-app 文档',
-  //     url: 'https://uniapp.dcloud.net.cn/component/web-view.html',
-  //   }),
-  // })
+  router.push(
+    buildWebViewPageRoute({
+      title: '百度移动版',
+      url: 'https://m.baidu.com',
+    }),
+  )
 }
 
 const goLoginEntry = () => {
   if (userStore.isLogin) {
-    uni.switchTab({ url: '/pages/my/index' })
+    router.pushTab({ name: 'my' })
     return
   }
 
-  uni.navigateTo({ url: '/pages/login/index' })
+  router.push({ name: 'login' })
 }
 </script>
 
