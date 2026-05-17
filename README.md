@@ -52,8 +52,18 @@ pnpm build
 - 基于 alova 的请求策略
 - OpenAPI 自动生成
 - 全局加载状态管理
-- 请求缓存与共享、Token 自动注入
+- 使用 alova 内置请求共享，避免重复请求
+- Token 自动注入，支持可选双 token 刷新
+- 需要重试的请求优先使用 alova 官方 `useRetriableRequest`
 - 推荐安装 alova 的 vscode 插件提升开发体验
+
+### 🛡️ 全局错误处理
+
+- Vue 组件错误通过 `app.config.errorHandler` 捕获
+- uni-app 应用错误通过 `onError` 捕获
+- 未处理的 Promise 异常通过 `onUnhandledRejection` 捕获
+- 支持生产环境上报到 Sentry 或自定义错误收集接口
+- 内置短时间重复错误去重，避免同一异常连续刷屏
 
 ### 🚀 开发体验
 
@@ -104,6 +114,82 @@ pnpm build
 - 缓存管理(默认7天)
 - 全局模板变量(支持ts类型定义)
 - 加密解密，md5，base64，aes
+
+### HTTP 请求
+
+HTTP 实例在 `src/utils/http.ts` 中统一创建，业务接口优先放到 `src/apis/` 下复用同一个 `http` 实例。
+
+当前请求层约定：
+
+- 基于 `@alova/adapter-uniapp` 和 `alova/vue`，适配 uni-app 多端请求。
+- `shareRequest: true` 显式开启 alova 请求共享，相同 method、url、headers、params、body 的并发请求会共享进行中的请求。
+- 请求超时时间统一为 `5000ms`。
+- 请求前通过 `createServerTokenAuthentication` 自动注入 `Authorization: Bearer <token>`。
+- `401` 会进入 token 过期处理；`VITE_AUTH_MODE = 'double'` 且存在 `refreshToken` 时会尝试刷新 token，失败后清空登录态并跳转登录页。
+- 上传、下载请求会直接返回原始响应，不走业务响应解包。
+- 普通请求默认按 `IResponse<T>` 解包，业务成功返回 `data`，业务错误和 HTTP 错误会统一抛出 `Error`。
+
+请求 meta 支持：
+
+```ts
+http.Get('/example', {
+  meta: {
+    toast: false,
+  },
+})
+```
+
+- `meta.toast = false`：关闭当前请求的全局错误 toast。
+- `meta.authRole = 'login'`：登录类接口标记，避免被鉴权逻辑当作普通业务请求处理。
+- `meta.authRole = 'refresh'`：刷新 token 接口标记，避免刷新流程递归触发自身。
+
+请求重试不在全局拦截器中处理。需要重试的页面请求优先使用 alova 官方 `useRetriableRequest`：
+
+```ts
+import { useRetriableRequest } from 'alova/client'
+import { http } from '@/utils/http'
+
+const userRequest = http.Get('/user/profile')
+const { data, loading, error } = useRetriableRequest(userRequest, {
+  retry: 2,
+  backoff: {
+    delay: 1000,
+    multiplier: 2,
+  },
+})
+```
+
+不要对非幂等请求默认开启重试，例如创建订单、支付、提交表单等操作应由业务显式确认是否可以重试。
+
+### 全局错误处理与 Sentry
+
+全局错误处理入口在 `src/main.ts` 和 `src/App.vue`：
+
+- `src/main.ts` 调用 `installVueErrorHandler(app)`，用于捕获 Vue 组件运行时错误。
+- `src/App.vue` 调用 `useGlobalErrorHandling()`，用于捕获 uni-app 的 `onError` 和 `onUnhandledRejection`。
+
+错误会统一进入 `src/utils/global-error-reporting.ts`，再根据运行时配置决定只打印日志，还是远程上报：
+
+- 开发环境默认只输出到控制台。
+- 生产环境下，`VITE_ENABLE_ERROR_REPORT` 不为 `false` 且配置了上报地址时才会上报。
+- 同时配置 `VITE_SENTRY_DSN` 和 `VITE_ERROR_REPORT_URL` 时，优先使用 Sentry。
+
+生产环境启用 Sentry：
+
+```env
+VITE_ENABLE_ERROR_REPORT = true
+VITE_SENTRY_DSN = 'https://public@example.ingest.sentry.io/42'
+VITE_SENTRY_RELEASE = 'uni-temp@0.0.1'
+```
+
+如果不用 Sentry，也可以配置自定义接口：
+
+```env
+VITE_ENABLE_ERROR_REPORT = true
+VITE_ERROR_REPORT_URL = 'https://example.com/api/client-errors'
+```
+
+当前 Sentry 接入没有额外引入 `@sentry/vue` SDK，而是通过 `uni.request` 发送 Sentry Envelope，适合小程序、H5、App 共用同一套上报逻辑。
 
 ### 注意事项
 
