@@ -141,8 +141,8 @@ function handleMenuClick(item: UserMenuItem) {
   if (item.key === 'webview') {
     router.push(
       buildWebViewPageRoute({
-        title: 'uni-app 文档',
-        url: 'https://uniapp.dcloud.net.cn/component/web-view.html',
+        title: '百度移动版',
+        url: 'https://m.baidu.com',
       }),
     )
     return

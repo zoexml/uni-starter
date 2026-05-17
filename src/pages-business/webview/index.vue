@@ -6,7 +6,10 @@
     public: true,
   },
   style: {
+    navigationBarBackgroundColor: '#ffffff',
+    navigationBarTextStyle: 'black',
     navigationBarTitleText: '网页容器',
+    navigationStyle: 'default',
   },
 }
 </route>

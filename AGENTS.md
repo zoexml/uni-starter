@@ -67,7 +67,7 @@
 - Vue 单文件组件优先使用 Vue 3 Composition API 和 `<script setup lang="ts">`。
 - SFC 代码块顺序保持为：`<script>`、`<template>`、`<style>`。
 - 页面组件主要负责页面级编排和状态衔接；可复用 UI 放到 `src/components/`，可复用逻辑放到 `src/composables/`。
-- WebView 相关页面放在 `src/pages-business/webview/`，相关常量、白名单、跳转构造和桥接逻辑统一维护在 `src/composables/useWebView.ts`，不要再拆到 `src/utils/webview.ts`。
+- WebView 相关页面放在 `src/pages-business/webview/`，所有外部 WebView 统一通过该公共页面打开；相关常量、白名单、跳转构造和桥接逻辑统一维护在 `src/composables/useWebView.ts`，不要再拆到 `src/utils/webview.ts` 或为单个链接新增页面。
 - 组件的 props 和 emits 必须保持类型明确。
 - 跨页面或跨功能共享状态使用 Pinia。能用 `computed` 推导的状态不要重复存储。
 - 平台差异逻辑要尽量小且显式，优先复用 `src/utils/platform.ts` 中已有能力。

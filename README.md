@@ -94,8 +94,9 @@ pnpm build
 
 - WebView 页面位于 `src/pages-business/webview/index.vue`。
 - WebView 相关常量、白名单校验、桥接协议和容器状态统一维护在 `src/composables/useWebView.ts`。
-- 打开外部页面时使用 `buildWebViewPageUrl({ title, url })` 生成跳转地址。
-- 访问控制通过 `DEFAULT_WEBVIEW_ACCESS_RULES` 配置域名、路径、开放桥接方法和是否需要登录。
+- 所有外部 WebView 都统一通过该公共页面打开；页面内只传 `title` 和 `url`，不要为单个链接新增页面。
+- 路由跳转优先使用 `buildWebViewPageRoute({ title, url })` 配合 `uni-mini-router` 的 name 模式；无 router 上下文时可用 `openWebView({ title, url })`。
+- 访问控制通过 `DEFAULT_WEBVIEW_ACCESS_RULES` 配置域名、路径、开放桥接方法和是否需要登录；默认公共规则允许 HTTPS 链接，特定业务域名规则应放在通配规则之前。
 - 桥接方法包括 `setTitle`、`close`、`navigate`、`share`、`getToken`、`getUserInfo`、`getEnv`。
 
 ## 📖 开发指南

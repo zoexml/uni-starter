@@ -99,11 +99,22 @@ interface ParseWebViewRouteQueryResult {
   url: string
 }
 
+interface WebViewRouteLike {
+  params?: Record<string, unknown>
+  query?: Record<string, unknown>
+}
+
+interface WebViewLoadEvent {
+  detail?: {
+    errMsg?: string
+  }
+}
+
 const httpProtocols = ['http:', 'https:'] as const
 const maskedPhonePattern = /^(\d{3})\d+(\d{4})$/
 const protocolPattern = /^([a-z][a-z\d+.-]*:)/i
 
-// Template defaults for demo and local debugging. Replace these with real business domains.
+// Public WebView container defaults. Put stricter business rules before the wildcard rule when needed.
 export const DEFAULT_WEBVIEW_ACCESS_RULES: readonly WebViewAccessRule[] = [
   {
     bridgeMethods: ['setTitle', 'close', 'navigate', 'getEnv'],
@@ -115,11 +126,11 @@ export const DEFAULT_WEBVIEW_ACCESS_RULES: readonly WebViewAccessRule[] = [
   },
   {
     bridgeMethods: ['setTitle', 'close', 'navigate', 'getEnv'],
-    hosts: ['uniapp.dcloud.net.cn'],
-    id: 'uni-docs',
+    hosts: ['*'],
+    id: 'public-webview',
     pathPattern: '/**',
     requiresAuth: false,
-    title: 'uni-app 文档',
+    title: '网页容器',
   },
 ] as const
 
@@ -151,6 +162,7 @@ const isMatchingHost = (hostname: string, hostPattern: string) => {
   const normalizedPattern = hostPattern.trim().toLowerCase()
 
   if (!normalizedPattern) return false
+  if (normalizedPattern === '*') return true
   if (normalizedPattern.startsWith('*.')) {
     const baseHost = normalizedPattern.slice(2)
     return hostname === baseHost || hostname.endsWith(`.${baseHost}`)
@@ -319,12 +331,31 @@ export const buildWebViewPageRoute = (options: OpenWebViewOptions): WebViewRoute
   }
 }
 
-const decodeRouteValue = (value: string) => {
+export const openWebView = (options: OpenWebViewOptions) => {
+  uni.navigateTo({
+    url: buildWebViewPageUrl(options),
+  })
+}
+
+const decodeRouteValueOnce = (value: string) => {
   try {
     return decodeURIComponent(value)
   } catch {
     return value
   }
+}
+
+const decodeRouteValue = (value: string) => {
+  let decodedValue = value.trim()
+
+  for (let index = 0; index < 3; index += 1) {
+    const nextValue = decodeRouteValueOnce(decodedValue).trim()
+
+    if (nextValue === decodedValue) break
+    decodedValue = nextValue
+  }
+
+  return decodedValue
 }
 
 export const parseWebViewRouteQuery = (query?: Record<string, unknown> | null): ParseWebViewRouteQueryResult | null => {
@@ -339,6 +370,46 @@ export const parseWebViewRouteQuery = (query?: Record<string, unknown> | null): 
     title: rawTitle || undefined,
     url: rawUrl,
   }
+}
+
+const getStringRouteValue = (...values: unknown[]) => {
+  return values.find((value): value is string => typeof value === 'string' && value.trim().length > 0)
+}
+
+const getCurrentPageOptions = (): Record<string, unknown> => {
+  const currentPage = getCurrentPages().at(-1) as { options?: Record<string, unknown>, $page?: { fullPath?: string } } | undefined
+
+  if (currentPage?.options) return currentPage.options
+
+  const fullPath = currentPage?.$page?.fullPath
+  if (!fullPath) return {}
+
+  return Object.fromEntries(
+    fullPath
+      .split('?')[1]
+      ?.split('&')
+      .filter(Boolean)
+      .map((item) => {
+        const [key, ...valueParts] = item.split('=')
+        return [key, valueParts.join('=')]
+      }) || [],
+  )
+}
+
+export const parseWebViewRouteLocation = (route?: WebViewRouteLike | null): ParseWebViewRouteQueryResult | null => {
+  const query = route?.query || {}
+  const params = route?.params || {}
+  const currentPageOptions = getCurrentPageOptions()
+
+  return parseWebViewRouteQuery({
+    title: getStringRouteValue(query.title, params.title, currentPageOptions.title),
+    url: getStringRouteValue(query.url, params.url, currentPageOptions.url),
+  })
+}
+
+const formatParsedUrlForError = (url: string) => {
+  if (!url) return ''
+  return url.length > 160 ? `${url.slice(0, 160)}...` : url
 }
 
 export const buildWebViewRuntimeUrl = (url: NormalizedWebViewUrl, initQueryValue: string) => {
@@ -529,7 +600,7 @@ export const useWebView = () => {
   }
 
   const buildProtectedRedirect = () => {
-    const currentQuery = parseWebViewRouteQuery(route.query as Record<string, unknown>)
+    const currentQuery = parseWebViewRouteLocation(route as WebViewRouteLike)
 
     if (!currentQuery) return ''
 
@@ -537,7 +608,7 @@ export const useWebView = () => {
   }
 
   const applyAccess = () => {
-    const parsedQuery = parseWebViewRouteQuery(route.query as Record<string, unknown>)
+    const parsedQuery = parseWebViewRouteLocation(route as WebViewRouteLike)
 
     if (!parsedQuery) {
       setPageError('链接参数缺失', '请通过统一的 WebView 打开方法进入该页面。')
@@ -568,7 +639,7 @@ export const useWebView = () => {
 
       const errorMap: Record<string, { message: string, title: string }> = {
         INVALID_URL: {
-          message: '目标链接格式不正确，无法打开。',
+          message: `目标链接格式不正确，无法打开。当前解析到：${formatParsedUrlForError(parsedQuery.url)}`,
           title: '链接无效',
         },
         UNSUPPORTED_PROTOCOL: {
@@ -799,8 +870,13 @@ export const useWebView = () => {
     pageLoaded.value = true
   }
 
-  const handleFrameError = () => {
-    setPageError('页面加载失败', '目标网页暂时无法访问，请稍后重试。')
+  const handleFrameError = (event?: WebViewLoadEvent) => {
+    const errMsg = event?.detail?.errMsg
+    const message = getRuntimePlatform() === 'mp-weixin'
+      ? '目标网页无法被微信小程序 web-view 打开。请确认该域名已在小程序后台配置为业务域名，或开发工具已开启“不校验合法域名、web-view（业务域名）”。'
+      : '目标网页暂时无法访问，请稍后重试。'
+
+    setPageError('页面加载失败', errMsg ? `${message}（${errMsg}）` : message)
   }
 
   const retry = () => {
@@ -811,6 +887,8 @@ export const useWebView = () => {
     [
       () => route.query?.url,
       () => route.query?.title,
+      () => (route as WebViewRouteLike).params?.url,
+      () => (route as WebViewRouteLike).params?.title,
       () => userStore.isLogin,
     ],
     applyAccess,

@@ -73,7 +73,9 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 - 页面入口：`src/pages-business/webview/index.vue`
 - 统一逻辑入口：`src/composables/useWebView.ts`
 - `useWebView.ts` 同时维护 WebView 页面路径、访问白名单、URL 构造、桥接 payload 校验和容器运行时状态，避免在 `utils` 和 `composables` 两处维护同一套逻辑。
-- 外部页面跳转使用 `buildWebViewPageUrl({ title, url })`，当前页面路径常量为 `/pages-business/webview/index`。
+- 所有外部 WebView 统一通过 `src/pages-business/webview/index.vue` 公共页面打开，不为单个链接新增页面。
+- 页面跳转优先使用 `buildWebViewPageRoute({ title, url })` 配合 `uni-mini-router` 的 name 模式；无 router 上下文时可用 `openWebView({ title, url })`。当前页面路径常量为 `/pages-business/webview/index`。
+- 访问控制通过 `DEFAULT_WEBVIEW_ACCESS_RULES` 配置；默认公共规则允许 HTTPS 链接，特定业务域名规则应放在通配规则之前。
 
 ### TabBar 策略
 
