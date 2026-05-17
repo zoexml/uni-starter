@@ -81,12 +81,11 @@ const applyPrimaryColorVariablesToDocument = () => {
 }
 
 const applyNativeTabBarPrimaryColor = () => {
-  // #ifndef MP-WEIXIN
   uni.setTabBarStyle({
+    color: '#999999',
     selectedColor: currentColorOption.value.value,
     fail: () => undefined,
   })
-  // #endif
 }
 
 const applyPrimaryColor = () => {

@@ -9,6 +9,7 @@ const { appThemeStyle, wotThemeVars } = useTheme()
 export default {
   options: {
     addGlobalClass: true,
+    virtualHost: true,
     styleIsolation: 'shared',
   },
 }

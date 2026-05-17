@@ -1,3 +1,4 @@
+import type { TabBar } from '@uni-helper/vite-plugin-uni-pages'
 /*
  * @Description: tabbar 配置文件
  * tabbar 选择的策略，更详细的介绍见 tabbar.md 文件
@@ -7,7 +8,6 @@
  * 3: 'CUSTOM_TABBAR_WITHOUT_CACHE' `无缓存自定义 tabbar`
  * 温馨提示：本文件的任何代码更改了之后，都需要重新运行，否则 pages.json 不会更新导致配置不生效
  */
-import type { TabBar } from '@uni-helper/vite-plugin-uni-pages'
 import type { CustomTabBarItem } from '@/types/tabbar'
 import { DEFAULT_PRIMARY_COLOR } from '@/common/constants'
 
@@ -23,7 +23,7 @@ export const TABBAR_STRATEGY_MAP = {
 // 如果是使用 NO_TABBAR(0)，nativeTabbarList 和 customTabbarList 都不生效(里面的配置不用管)
 // 如果是使用 NATIVE_TABBAR(1)，只需要配置 nativeTabbarList，customTabbarList 不生效
 // 如果是使用 CUSTOM_TABBAR(2,3)，只需要配置 customTabbarList，nativeTabbarList 不生效
-export const selectedTabbarStrategy = TABBAR_STRATEGY_MAP.CUSTOM_TABBAR_WITH_CACHE
+export const selectedTabbarStrategy = TABBAR_STRATEGY_MAP.NATIVE_TABBAR
 
 type NativeTabBarItem = TabBar['list'][number]
 
