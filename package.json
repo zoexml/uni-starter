@@ -102,6 +102,7 @@
     "@uni-helper/vite-plugin-uni-platform": "^0.0.4",
     "@uni-helper/vite-plugin-uni-platform-modifier": "^0.0.2",
     "@uni-ku/bundle-optimizer": "1.3.15-beta.2",
+    "@uni-ku/root": "1.4.1",
     "@unocss/eslint-plugin": "^66.3.3",
     "@vue/compiler-sfc": "3.5.13",
     "@vue/runtime-core": "3.5.13",

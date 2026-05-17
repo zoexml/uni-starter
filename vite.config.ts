@@ -7,6 +7,7 @@ import UniManifest from '@uni-helper/vite-plugin-uni-manifest'
 import UniMiddleware from '@uni-helper/vite-plugin-uni-middleware'
 import UniPlatformModifier from '@uni-helper/vite-plugin-uni-platform-modifier'
 import optimizer from '@uni-ku/bundle-optimizer'
+import UniKuRoot from '@uni-ku/root'
 import { visualizer } from 'rollup-plugin-visualizer'
 import TransformPages from 'uni-read-pages-vite'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -69,6 +70,16 @@ export default async ({ command, mode }: ConfigEnv) => {
         directoryAsNamespace: true,
       }),
       // UniXXX 需要在 Uni 之前引入
+      // https://github.com/uni-ku/bundle-optimizer
+      optimizer({
+        dts: { base: 'src/types' },
+        // logger: true,
+      }),
+      // https://github.com/uni-ku/root
+      // 若存在改变 pages.json 的插件，请将 UniKuRoot 放置其后
+      UniKuRoot({
+        excludePages: ['**/components/**/**.*', '**/C/**.*'],
+      }),
       uni(),
       // https://github.com/antfu/unplugin-auto-import
       AutoImport({
@@ -87,11 +98,6 @@ export default async ({ command, mode }: ConfigEnv) => {
         vueTemplate: true,
       }),
       UnoCSS(),
-      // https://github.com/uni-ku/bundle-optimizer
-      optimizer({
-        dts: { base: 'src/types' },
-        // logger: true,
-      }),
 
       // 打包分析插件
       mode === 'production'
