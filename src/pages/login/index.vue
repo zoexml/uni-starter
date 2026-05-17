@@ -1,6 +1,9 @@
 <route lang="json5" type="page">
 {
   name: 'login',
+  meta: {
+    public: true,
+  },
   style: {
     navigationBarTitleText: '登录注册',
   },
@@ -12,6 +15,7 @@ import { mockLoginByPhone, mockLoginByWechat, mockSendVerifyCode } from '@/mocks
 import { useUserStore } from '@/stores'
 
 const userStore = useUserStore()
+const route = useRoute()
 
 const phone = shallowRef('')
 const verifyCode = shallowRef('')
@@ -54,7 +58,34 @@ function ensureAgreement() {
   return false
 }
 
-function goUserCenter() {
+function isTabbarPath(path: string) {
+  return ['/pages/index/index', '/pages/my/index'].includes(path.split('?')[0])
+}
+
+function getRedirectPath() {
+  const redirect = route.query?.redirect
+  if (typeof redirect !== 'string') return ''
+
+  try {
+    return decodeURIComponent(redirect)
+  } catch {
+    return ''
+  }
+}
+
+function goAfterLogin() {
+  const redirectPath = getRedirectPath()
+
+  if (redirectPath) {
+    if (isTabbarPath(redirectPath)) {
+      uni.switchTab({ url: redirectPath as '/pages/index/index' | '/pages/my/index' })
+      return
+    }
+
+    uni.redirectTo({ url: redirectPath })
+    return
+  }
+
   uni.switchTab({ url: '/pages/my/index' })
 }
 
@@ -85,7 +116,7 @@ async function handlePhoneLogin() {
     const session = await mockLoginByPhone(phone.value, verifyCode.value)
     userStore.setLoginSession(session)
     uni.showToast({ title: '登录成功', icon: 'success' })
-    goUserCenter()
+    goAfterLogin()
   } catch (error) {
     uni.showToast({ title: error instanceof Error ? error.message : '登录失败', icon: 'none' })
   } finally {
@@ -101,7 +132,7 @@ async function handleWechatLogin() {
     const session = await mockLoginByWechat()
     userStore.setLoginSession(session)
     uni.showToast({ title: '微信授权成功', icon: 'success' })
-    goUserCenter()
+    goAfterLogin()
   } catch (error) {
     uni.showToast({ title: error instanceof Error ? error.message : '微信授权失败', icon: 'none' })
   } finally {
@@ -121,7 +152,7 @@ onUnmounted(clearCountdown)
 </script>
 
 <template>
-  <z-paging>
+  <z-paging :show-scrollbar="true">
     <template #top>
       <Navbar title="登录注册" />
     </template>

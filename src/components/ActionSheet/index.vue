@@ -91,7 +91,7 @@ const handleSelect = (item: ActionSheetItem, index: number) => {
   &__overlay {
     position: absolute;
     inset: 0;
-    background: rgb(0 0 0 / 45%);
+    background: var(--app-color-overlay);
   }
 
   &__panel {
@@ -100,7 +100,7 @@ const handleSelect = (item: ActionSheetItem, index: number) => {
     bottom: 0;
     left: 0;
     overflow: hidden;
-    background: #f6f8f7;
+    background: var(--app-color-surface-muted);
     border-radius: 24rpx 24rpx 0 0;
   }
 
@@ -108,13 +108,13 @@ const handleSelect = (item: ActionSheetItem, index: number) => {
     padding: 28rpx 32rpx;
     font-size: 26rpx;
     line-height: 1.5;
-    color: #66736e;
+    color: var(--app-color-text-secondary);
     text-align: center;
-    background: #fff;
+    background: var(--app-color-surface);
   }
 
   &__list {
-    background: #fff;
+    background: var(--app-color-surface);
   }
 
   &__item,
@@ -127,8 +127,8 @@ const handleSelect = (item: ActionSheetItem, index: number) => {
     padding: 0;
     font-size: 30rpx;
     line-height: 1.4;
-    color: #17211d;
-    background: #fff;
+    color: var(--app-color-text);
+    background: var(--app-color-surface);
     border: 0;
     border-radius: 0;
 
@@ -138,22 +138,22 @@ const handleSelect = (item: ActionSheetItem, index: number) => {
   }
 
   &__item {
-    border-top: 1rpx solid #edf1ef;
+    border-top: 1rpx solid var(--app-color-border);
 
     &:active {
-      background: #f6f8f7;
+      background: var(--app-color-surface-muted);
     }
 
     &--danger {
-      color: #cf3d32;
+      color: var(--app-color-danger);
     }
 
     &--disabled {
-      color: #b8c0bc;
-      background: #fff;
+      color: var(--app-color-text-disabled);
+      background: var(--app-color-surface);
 
       &:active {
-        background: #fff;
+        background: var(--app-color-surface);
       }
     }
   }
@@ -163,14 +163,14 @@ const handleSelect = (item: ActionSheetItem, index: number) => {
     font-weight: 500;
 
     &:active {
-      background: #f6f8f7;
+      background: var(--app-color-surface-muted);
     }
   }
 
   &__safe-area {
     height: env(safe-area-inset-bottom);
     min-height: 16rpx;
-    background: #fff;
+    background: var(--app-color-surface);
   }
 }
 </style>

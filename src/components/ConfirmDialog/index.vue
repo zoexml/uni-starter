@@ -87,7 +87,7 @@ const handleConfirm = () => {
   &__overlay {
     position: absolute;
     inset: 0;
-    background: rgb(0 0 0 / 45%);
+    background: var(--app-color-overlay);
   }
 
   &__panel {
@@ -96,7 +96,7 @@ const handleConfirm = () => {
     left: 50%;
     width: 620rpx;
     overflow: hidden;
-    background: #fff;
+    background: var(--app-color-surface);
     border-radius: 16rpx;
     transform: translate(-50%, -50%);
   }
@@ -110,7 +110,7 @@ const handleConfirm = () => {
     font-size: 34rpx;
     font-weight: 700;
     line-height: 1.4;
-    color: #17211d;
+    color: var(--app-color-text);
   }
 
   &__body {
@@ -121,12 +121,12 @@ const handleConfirm = () => {
   &__message {
     font-size: 28rpx;
     line-height: 1.6;
-    color: #66736e;
+    color: var(--app-color-text-secondary);
   }
 
   &__footer {
     display: flex;
-    border-top: 1rpx solid #edf1ef;
+    border-top: 1rpx solid var(--app-color-border);
   }
 
   &__button {
@@ -135,8 +135,8 @@ const handleConfirm = () => {
     padding: 0;
     font-size: 30rpx;
     line-height: 96rpx;
-    color: #17211d;
-    background: #fff;
+    color: var(--app-color-text);
+    background: var(--app-color-surface);
     border: 0;
     border-radius: 0;
 
@@ -145,13 +145,18 @@ const handleConfirm = () => {
     }
 
     &--cancel {
-      color: #66736e;
-      border-right: 1rpx solid #edf1ef;
+      color: var(--app-color-text-secondary);
+      border-right: 1rpx solid var(--app-color-border);
     }
 
     &--confirm {
       font-weight: 600;
-      color: #2f7d54;
+      color: var(--wot-primary-6);
+
+      &:active {
+        color: var(--wot-primary-7);
+        background: var(--app-primary-soft);
+      }
     }
   }
 }

@@ -2,7 +2,21 @@
 
 :root,
 page {
+  --wot-primary-5: #3377fe;
+  --wot-primary-6: #0055fe;
+  --wot-primary-7: #0044cb;
   --app-primary-soft: rgb(0 85 254 / 10%);
+  --app-color-text: #17211d;
+  --app-color-text-regular: #3f4b46;
+  --app-color-text-secondary: #66736e;
+  --app-color-text-tertiary: #8a9691;
+  --app-color-text-placeholder: #9aa5a0;
+  --app-color-text-disabled: #b8c0bc;
+  --app-color-border: #edf1ef;
+  --app-color-surface: #fff;
+  --app-color-surface-muted: #f6f8f7;
+  --app-color-overlay: rgb(0 0 0 / 45%);
+  --app-color-danger: #cf3d32;
 }
 
 view,
