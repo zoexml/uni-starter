@@ -51,7 +51,7 @@ export default async ({ command, mode }: ConfigEnv) => {
         // homePage 通过 vue 文件的 route-block 的type="home"来设定
         homePage: 'pages/index/index',
         // pages 目录为 src/pages，分包目录不能配置在pages目录下
-        subPackages: ['src/pages-sub'], // 是个数组，可以配置多个，但是不能为pages里面的目录
+        subPackages: ['src/pages-business'], // 是个数组，可以配置多个，但是不能为pages里面的目录
         dts: 'src/types/uni-pages.d.ts',
       }),
       // https://github.com/uni-helper/vite-plugin-uni-layouts

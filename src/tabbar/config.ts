@@ -55,9 +55,8 @@ export const customTabbarList: CustomTabBarItem[] = [
   {
     text: '首页',
     pagePath: 'pages/index/index',
-    iconType: 'image',
-    icon: '/static/tabs/home-default.png',
-    iconActive: '/static/tabs/home-active.png',
+    iconType: 'uiLib',
+    icon: 'home',
     // badge: 'dot',
   },
   // {
@@ -73,9 +72,8 @@ export const customTabbarList: CustomTabBarItem[] = [
   {
     pagePath: 'pages/my/index',
     text: '我的',
-    iconType: 'image',
-    icon: '/static/tabs/my-default.png',
-    iconActive: '/static/tabs/my-active.png',
+    iconType: 'uiLib',
+    icon: 'user',
     // badge: 100,
   },
   // 其他类型演示

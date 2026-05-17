@@ -14,9 +14,9 @@
 - 🔷 [typescript](https://www.typescriptlang.org/) - JavaScript 超集
 - 🔧 [antfu eslint config](https://github.com/antfu/eslint-config) - 代码规范
 
-## 待使用的优化方案
+## 已接入的优化方案
 
-- [root](https://github.com/uni-ku/root) - root
+- [root](https://github.com/uni-ku/root) - 根组件和页面容器增强
 - [bundle-optimizer](https://github.com/uni-ku/bundle-optimizer) - 分包优化
 
 ## 🔨 快速开始
@@ -39,7 +39,6 @@ pnpm build
 - 用rimraf实现“秒删” npm install rimraf -g
 - 检查项目中的依赖是否有新版本，谨慎更新 npx npm-check-updates
 - @see https://github.com/raineorshine/npm-check-updates
-- update:icon 更新图标
 
 ### 🎨 主题系统
 
@@ -84,10 +83,20 @@ pnpm build
 
 ### 📦 分包优化
 
+- 通用业务分包放在 `src/pages-business/`，当前包含 `demo` 和 `webview`。
+- `vite.config.ts` 通过 `UniPages({ subPackages: ['src/pages-business'] })` 注册分包目录。
 - 异步跨包调用
 - 组件异步加载
 - 分包预加载
 - 支持小程序和 H5 来自 [uni-ku/bundle-optimizer](https://github.com/uni-ku/bundle-optimizer)
+
+### 🌐 WebView 容器
+
+- WebView 页面位于 `src/pages-business/webview/index.vue`。
+- WebView 相关常量、白名单校验、桥接协议和容器状态统一维护在 `src/composables/useWebView.ts`。
+- 打开外部页面时使用 `buildWebViewPageUrl({ title, url })` 生成跳转地址。
+- 访问控制通过 `DEFAULT_WEBVIEW_ACCESS_RULES` 配置域名、路径、开放桥接方法和是否需要登录。
+- 桥接方法包括 `setTitle`、`close`、`navigate`、`share`、`getToken`、`getUserInfo`、`getEnv`。
 
 ## 📖 开发指南
 

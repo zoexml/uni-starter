@@ -13,9 +13,9 @@
 
 <script lang="ts" setup>
 import { useTheme } from '@/composables/useTheme'
+import { buildWebViewPageRoute } from '@/composables/useWebView'
 import { mockLogout } from '@/mocks/auth'
 import { useUserStore } from '@/stores'
-// import { buildWebViewPageUrl } from '@/utils/webview'
 
 interface UserMenuItem {
   key: string
@@ -26,6 +26,7 @@ interface UserMenuItem {
 }
 
 const userStore = useUserStore()
+const router = useRouter()
 
 const logoutLoading = shallowRef(false)
 const cacheSize = shallowRef('0KB')
@@ -45,49 +46,49 @@ const menuItems = computed<UserMenuItem[]>(() => [
     key: 'settings',
     title: '设置',
     desc: '账号资料、通知偏好',
-    icon: '设',
+    icon: 'settings',
     permission: 'settings:view',
   },
   {
     key: 'theme',
     title: '主题色',
     desc: `当前 ${currentPrimaryColorLabel.value}`,
-    icon: '色',
+    icon: 'brush',
     permission: 'settings:view',
   },
   {
     key: 'agreement',
     title: '用户协议',
     desc: '查看服务条款',
-    icon: '协',
+    icon: 'edit',
     permission: 'agreement:view',
   },
   {
     key: 'privacy',
     title: '隐私政策',
     desc: '查看隐私说明',
-    icon: '私',
+    icon: 'lock',
     permission: 'agreement:view',
   },
   {
     key: 'about',
     title: '关于我们',
     desc: '模板版本与项目介绍',
-    icon: '关',
+    icon: 'info-circle',
     permission: 'about:view',
   },
   {
     key: 'webview',
     title: 'WebView 示例',
     desc: '打开外部网页容器',
-    icon: '网',
+    icon: 'link',
     permission: 'webview:view',
   },
   {
     key: 'cache',
     title: '清缓存',
     desc: `当前约 ${cacheSize.value}`,
-    icon: '清',
+    icon: 'delete',
     permission: 'cache:clear',
   },
 ])
@@ -95,7 +96,7 @@ const menuItems = computed<UserMenuItem[]>(() => [
 const visibleMenuItems = computed(() => menuItems.value.filter(item => userStore.hasPermission(item.permission)))
 
 function goLogin() {
-  uni.navigateTo({ url: '/pages/login/index' })
+  router.push({ name: 'login' })
 }
 
 function refreshCacheSize() {
@@ -137,15 +138,15 @@ function handleMenuClick(item: UserMenuItem) {
     return
   }
 
-  // if (item.key === 'webview') {
-  //   uni.navigateTo({
-  //     url: buildWebViewPageUrl({
-  //       title: 'uni-app 文档',
-  //       url: 'https://uniapp.dcloud.net.cn/component/web-view.html',
-  //     }),
-  //   })
-  //   return
-  // }
+  if (item.key === 'webview') {
+    router.push(
+      buildWebViewPageRoute({
+        title: 'uni-app 文档',
+        url: 'https://uniapp.dcloud.net.cn/component/web-view.html',
+      }),
+    )
+    return
+  }
 
   if (item.key === 'cache') {
     handleClearCache()
@@ -280,7 +281,7 @@ onShow(refreshCacheSize)
                 />
               </template>
               <template v-else>
-                {{ item.icon }}
+                <wd-icon :name="item.icon" size="32rpx" />
               </template>
             </view>
             <view class="menu-main">
@@ -292,7 +293,7 @@ onShow(refreshCacheSize)
               </view>
             </view>
             <view class="menu-arrow">
-              ›
+              <wd-icon name="arrow-right" size="28rpx" />
             </view>
           </view>
         </view>
@@ -473,7 +474,6 @@ onShow(refreshCacheSize)
           width: 56rpx;
           height: 56rpx;
           margin-right: 20rpx;
-          font-size: 30rpx;
           color: var(--wot-primary-6);
           background: var(--app-primary-soft);
           border-radius: 50%;
@@ -510,9 +510,10 @@ onShow(refreshCacheSize)
         }
 
         .menu-arrow {
+          display: flex;
+          align-items: center;
+          justify-content: center;
           margin-left: 20rpx;
-          font-size: 40rpx;
-          line-height: 1;
           color: #a8b2ae;
         }
       }

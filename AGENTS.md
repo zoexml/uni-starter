@@ -38,7 +38,6 @@
 - `pnpm lint:fix`: 执行 ESLint 自动修复
 - `pnpm lint:stylelint`: 执行 Stylelint 自动修复
 - `pnpm openapi`: 根据 OpenAPI 配置生成接口代码
-- `pnpm update:icon`: 处理 iconfont 资源
 
 验证时优先选择和改动范围匹配的最小命令。涉及共享逻辑、组件、页面或类型时，能运行的话至少执行 `pnpm type-check` 和 `pnpm lint`。
 
@@ -47,7 +46,7 @@
 - `src/main.ts`: 应用入口
 - `src/App.vue`: 根组件
 - `src/pages/`: 主包页面
-- `src/pages-sub/`: 分包页面
+- `src/pages-business/`: 通用业务分包页面
 - `src/layouts/`: 布局组件
 - `src/components/`: 通用组件
 - `src/composables/`: 组合式逻辑
@@ -55,7 +54,7 @@
 - `src/router/`: 路由配置
 - `src/apis/`: API 模块，部分文件可能由 OpenAPI 生成
 - `src/utils/`: 通用工具函数
-- `src/styles/`: 全局样式和 iconfont 样式
+- `src/styles/`: 全局样式
 - `src/static/`: uni-app 静态资源
 - `src/tabbar/`: 自定义 tabbar
 - `pages.config.ts`: 页面和分包配置
@@ -68,6 +67,7 @@
 - Vue 单文件组件优先使用 Vue 3 Composition API 和 `<script setup lang="ts">`。
 - SFC 代码块顺序保持为：`<script>`、`<template>`、`<style>`。
 - 页面组件主要负责页面级编排和状态衔接；可复用 UI 放到 `src/components/`，可复用逻辑放到 `src/composables/`。
+- WebView 相关页面放在 `src/pages-business/webview/`，相关常量、白名单、跳转构造和桥接逻辑统一维护在 `src/composables/useWebView.ts`，不要再拆到 `src/utils/webview.ts`。
 - 组件的 props 和 emits 必须保持类型明确。
 - 跨页面或跨功能共享状态使用 Pinia。能用 `computed` 推导的状态不要重复存储。
 - 平台差异逻辑要尽量小且显式，优先复用 `src/utils/platform.ts` 中已有能力。

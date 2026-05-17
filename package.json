@@ -10,7 +10,6 @@
     "clean": "rimraf node_modules",
     "uvm": "npx @dcloudio/uvm@latest",
     "uvm-rm": "node ./scripts/postupgrade.js",
-    "update:icon": "node ./scripts/process-iconfont.js",
     "dev": "uni",
     "dev:app": "uni -p app",
     "dev:app-android": "uni -p app-android",
