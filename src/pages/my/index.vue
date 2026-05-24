@@ -157,7 +157,7 @@ function handleMenuClick(item: UserMenuItem) {
     settings: '这里是设置页模板入口，可扩展头像昵称编辑、通知设置、账号安全等能力。',
     agreement: '这里是用户协议模板内容，实际项目可跳转协议详情页。',
     privacy: '这里是隐私政策模板内容，实际项目可跳转隐私政策详情页。',
-    about: 'uni-temp 小程序模板，内置登录注册、用户中心、权限扩展基础能力。',
+    about: 'uni-starter 小程序模板，内置登录注册、用户中心、权限扩展基础能力。',
   }
 
   showTemplateModal(item.title, contentMap[item.key] || '功能开发中')

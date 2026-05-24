@@ -50,7 +50,7 @@ export const nativeTabbarList: NativeTabBarItem[] = [
 ]
 
 // TODO: 3/3. 使用 CUSTOM_TABBAR(2,3) 时，更新下面的 tabbar 配置
-// 如果需要配置鼓包，需要在 'tabbar/store.ts' 里面设置，最后在 [tabbar/index.vue](file:///Users/joet/code/uni-temp/src/tabbar/index.vue) 里面更改鼓包的图片
+// 如果需要配置鼓包，需要在 'tabbar/store.ts' 里面设置，最后在 [tabbar/index.vue](file:///Users/joet/code/uni-starter/src/tabbar/index.vue) 里面更改鼓包的图片
 export const customTabbarList: CustomTabBarItem[] = [
   {
     text: '首页',

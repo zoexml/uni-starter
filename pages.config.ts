@@ -9,7 +9,7 @@ export default defineUniPages({
     // backgroundTextStyle: '@bgTxtStyle',
     // navigationBarBackgroundColor: '#000000', // 导航栏背景颜色（同状态栏背景色）
     navigationBarTextStyle: '@navTxtStyle',
-    navigationBarTitleText: 'uni-temp',
+    navigationBarTitleText: 'uni-starter',
     navigationStyle: 'custom',
   },
   easycom: {

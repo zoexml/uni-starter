@@ -161,7 +161,7 @@ onUnmounted(clearCountdown)
       <view class="login-header">
         <image class="login-logo" src="/static/images/logo.svg" mode="aspectFit" />
         <view class="login-title">
-          欢迎使用 uni-temp
+          欢迎使用 uni-starter
         </view>
         <view class="login-desc">
           手机号验证码登录，未注册手机号将自动创建 mock 账号

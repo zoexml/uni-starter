@@ -1,7 +1,17 @@
+allowBuilds:
+  '@parcel/watcher': true
+  '@uni-helper/unocss-preset-uni': true
+  core-js: true
+  core-js-pure: true
+  esbuild: true
+  simple-git-hooks: true
+  unrs-resolver: true
+  vue-demi: true
 onlyBuiltDependencies:
+  - '@parcel/watcher'
   - '@uni-helper/unocss-preset-uni'
   - core-js
-  - es5-ext
+  - core-js-pure
   - esbuild
   - simple-git-hooks
   - unrs-resolver

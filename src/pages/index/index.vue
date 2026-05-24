@@ -48,7 +48,7 @@ const goLoginEntry = () => {
     <view class="home-page">
       <view class="home-panel">
         <view class="home-title">
-          uni-temp 小程序模板
+          uni-starter 小程序模板
         </view>
         <view class="home-desc">
           已内置 mock 登录注册、用户中心和权限数据，可直接替换为真实接口。
