@@ -57,7 +57,6 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 基于 `alova` + `@alova/adapter-uniapp` + `alova/vue` 构建：
 
 - 响应拦截器统一处理 HTTP 状态码和业务错误码（`{ code, message, data }` 格式），自动 `uni.showToast`
-- 支持多域名（`API_DOMAINS` 对象）
 - Token 注入和刷新逻辑已预留但被注释，需对接真实后端后启用
 - 所有页面 API 调用应使用 `http.get/post/put/delete` 或 alova hooks（`useRequest`、`usePagination` 等）
 
@@ -87,6 +86,17 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 4. `CUSTOM_TABBAR_WITHOUT_CACHE` — 自定义无缓存
 
 策略切换后需重新运行项目以更新 `pages.json`。
+
+### 内置组件
+
+`src/components/` 下的可复用组件，通过 `vite-plugin-uni-components` 自动引入：
+
+| 组件 | 路径 | 说明 |
+|------|------|------|
+| `StepIndicator` | `src/components/StepIndicator/index.vue` | 步骤指示器，支持 `active`/`steps`/`activeColor`/`inactiveColor` props，可点击已完成的步骤 |
+| `Cropper` | `src/components/Cropper/index.vue` | 图片裁剪器，基于 Canvas，支持拖拽裁剪框，通过 `defineExpose` 暴露 `confirm()`/`reset()` |
+
+两个组件的示例页面在 `src/pages/example/step-indicator/` 和 `src/pages/example/cropper/`。
 
 ## 编码约定
 

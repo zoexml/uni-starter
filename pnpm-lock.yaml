@@ -201,6 +201,9 @@ importers:
       stylelint-config-standard-vue:
         specifier: ^1.0.0
         version: 1.0.0(postcss-html@1.8.0)(stylelint@16.19.1(typescript@5.8.3))
+      stylelint-scss:
+        specifier: ^6.11.1
+        version: 6.11.1(stylelint@16.19.1(typescript@5.8.3))
       typescript:
         specifier: ^5.8.2
         version: 5.8.3
@@ -15703,7 +15706,7 @@ snapshots:
       mdn-data: 2.21.0
       postcss-media-query-parser: 0.2.3
       postcss-resolve-nested-selector: 0.1.6
-      postcss-selector-parser: 7.1.0
+      postcss-selector-parser: 7.1.1
       postcss-value-parser: 4.2.0
       stylelint: 16.19.1(typescript@5.8.3)
 

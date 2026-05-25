@@ -46,6 +46,7 @@
 - `src/main.ts`: 应用入口
 - `src/App.vue`: 根组件
 - `src/pages/`: 主包页面
+- `src/pages/example/`: 组件示例页面（StepIndicator、Cropper 等）
 - `src/pages-business/`: 通用业务分包页面
 - `src/layouts/`: 布局组件
 - `src/components/`: 通用组件
@@ -61,6 +62,15 @@
 - `manifest.config.ts`: uni-app manifest 配置
 - `vite.config.ts`: Vite 和 uni 插件配置
 - `uno.config.ts`: UnoCSS 配置
+
+## 内置组件
+
+`src/components/` 下已有以下组件（通过插件自动引入，无需手动 import）：
+
+- `StepIndicator` — 步骤指示器，示例页 `src/pages/example/step-indicator/`
+- `Cropper` — Canvas 图片裁剪器，示例页 `src/pages/example/cropper/`
+
+新增示例页面参考 `src/pages/example/` 下的现有文件。
 
 ## 编码约定
 

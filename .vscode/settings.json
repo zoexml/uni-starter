@@ -46,6 +46,7 @@
 
   // Enable file nesting
   "explorer.fileNesting.enabled": true, // 开启文件嵌套
+  "explorer.compactFolders": true, // 文件夹默认折叠
   "explorer.fileNesting.patterns": {
     ".env": ".env.*",
     "tsconfig.json": "tsconfig.*.json, env.d.ts, .npmrc, .nvmrc",

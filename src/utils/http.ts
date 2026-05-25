@@ -11,11 +11,6 @@ import { ResultEnum, ShowMessage } from '../common/enum'
 const LOGIN_PAGE = '/pages/login/index'
 const REQUEST_TIMEOUT = 5000
 
-export const API_DOMAINS = {
-  DEFAULT: import.meta.env.VITE_SERVER_BASEURL,
-  SECONDARY: import.meta.env.VITE_API_SECONDARY_URL,
-}
-
 type AuthMode = 'single' | 'double'
 interface HttpRequestMeta {
   toast?: boolean
