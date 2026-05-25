@@ -3,6 +3,17 @@
   "type": "module",
   "version": "0.0.1",
   "private": true,
+  "description": "基于 Vue3 + Vite + TypeScript + UnoCSS + Pinia 的 uni-app 启动模板",
+  "keywords": [
+    "uni-app",
+    "vue3",
+    "template",
+    "starter",
+    "typescript",
+    "unocss",
+    "pinia",
+    "vite"
+  ],
   "engines": {
     "node": ">=22"
   },
