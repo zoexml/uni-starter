@@ -103,6 +103,15 @@ export const customTabbarList: CustomTabBarItem[] = [
   // },
 ]
 
+const tabbarPagePaths = [...nativeTabbarList, ...customTabbarList].map(item => item?.pagePath).filter((pagePath): pagePath is string => Boolean(pagePath))
+
+export const TABBAR_PATHS = Array.from(new Set(tabbarPagePaths.map(pagePath => `/${pagePath}`)))
+
+export function isTabbarPath(path: string) {
+  const normalizedPath = path.split('?')[0]
+  return TABBAR_PATHS.includes(normalizedPath)
+}
+
 /**
  * 是否启用 tabbar 缓存
  * NATIVE_TABBAR(1) 和 CUSTOM_TABBAR_WITH_CACHE(2) 时，需要tabbar缓存

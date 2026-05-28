@@ -1,4 +1,5 @@
 import { useUserStore } from '@/stores'
+import { isTabbarPath } from '@/tabbar/config'
 
 export const WEBVIEW_BRIDGE_SOURCE = 'uni-starter-webview'
 export const WEBVIEW_BRIDGE_VERSION = 1
@@ -519,7 +520,6 @@ interface BridgeRuntimeError {
   message: string
 }
 
-const tabbarPaths = ['/pages/index/index', '/pages/my/index']
 const iframeAllow = 'clipboard-read; clipboard-write; fullscreen; geolocation'
 const iframeSandbox = 'allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts'
 
@@ -543,10 +543,6 @@ const getRuntimePlatform = () => {
   } catch {
     return 'unknown'
   }
-}
-
-const isTabbarPath = (path: string) => {
-  return tabbarPaths.includes(path.split('?')[0])
 }
 
 const extractWebViewMessagePayload = (value: unknown) => {

@@ -13,6 +13,7 @@
 <script lang="ts" setup>
 import { mockLoginByPhone, mockLoginByWechat, mockSendVerifyCode } from '@/mocks/auth'
 import { useUserStore } from '@/stores'
+import { isTabbarPath } from '@/tabbar/config'
 
 const userStore = useUserStore()
 const route = useRoute()
@@ -56,10 +57,6 @@ function ensureAgreement() {
   if (agreed.value) return true
   uni.showToast({ title: '请先阅读并同意用户协议', icon: 'none' })
   return false
-}
-
-function isTabbarPath(path: string) {
-  return ['/pages/index/index', '/pages/my/index'].includes(path.split('?')[0])
 }
 
 function getRedirectPath() {

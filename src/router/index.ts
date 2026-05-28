@@ -1,5 +1,6 @@
 import { createRouter } from 'uni-mini-router'
 import { useUserStore } from '@/stores'
+import { isTabbarPath } from '@/tabbar/config'
 
 console.log('🚀 ~ routes----:', ROUTES)
 const router = createRouter({
@@ -20,8 +21,6 @@ interface GuardRoute {
 }
 
 const LOGIN_ROUTE_NAME = 'login'
-const TABBAR_PATHS = ['/pages/index/index', '/pages/my/index']
-
 function getRoutePath(route: GuardRoute) {
   return route.fullPath || route.path || ''
 }
@@ -38,10 +37,6 @@ function createLoginRedirect(to: GuardRoute) {
     path: '/pages/login/index',
     query,
   }
-}
-
-function isTabbarPath(path: string) {
-  return TABBAR_PATHS.includes(getCleanPath(path))
 }
 
 router.beforeEach((to, from, next) => {
@@ -66,7 +61,7 @@ router.beforeEach((to, from, next) => {
     uni.showToast({ title: '暂无访问权限', icon: 'none' })
 
     const fallbackPath = userStore.isLogin ? '/pages/index/index' : '/pages/login/index'
-    next(isTabbarPath(fallbackPath) ? { path: fallbackPath, navType: 'pushTab' } : { path: fallbackPath })
+    next(isTabbarPath(getCleanPath(fallbackPath)) ? { path: fallbackPath, navType: 'pushTab' } : { path: fallbackPath })
     return
   }
 

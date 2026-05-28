@@ -13,5 +13,4 @@ pinia.use(
 
 export default pinia
 // 模块统一导出
-export * from './counter'
 export * from './user'
