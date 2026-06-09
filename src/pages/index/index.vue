@@ -12,6 +12,8 @@
 <script setup lang="ts">
 import { buildWebViewPageRoute } from '@/composables/useWebView'
 import { useUserStore } from '@/stores'
+import BannerSwiper from '@/components/BannerSwiper/index.vue'
+import { homepageConfig } from './homepage.config'
 
 const userStore = useUserStore()
 const router = useRouter()
@@ -46,6 +48,7 @@ const goLoginEntry = () => {
       <Navbar title="home" :left-arrow="false" />
     </template>
     <view class="home-page">
+      <BannerSwiper :banner="homepageConfig.banner" />
       <view class="home-panel">
         <view class="home-title">
           uni-starter 小程序模板
@@ -73,11 +76,11 @@ const goLoginEntry = () => {
 <style lang="scss" scoped>
 .home-page {
   min-height: 100%;
-  padding: 32rpx;
   background: #f6f8f7;
 
   .home-panel {
     padding: 36rpx 32rpx;
+    margin: 32rpx;
     background: #fff;
     border: 1rpx solid #edf1ef;
     border-radius: 16rpx;
