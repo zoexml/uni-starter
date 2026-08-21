@@ -28,7 +28,6 @@
 | `FloatingService` | 可拖拽悬浮客服按钮 | `label`、`direction`、`snapToEdge`、`click` |
 | `GoodsCard` | 商品卡片 | `item`、`click` |
 | `InformationCard` | 资讯卡片 | `item`、`click` |
-| `BannerSwiper` | 首页轮播图 | `banner`、`items`、`interval` |
 | `Loading` | 居中加载动画 | 直接使用 |
 | `Navbar` | Wot UI 导航栏封装 | `title`、`leftArrow` |
 | `OptionPicker` | 单列选项选择器 | `v-model`、`v-model:visible`、`options` |
@@ -153,24 +152,6 @@ const handleSelect = (item: { name: string }) => {
 | --- | --- |
 | `click` | 未发生拖动时点击按钮触发 |
 | `change` | 拖动结束后返回位置 |
-
-## BannerSwiper
-
-首页轮播图组件，数据由 `banner` 配置驱动。单图时显示为静态图，多图支持自动播放、循环和指示点；触摸轮播后自动播放暂停 5 秒恢复。
-
-```vue
-<BannerSwiper :banner="homepageConfig.banner" />
-```
-
-`banner` 结构：
-
-| 字段 | 说明 |
-| --- | --- |
-| `enabled` | 是否启用轮播 |
-| `items` | 轮播项数组，元素为 `{ image, link }`，`image` 为图片地址 |
-| `interval` | 自动播放间隔，默认 `3000`ms |
-
-点击轮播项时，`link` 以 `http(s)://` 开头会复用 WebView 容器打开外部链接；以 `/` 开头视为项目内页面路径，走 `uni.navigateTo`。
 
 ## TouchDialog
 

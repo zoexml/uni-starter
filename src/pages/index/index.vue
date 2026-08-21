@@ -10,17 +10,24 @@
 </route>
 
 <script setup lang="ts">
+import { useShare } from '@/composables/useShare'
 import { buildWebViewPageRoute } from '@/composables/useWebView'
+import { useTrackPageView } from '@/composables/useTracker'
 import { useUserStore } from '@/stores'
-import BannerSwiper from '@/components/BannerSwiper/index.vue'
-import { homepageConfig } from './homepage.config'
+
+useShare({ title: 'uni-starter 小程序模板' })
+useTrackPageView()
 
 const userStore = useUserStore()
 const router = useRouter()
 const loginEntryText = computed(() => userStore.isLogin ? '进入用户中心' : '登录 / 注册')
 
 const goDemoPage = () => {
-  router.push({ name: 'demo' })
+  router.push({ name: 'example-demo' })
+}
+
+const goExamplePage = () => {
+  router.push({ name: 'example' })
 }
 
 const goWebViewDemo = () => {
@@ -48,7 +55,6 @@ const goLoginEntry = () => {
       <Navbar title="home" :left-arrow="false" />
     </template>
     <view class="home-page">
-      <BannerSwiper :banner="homepageConfig.banner" />
       <view class="home-panel">
         <view class="home-title">
           uni-starter 小程序模板
@@ -63,6 +69,9 @@ const goLoginEntry = () => {
           </wd-button>
           <wd-button plain block @click="goDemoPage">
             进入 demo 页
+          </wd-button>
+          <wd-button plain block @click="goExamplePage">
+            示例中心
           </wd-button>
           <wd-button plain block @click="goWebViewDemo">
             打开 WebView 示例

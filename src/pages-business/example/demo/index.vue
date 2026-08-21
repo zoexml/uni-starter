@@ -1,18 +1,22 @@
 <route lang="json5" type="page">
 {
   layout: 'default',
-  name: 'demo',
+  name: 'example-demo',
   meta: {
     requiresAuth: true,
     permissions: ['demo:view'],
   },
   style: {
-    navigationBarTitleText: 'demo',
+    navigationBarTitleText: '组件示例',
   },
 }
 </route>
 
 <script lang="ts" setup>
+import { useShare } from '@/composables/useShare'
+
+useShare({ title: '组件示例' })
+
 const confirmVisible = shallowRef(false)
 const actionSheetVisible = shallowRef(false)
 const optionPickerVisible = shallowRef(false)

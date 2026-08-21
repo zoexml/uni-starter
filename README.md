@@ -83,7 +83,7 @@ pnpm build
 
 ### 📦 分包优化
 
-- 通用业务分包放在 `src/pages-business/`，当前包含 `demo` 和 `webview`。
+- 通用业务分包放在 `src/pages-business/`，当前包含 `webview` 和 `example`（示例中心，含组件示例与埋点示例）。
 - `vite.config.ts` 通过 `UniPages({ subPackages: ['src/pages-business'] })` 注册分包目录。
 - 异步跨包调用
 - 组件异步加载
