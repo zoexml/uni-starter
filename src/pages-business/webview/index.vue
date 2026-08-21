@@ -15,7 +15,12 @@
 </route>
 
 <script lang="ts" setup>
+import { useShare } from '@/composables/useShare'
+import { useTrackPageView } from '@/composables/useTracker'
 import { useWebView } from '@/composables/useWebView'
+
+useShare({ title: '网页容器' })
+useTrackPageView()
 
 const {
   errorMessage,

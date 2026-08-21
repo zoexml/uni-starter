@@ -11,9 +11,15 @@
 </route>
 
 <script lang="ts" setup>
+import { useShare } from '@/composables/useShare'
 import { mockLoginByPhone, mockLoginByWechat, mockSendVerifyCode } from '@/mocks/auth'
+import { useTracker, useTrackPageView } from '@/composables/useTracker'
 import { useUserStore } from '@/stores'
 import { isTabbarPath } from '@/tabbar/config'
+
+const { track } = useTracker()
+useShare({ title: '登录注册' })
+useTrackPageView()
 
 const userStore = useUserStore()
 const route = useRoute()
@@ -112,6 +118,7 @@ async function handlePhoneLogin() {
     loginLoading.value = true
     const session = await mockLoginByPhone(phone.value, verifyCode.value)
     userStore.setLoginSession(session)
+    track('user_login', { method: 'phone' })
     uni.showToast({ title: '登录成功', icon: 'success' })
     goAfterLogin()
   } catch (error) {
@@ -128,6 +135,7 @@ async function handleWechatLogin() {
     wechatLoading.value = true
     const session = await mockLoginByWechat()
     userStore.setLoginSession(session)
+    track('user_login', { method: 'wechat' })
     uni.showToast({ title: '微信授权成功', icon: 'success' })
     goAfterLogin()
   } catch (error) {

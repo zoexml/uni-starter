@@ -100,6 +100,11 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 - 页面跳转优先使用 `buildWebViewPageRoute({ title, url })` 配合 `uni-mini-router` 的 name 模式；无 router 上下文时可用 `openWebView({ title, url })`。当前页面路径常量为 `/pages-business/webview/index`。
 - 访问控制通过 `DEFAULT_WEBVIEW_ACCESS_RULES` 配置；默认公共规则允许 HTTPS 链接，特定业务域名规则应放在通配规则之前。
 
+### 分享/Share
+
+- 统一分享封装：`src/composables/useShare.ts` — `useShare({ title, path?, query?, imageUrl? })` 注册 `onShareAppMessage`（转发卡片）与 `onShareTimeline`（朋友圈），`path` 缺省取当前页路径，`query` 自动拼接。
+- 各页面 setup 内调用一次即可；`imageUrl` 缺省时微信自动使用页面截图，H5 上钩子为 no-op 天然降级。
+
 ### TabBar 策略
 
 通过 `src/tabbar/config.ts` 控制，支持四种模式（详见 `TABBAR_STRATEGY_MAP`）：
@@ -111,6 +116,20 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 
 策略切换后需重新运行项目以更新 `pages.json`。
 
+### 埋点/Analytics
+
+统一埋点封装，对照「纯工具层 + 薄 composable」拆分（同全局错误处理）：
+
+- 统一入口：`src/composables/useTracker.ts` — `useTracker()` 返回 `track`/`trackPageView`/`flush` 与只读状态；`useTrackPageView()` 在 `onShow` 自动上报 `page_view`
+- 纯核心：`src/utils/tracker.ts` — 类型、`createTrackerRuntimeConfig(env)`、适配器注册表、`tracker_queue` 存储读写、事件工厂
+- 内置 HTTP 批量适配器：`src/utils/tracker-http-adapter.ts`，`uni.request` POST 事件数组，一次 flush 一次请求
+- 上报流程：`track()` → 归一化 `TrackerEvent` → 内存队列 → 阈值/定时/App 隐藏触发 flush → 扇出到所有注册适配器 → 失败持久化到 storage，下次启动恢复重试
+- 接三方平台（友盟/神策等）：实现 `TrackerAdapter`（`trackBatch`）后调用 `registerTrackerAdapter()` 注册
+- 事件名约束：内置事件见 `TRACKER_EVENT_NAMES`（`page_view`/`user_login`/`user_logout`），`track` 同时接受任意自定义名
+- userId 惰性读取 `useUserStore()`，登录/登出无需手动调用 `setUserId`
+
+示例页面统一放在 `src/pages-business/example/` 分包（示例中心入口页 + `example/tracker` 埋点示例页 + `example/demo` 组件示例页，由 `example/index.vue` 汇总入口）。
+
 ## 内置组件与 composable
 
 通用组件统一放在 `src/components/`，通过 `vite-plugin-uni-components` 自动引入，页面中直接使用组件名，无需手动 `import`。完整组件清单、props 与用法以 `src/components/README.md` 为准，不要在本文件重复维护组件列表。
@@ -119,8 +138,9 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 
 - `useTheme` — 主题色与明暗模式切换
 - `useWebView` — WebView 容器统一逻辑（见「WebView 容器」）
-- `useCropper` — 基于 Canvas 的图片裁剪
+- `useShare` — 统一分享卡片（见「分享/Share」）
 - `useGlobalErrorHandling` — 全局错误处理
+- `useTracker` / `useTrackPageView` — 埋点上报（见「埋点/Analytics」）
 
 ## 编码约定
 
@@ -154,6 +174,10 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 | `VITE_APP_PROXY` | H5 是否启用代理 |
 | `VITE_APP_PROXY_PREFIX` | 代理前缀（默认 `/api`） |
 | `VITE_DELETE_CONSOLE` | 构建时是否移除 console |
+| `VITE_TRACKER_ENABLE` | 埋点开关，`'true'` 启用 |
+| `VITE_TRACKER_URL` | 埋点上报地址；为空时 dev 打印批次丢弃，prod 仅告警一次 |
+| `VITE_TRACKER_BATCH_SIZE` | 埋点批量冲刷阈值，默认 `10` |
+| `VITE_TRACKER_FLUSH_INTERVAL` | 埋点定时冲刷间隔 ms，默认 `5000` |
 
 ## Git 和工作区规则
 

@@ -18,6 +18,10 @@ interface ImportMetaEnv {
   readonly VITE_ERROR_REPORT_URL?: string
   readonly VITE_SENTRY_DSN?: string
   readonly VITE_SENTRY_RELEASE?: string
+  readonly VITE_TRACKER_ENABLE?: string
+  readonly VITE_TRACKER_URL?: string
+  readonly VITE_TRACKER_BATCH_SIZE?: string
+  readonly VITE_TRACKER_FLUSH_INTERVAL?: string
 }
 
 export {} // 防止模块污染

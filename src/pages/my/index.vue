@@ -12,10 +12,16 @@
 </route>
 
 <script lang="ts" setup>
+import { useShare } from '@/composables/useShare'
 import { useTheme } from '@/composables/useTheme'
+import { useTracker, useTrackPageView } from '@/composables/useTracker'
 import { buildWebViewPageRoute } from '@/composables/useWebView'
 import { mockLogout } from '@/mocks/auth'
 import { useUserStore } from '@/stores'
+
+const { track } = useTracker()
+useShare({ title: '我的' })
+useTrackPageView()
 
 interface UserMenuItem {
   key: string
@@ -195,6 +201,7 @@ async function handleLogout() {
         logoutLoading.value = true
         await mockLogout()
         userStore.logout()
+        track('user_logout')
         uni.showToast({ title: '已退出登录', icon: 'success' })
       } finally {
         logoutLoading.value = false
