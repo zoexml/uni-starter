@@ -1,6 +1,7 @@
 import path from 'node:path'
 import { defineManifestConfig } from '@uni-helper/vite-plugin-uni-manifest'
 import { loadEnv } from 'vite'
+import pkg from './package.json'
 
 // 获取环境变量的范例
 const env = loadEnv(process.env.NODE_ENV!, path.resolve(process.cwd()))
@@ -10,8 +11,8 @@ export default defineManifestConfig({
   'name': VITE_APP_TITLE,
   'appid': VITE_UNI_APPID,
   'description': '',
-  'versionName': '1.0.0',
-  'versionCode': '100',
+  'versionName': pkg.version,
+  'versionCode': String(Number(pkg.version.replace(/\./g, ''))),
   'transformPx': false,
   'locale': VITE_FALLBACK_LOCALE, // 'zh-Hans'
   /* 5+App特有相关 */

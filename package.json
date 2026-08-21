@@ -1,7 +1,7 @@
 {
   "name": "uni-starter",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
   "description": "基于 Vue3 + Vite + TypeScript + UnoCSS + Pinia 的 uni-app 启动模板",
   "keywords": [
@@ -81,7 +81,7 @@
     "@dcloudio/uni-mp-weixin": "3.0.0-5000720260410001",
     "@uni-helper/uni-use": "^0.19.14",
     "@vueuse/core": "9.13.0",
-    "@wot-ui/ui": "^2.0.8",
+    "@wot-ui/ui": "^2.3.2",
     "alova": "^3.3.4",
     "dayjs": "^1.11.13",
     "deep-pick-omit": "^1.2.1",
@@ -104,7 +104,7 @@
     "@stylistic/stylelint-config": "^2.0.0",
     "@types/node": "^22.13.14",
     "@uni-helper/eslint-config": "^0.4.0",
-    "@uni-helper/uni-types": "^1.0.0-alpha.6",
+    "@uni-helper/uni-types": "^1.1.0",
     "@uni-helper/unocss-preset-uni": "^0.2.11",
     "@uni-helper/vite-plugin-uni-components": "^0.2.0",
     "@uni-helper/vite-plugin-uni-layouts": "^0.1.10",

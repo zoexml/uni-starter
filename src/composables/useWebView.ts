@@ -105,12 +105,6 @@ interface WebViewRouteLike {
   query?: Record<string, unknown>
 }
 
-interface WebViewLoadEvent {
-  detail?: {
-    errMsg?: string
-  }
-}
-
 const httpProtocols = ['http:', 'https:'] as const
 const maskedPhonePattern = /^(\d{3})\d+(\d{4})$/
 const protocolPattern = /^([a-z][a-z\d+.-]*:)/i
@@ -866,7 +860,7 @@ export const useWebView = () => {
     pageLoaded.value = true
   }
 
-  const handleFrameError = (event?: WebViewLoadEvent) => {
+  const handleFrameError = (event?: UniHelper.WebViewOnErrorEvent) => {
     const errMsg = event?.detail?.errMsg
     const message = getRuntimePlatform() === 'mp-weixin'
       ? '目标网页无法被微信小程序 web-view 打开。请确认该域名已在小程序后台配置为业务域名，或开发工具已开启“不校验合法域名、web-view（业务域名）”。'
