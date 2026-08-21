@@ -1,107 +1,159 @@
 # AGENTS.md
 
-本文件用于给后续代码代理提供这个仓库的项目上下文、约束和交付规则。
+> 本文件是本仓库代码代理指令的**唯一**来源，供 Claude Code、Cursor、Codex 等工具读取。
+> `CLAUDE.md` 仅为兼容入口，指向本文件。项目指引的修改请直接维护本文件，不要两份同时维护。
 
 ## 项目概览
 
-这是一个 uni-app 启动模板项目，主要技术栈包括：
+这是一个 uni-app 3.0 模板项目，目标平台包括 H5、微信小程序、支付宝小程序等。技术栈为 Vue 3 + TypeScript + Vite + Pinia + UnoCSS + Wot Design Uni + alova（另含 z-paging、uni-mini-router 等）。
 
-- Vue 3
-- TypeScript
-- Vite
-- Pinia
-- UnoCSS
-- Wot Design Uni
-- alova
-- z-paging
-- uni-mini-router
+除非用户明确要求，不要替换框架、包管理器、UI 组件库、路由方案或请求层。
 
-请优先沿用项目已有技术栈和代码风格。除非用户明确要求，不要替换框架、包管理器、UI 组件库、路由方案或请求层。
-
-## 环境要求
-
-- Node.js: `>=22`
-- 包管理器: `pnpm`
-- pnpm 版本: `10.15.0`
-- 安装依赖: `pnpm install`
-
-项目通过 `preinstall` 脚本限制只能使用 pnpm。
+**包管理器强制为 pnpm**（通过 `preinstall` 钩子），Node.js >= 22。
 
 ## 常用命令
 
-- `pnpm dev` 或 `pnpm dev:h5`: 启动 H5 开发
-- `pnpm dev:mp-weixin`: 启动微信小程序开发
-- `pnpm build`: 构建 H5
-- `pnpm build:mp-weixin`: 构建微信小程序
-- `pnpm type-check`: 执行 TypeScript/Vue 类型检查
-- `pnpm lint`: 执行 ESLint 检查
-- `pnpm lint:fix`: 执行 ESLint 自动修复
-- `pnpm lint:stylelint`: 执行 Stylelint 自动修复
-- `pnpm openapi`: 根据 OpenAPI 配置生成接口代码
+```bash
+pnpm install                 # 安装依赖
+pnpm dev                     # H5 开发
+pnpm dev:mp-weixin           # 微信小程序开发
+pnpm build                   # 构建 H5
+pnpm build:mp-weixin         # 构建微信小程序
+pnpm type-check              # TypeScript 类型检查
+pnpm lint                    # ESLint 检查
+pnpm lint:fix                # ESLint 自动修复
+pnpm lint:stylelint          # Stylelint 修复
+pnpm openapi                 # 根据 OpenAPI 配置生成接口代码
+```
 
-验证时优先选择和改动范围匹配的最小命令。涉及共享逻辑、组件、页面或类型时，能运行的话至少执行 `pnpm type-check` 和 `pnpm lint`。
+验证改动时，涉及组件/页面/类型的最小命令组合为 `pnpm type-check && pnpm lint`；尽量选择和改动范围匹配的最小命令组合。
 
 ## 目录结构
 
-- `src/main.ts`: 应用入口
-- `src/App.vue`: 根组件
-- `src/pages/`: 主包页面
-- `src/pages/example/`: 组件示例页面（StepIndicator、Cropper 等）
-- `src/pages-business/`: 通用业务分包页面
-- `src/layouts/`: 布局组件
-- `src/components/`: 通用组件
-- `src/composables/`: 组合式逻辑
-- `src/stores/`: Pinia 状态管理
-- `src/router/`: 路由配置
-- `src/apis/`: API 模块，部分文件可能由 OpenAPI 生成
-- `src/utils/`: 通用工具函数
-- `src/styles/`: 全局样式
-- `src/static/`: uni-app 静态资源
-- `src/tabbar/`: 自定义 tabbar
-- `pages.config.ts`: 页面和分包配置
-- `manifest.config.ts`: uni-app manifest 配置
-- `vite.config.ts`: Vite 和 uni 插件配置
-- `uno.config.ts`: UnoCSS 配置
+- `src/main.ts` / `src/App.vue` — 应用入口与根组件
+- `src/pages/` — 主包页面
+- `src/pages-business/` — 通用业务分包页面
+- `src/layouts/` — 布局组件
+- `src/components/` — 通用组件（自动引入，清单见 `src/components/README.md`）
+- `src/composables/` — 组合式逻辑
+- `src/stores/` — Pinia 状态管理
+- `src/router/` — 路由配置
+- `src/apis/` — API 模块，部分文件由 OpenAPI 生成
+- `src/utils/` — 通用工具函数
+- `src/styles/` — 全局样式
+- `src/static/` — uni-app 静态资源
+- `src/tabbar/` — TabBar 配置
+- `pages.config.ts` — 页面和分包配置
+- `manifest.config.ts` — uni-app manifest 配置
+- `vite.config.ts` — Vite 和 uni 插件配置
+- `uno.config.ts` — UnoCSS 配置
 
-## 内置组件
+## 架构概览
 
-`src/components/` 下已有以下组件（通过插件自动引入，无需手动 import）：
+### 插件体系
 
-- `StepIndicator` — 步骤指示器，示例页 `src/pages/example/step-indicator/`
-- `Cropper` — Canvas 图片裁剪器，示例页 `src/pages/example/cropper/`
+项目使用 `@uni-helper` 系列 Vite 插件实现约定式开发：
 
-新增示例页面参考 `src/pages/example/` 下的现有文件。
+| 插件 | 职责 |
+|------|------|
+| `vite-plugin-uni-pages` | 基于文件系统自动生成路由表，`homePage` 通过 `route-block` 设置 |
+| `vite-plugin-uni-layouts` | 布局系统，`src/layouts/` 下文件自动注册 |
+| `vite-plugin-uni-manifest` | 从 `manifest.config.ts` 生成 `manifest.json` |
+| `vite-plugin-uni-platform` | 注入当前编译平台常量 |
+| `vite-plugin-uni-components` | 组件自动引入，`directoryAsNamespace: true` |
+| `unplugin-auto-import` | API 自动引入（Vue、Pinia、VueUse、uni-app、alova、uni-mini-router、@wot-ui） |
+| `@uni-ku/bundle-optimizer` | 分包异步组件/跨包调用优化 |
+| `@uni-helper/vite-plugin-uni-middleware` | uni-app 中间件支持 |
+
+路由表通过 `uni-read-pages-vite` 读取后以 `ROUTES` 全局常量注入，供 `uni-mini-router` 使用。
+
+通用业务分包目录为 `src/pages-business/`，在 `vite.config.ts` 的 `UniPages({ subPackages: ['src/pages-business'] })` 中注册。不要再新增或引用旧的 `src/pages-sub/` 目录。
+
+### 状态管理
+
+Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStorageSync` 实现跨端持久化。
+
+- `stores/user.ts` — 用户认证（token、userInfo、roles、permissions），支持权限判断 `hasPermission()`
+- 新增 store 模块后需在 `stores/index.ts` 中 `export *` 以启用自动引入
+
+### 请求层
+
+基于 `alova` + `@alova/adapter-uniapp` + `alova/vue` 构建：
+
+- 响应拦截器统一处理 HTTP 状态码和业务错误码（`{ code, message, data }` 格式），自动 `uni.showToast`
+- Token 注入和刷新逻辑已预留但被注释，需对接真实后端后启用
+- 所有页面 API 调用应使用 `http.get/post/put/delete` 或 alova hooks（`useRequest`、`usePagination` 等）
+
+### 主题系统
+
+- `src/composables/useTheme.ts` — `useTheme()` composable 控制主题色和明暗模式切换
+- `src/styles/base.scss` — 应用级 CSS 语义色变量，例如 `--app-color-text`、`--app-color-border`、`--app-primary-soft`
+- `src/App.ku.vue` — 通过 `wd-config-provider` 注入 Wot UI 主题变量
+- 支持小程序和 H5 的 CSS 变量主题
+
+### WebView 容器
+
+- 页面入口：`src/pages-business/webview/index.vue`
+- 统一逻辑入口：`src/composables/useWebView.ts`
+- `useWebView.ts` 同时维护 WebView 页面路径、访问白名单、URL 构造、桥接 payload 校验和容器运行时状态，避免在 `utils` 和 `composables` 两处维护同一套逻辑。
+- 所有外部 WebView 统一通过 `src/pages-business/webview/index.vue` 公共页面打开，不为单个链接新增页面。
+- 页面跳转优先使用 `buildWebViewPageRoute({ title, url })` 配合 `uni-mini-router` 的 name 模式；无 router 上下文时可用 `openWebView({ title, url })`。当前页面路径常量为 `/pages-business/webview/index`。
+- 访问控制通过 `DEFAULT_WEBVIEW_ACCESS_RULES` 配置；默认公共规则允许 HTTPS 链接，特定业务域名规则应放在通配规则之前。
+
+### TabBar 策略
+
+通过 `src/tabbar/config.ts` 控制，支持四种模式（详见 `TABBAR_STRATEGY_MAP`）：
+
+1. `NO_TABBAR` — 无 TabBar
+2. `NATIVE_TABBAR` — 原生 TabBar（当前使用）
+3. `CUSTOM_TABBAR_WITH_CACHE` — 自定义 + 缓存
+4. `CUSTOM_TABBAR_WITHOUT_CACHE` — 自定义无缓存
+
+策略切换后需重新运行项目以更新 `pages.json`。
+
+## 内置组件与 composable
+
+通用组件统一放在 `src/components/`，通过 `vite-plugin-uni-components` 自动引入，页面中直接使用组件名，无需手动 `import`。完整组件清单、props 与用法以 `src/components/README.md` 为准，不要在本文件重复维护组件列表。
+
+已有 composable：
+
+- `useTheme` — 主题色与明暗模式切换
+- `useWebView` — WebView 容器统一逻辑（见「WebView 容器」）
+- `useCropper` — 基于 Canvas 的图片裁剪
+- `useGlobalErrorHandling` — 全局错误处理
 
 ## 编码约定
 
-- Vue 单文件组件优先使用 Vue 3 Composition API 和 `<script setup lang="ts">`。
-- SFC 代码块顺序保持为：`<script>`、`<template>`、`<style>`。
-- 页面组件主要负责页面级编排和状态衔接；可复用 UI 放到 `src/components/`，可复用逻辑放到 `src/composables/`。
-- WebView 相关页面放在 `src/pages-business/webview/`，所有外部 WebView 统一通过该公共页面打开；相关常量、白名单、跳转构造和桥接逻辑统一维护在 `src/composables/useWebView.ts`，不要再拆到 `src/utils/webview.ts` 或为单个链接新增页面。
-- 组件的 props 和 emits 必须保持类型明确。
-- 跨页面或跨功能共享状态使用 Pinia。能用 `computed` 推导的状态不要重复存储。
-- 平台差异逻辑要尽量小且显式，优先复用 `src/utils/platform.ts` 中已有能力。
-- 请求相关逻辑优先复用现有 alova、OpenAPI 和 `src/utils/http.ts` 模式，不要额外引入新的 HTTP 客户端。
-- 样式优先遵循 `src/styles/`、`src/uni.scss` 和现有组件的写法。
-- **所有页面的 SCSS 必须使用嵌套写法**，即用 `&` 和嵌套选择器组织样式，禁止在 style 块中使用平铺的顶层类名选择器。
-- 不要在小需求中顺手做大范围重构。
+- Vue SFC 使用 `<script setup lang="ts">`，块顺序：`<script>` → `<template>` → `<style>`
+- 页面组件负责编排，可复用 UI 放 `src/components/`，可复用逻辑放 `src/composables/`
+- 主包页面放 `src/pages/`，通用业务分包页面放 `src/pages-business/`
+- Props 和 emits 必须类型明确
+- SCSS 必须使用嵌套选择器（`&`），禁止平铺顶层类名
+- 请求层复用现有 alova 模式，不引入新的 HTTP 客户端
+- 平台差异逻辑优先复用 `src/utils/platform.ts`
+- 跨页面或跨功能共享状态使用 Pinia；能用 `computed` 推导的状态不要重复存储
+- 避免小需求做大重构
 
-## 生成文件和构建产物
+## 生成文件
 
-除非任务明确要求处理生成结果，否则不要手动编辑生成文件或构建产物。
+以下文件为自动生成，不要手动编辑：
 
-常见生成或构建相关路径包括：
+- `src/pages.json` — 页面路由配置
+- `src/manifest.json` — uni-app manifest
+- `src/types/` 下的 `auto-imports.d.ts`、`components.d.ts`、`uni-pages.d.ts`、`async-component.d.ts`、`async-import.d.ts`
 
-- `node_modules/`
-- `dist/`
-- `src/pages.json`
-- `auto-imports.d.ts`
-- `components.d.ts`
-- `uni-pages.d.ts`
-- `async-component.d.ts`
-- `async-import.d.ts`
+如需调整自动生成的 API 代码，修改 `openapi-ts-request.config.ts` 后运行 `pnpm openapi`。
 
-如果需要调整 `src/apis/` 下的生成接口代码，优先修改 `openapi-ts-request.config.ts` 或源 OpenAPI 输入，然后运行 `pnpm openapi`。只有在用户明确要求小范围手动修补时，才直接改生成后的 API 文件。
+## 环境变量
+
+| 变量 | 说明 |
+|------|------|
+| `VITE_SERVER_BASEURL` | 后端 API 地址 |
+| `VITE_UPLOAD_BASEURL` | 文件上传地址 |
+| `VITE_AUTH_MODE` | 认证模式：`single`（单 token）/ `double`（双 token） |
+| `VITE_APP_PROXY` | H5 是否启用代理 |
+| `VITE_APP_PROXY_PREFIX` | 代理前缀（默认 `/api`） |
+| `VITE_DELETE_CONSOLE` | 构建时是否移除 console |
 
 ## Git 和工作区规则
 

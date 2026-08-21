@@ -28,10 +28,11 @@
 | `FloatingService` | 可拖拽悬浮客服按钮 | `label`、`direction`、`snapToEdge`、`click` |
 | `GoodsCard` | 商品卡片 | `item`、`click` |
 | `InformationCard` | 资讯卡片 | `item`、`click` |
+| `BannerSwiper` | 首页轮播图 | `banner`、`items`、`interval` |
 | `Loading` | 居中加载动画 | 直接使用 |
 | `Navbar` | Wot UI 导航栏封装 | `title`、`leftArrow` |
-| `OfflineBanner` | 顶部离线提示 | `visible`、`networkType` |
 | `OptionPicker` | 单列选项选择器 | `v-model`、`v-model:visible`、`options` |
+| `TouchDialog` | 可拖拽底部弹窗 | `visible`、`title`、`close` |
 
 ## ActionSheet
 
@@ -153,6 +154,57 @@ const handleSelect = (item: { name: string }) => {
 | `click` | 未发生拖动时点击按钮触发 |
 | `change` | 拖动结束后返回位置 |
 
+## BannerSwiper
+
+首页轮播图组件，数据由 `banner` 配置驱动。单图时显示为静态图，多图支持自动播放、循环和指示点；触摸轮播后自动播放暂停 5 秒恢复。
+
+```vue
+<BannerSwiper :banner="homepageConfig.banner" />
+```
+
+`banner` 结构：
+
+| 字段 | 说明 |
+| --- | --- |
+| `enabled` | 是否启用轮播 |
+| `items` | 轮播项数组，元素为 `{ image, link }`，`image` 为图片地址 |
+| `interval` | 自动播放间隔，默认 `3000`ms |
+
+点击轮播项时，`link` 以 `http(s)://` 开头会复用 WebView 容器打开外部链接；以 `/` 开头视为项目内页面路径，走 `uni.navigateTo`。
+
+## TouchDialog
+
+可拖拽的底部弹窗：手指向下拖动可关闭；向上拖过阈值后展开为近全屏并支持内容滚动。
+
+```vue
+<TouchDialog :visible="visible" title="标题" @close="visible = false">
+  <template #subtitle>副标题</template>
+  <template #content>内容</template>
+</TouchDialog>
+```
+
+常用参数：
+
+| 参数 | 说明 | 默认值 |
+| --- | --- | --- |
+| `visible` | 是否显示 | `false` |
+| `title` | 标题 | `''` |
+| `expandThreshold` | 展开阈值（相对窗口高度的比例），拖过该值展开为全屏 | `0.35` |
+| `initialRatio` | 展开后弹窗初始高度占窗口的比例 | `0.68` |
+
+插槽：
+
+| 插槽 | 说明 |
+| --- | --- |
+| `subtitle` | 标题下方的副标题区域 |
+| `content` | 主体内容，展开后支持滚动 |
+
+事件：
+
+| 事件 | 说明 |
+| --- | --- |
+| `close` | 弹窗关闭后触发 |
+
 ## 展示组件
 
 ### GoodsCard
@@ -204,13 +256,3 @@ Wot UI `wd-navbar` 的项目封装，默认开启顶部安全区、占位和固�
 ```vue
 <Loading />
 ```
-
-### OfflineBanner
-
-顶部离线提示条，通常由全局网络状态组合式逻辑驱动。
-
-```vue
-<OfflineBanner :visible="isOffline" :network-type="networkType" />
-```
-
-`networkType` 使用项目内 `AppNetworkType` 类型。

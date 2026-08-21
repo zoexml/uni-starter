@@ -189,7 +189,7 @@ const { data, loading, error } = useRetriableRequest(userRequest, {
 ```env
 VITE_ENABLE_ERROR_REPORT = true
 VITE_SENTRY_DSN = 'https://public@example.ingest.sentry.io/42'
-VITE_SENTRY_RELEASE = 'uni-starter@0.0.1'
+VITE_SENTRY_RELEASE = 'uni-starter@0.1.0'
 ```
 
 如果不用 Sentry，也可以配置自定义接口：
