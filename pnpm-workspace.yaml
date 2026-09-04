@@ -7,6 +7,8 @@ allowBuilds:
   simple-git-hooks: true
   unrs-resolver: true
   vue-demi: true
+minimumReleaseAgeExclude:
+  - wormajs@0.3.1
 onlyBuiltDependencies:
   - '@parcel/watcher'
   - '@uni-helper/unocss-preset-uni'

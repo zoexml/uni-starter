@@ -49,7 +49,7 @@ pnpm build
 ### ⚡️ 请求管理
 
 - 基于 alova 的请求策略
-- OpenAPI 自动生成
+- worma 自动生成（基于 OpenAPI 规范）
 - 全局加载状态管理
 - 使用 alova 内置请求共享，避免重复请求
 - Token 自动注入，支持可选双 token 刷新

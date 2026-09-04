@@ -30,9 +30,20 @@
 - `store.ts` ，专门给 `自定义 tabbar` 提供状态管理，代码几乎不需要修改。
 - `index.vue` ，专门给 `自定义 tabbar` 提供渲染逻辑，代码可以稍微修改，以符合自己的需求。
 
+`index.vue` 基于 Wot UI 的 `wd-tabbar` / `wd-tabbar-item` 渲染（挂在 `App.ku.vue` 根节点）：激活色跟随主题主色，badge 由组件内置 `wd-badge` 渲染（`item.badge` 配置数字或 `'dot'`）。图标通过 `#icon` 插槽按 `customTabbarList` 的 `iconType` 分发（`uiLib` → `wd-icon` / `unocss` / `iconfont` / `image`），字号复用组件内置图标尺寸类 `wd-tabbar-item__body-icon`（`--wot-tabbar-item-icon-size`，默认 24px），无需手动设置大小。
+
 ## 自定义tabbar的不同类型的配置
 
-- uniUi 图标
+- uiLib 图标（默认推荐，即 `wd-icon`）
+
+ ```json
+ {
+   // ... 其他配置
+   "iconType": "uiLib",
+   "icon": "home"
+ }
+  ```
+- uniUi 图标（需要额外安装 `@dcloudio/uni-ui` 才能使用）
 
  ```json
  {
@@ -47,7 +58,7 @@
  {
    // ... 其他配置
    // 注意 unocss 图标需要如下处理：（二选一）
-   // 1）在fg-tabbar.vue页面上引入一下并注释掉（见tabbar/index.vue代码第2行）
+   // 1）在tabbar/index.vue页面上引入一下并注释掉
    // 2）配置到 unocss.config.ts 的 safelist 中
    "iconType": "unocss",
    "icon": "i-carbon-code"

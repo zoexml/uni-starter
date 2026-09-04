@@ -23,7 +23,7 @@ pnpm type-check              # TypeScript 类型检查
 pnpm lint                    # ESLint 检查
 pnpm lint:fix                # ESLint 自动修复
 pnpm lint:stylelint          # Stylelint 修复
-pnpm openapi                 # 根据 OpenAPI 配置生成接口代码
+pnpm api                     # 根据 worma 配置生成接口代码
 ```
 
 验证改动时，涉及组件/页面/类型的最小命令组合为 `pnpm type-check && pnpm lint`；尽量选择和改动范围匹配的最小命令组合。
@@ -110,9 +110,11 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 通过 `src/tabbar/config.ts` 控制，支持四种模式（详见 `TABBAR_STRATEGY_MAP`）：
 
 1. `NO_TABBAR` — 无 TabBar
-2. `NATIVE_TABBAR` — 原生 TabBar（当前使用）
-3. `CUSTOM_TABBAR_WITH_CACHE` — 自定义 + 缓存
+2. `NATIVE_TABBAR` — 原生 TabBar
+3. `CUSTOM_TABBAR_WITH_CACHE` — 自定义 + 缓存（当前使用）
 4. `CUSTOM_TABBAR_WITHOUT_CACHE` — 自定义无缓存
+
+自定义 tabbar 由 `src/tabbar/index.vue` 渲染（挂在 `App.ku.vue` 根节点），基于 Wot UI `wd-tabbar`/`wd-tabbar-item`：激活色跟随主题主色，badge 由组件内置 `wd-badge` 渲染，图标通过 `#icon` 插槽按 `customTabbarList` 的 `iconType` 分发（`uiLib` → `wd-icon` / `unocss` / `iconfont` / `image`），字号用组件默认类 `wd-tabbar-item__body-icon`（24px）。
 
 策略切换后需重新运行项目以更新 `pages.json`。
 
@@ -162,7 +164,7 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 - `src/manifest.json` — uni-app manifest
 - `src/types/` 下的 `auto-imports.d.ts`、`components.d.ts`、`uni-pages.d.ts`、`async-component.d.ts`、`async-import.d.ts`
 
-如需调整自动生成的 API 代码，修改 `openapi-ts-request.config.ts` 后运行 `pnpm openapi`。
+如需调整自动生成的 API 代码，修改 `worma.config.js` 后运行 `pnpm api`。生成的接口代码位于 `src/apis/generated/`，其 `index.ts` 由配置中的自定义插件替换为项目现有 `http` 实例的再导出，接口函数会直接复用项目的 alova 请求层。
 
 ## 环境变量
 
