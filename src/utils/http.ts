@@ -5,6 +5,7 @@ import AdapterUniapp from '@alova/adapter-uniapp'
 import { createAlova } from 'alova'
 import { createServerTokenAuthentication } from 'alova/client'
 import VueHook from 'alova/vue'
+import { createMockAdapter, isMockMode } from '@/mocks/adapter'
 import { useUserStore } from '@/stores'
 import { ResultEnum, ShowMessage } from '../common/enum'
 
@@ -21,7 +22,9 @@ const authMode = (import.meta.env.VITE_AUTH_MODE ?? 'single') as AuthMode
 const refreshAlova = createAlova({
   baseURL: import.meta.env.VITE_SERVER_BASEURL,
   timeout: REQUEST_TIMEOUT,
-  ...AdapterUniapp(),
+  // 未配置后端地址时由 mock 适配器接管，页面里可以写真实请求代码；
+  // 配置 VITE_SERVER_BASEURL 后自动切回真实网络请求
+  ...(isMockMode() ? { requestAdapter: createMockAdapter() } : AdapterUniapp()),
   statesHook: VueHook,
 })
 

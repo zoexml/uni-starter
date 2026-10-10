@@ -12,9 +12,11 @@
 </route>
 
 <script lang="ts" setup>
-import type { ArticleItem } from '@/mocks/content'
-import { HOT_KEYWORDS, searchArticles } from '@/mocks/content'
+import type { ArticleItem, PageResult } from '@/mocks/content'
+import { usePagination } from 'alova/client'
+import { HOT_KEYWORDS } from '@/mocks/content'
 import { useTrackPageView } from '@/composables/useTracker'
+import { http } from '@/utils/http'
 
 useShare({ title: '搜索' })
 useTrackPageView()
@@ -23,10 +25,28 @@ const HISTORY_KEY = 'search-history'
 const HISTORY_MAX = 10
 
 const keyword = shallowRef('')
-const list = shallowRef<ArticleItem[]>([])
 const searched = shallowRef(false)
-const loading = shallowRef(false)
 const history = shallowRef<string[]>([])
+
+/**
+ * 搜索结果同样走 usePagination：keyword 变化后 reload() 重新从第一页拉取，
+ * 触底用 send(page + 1) 追加下一页。
+ */
+const { data, loading, page, isLastPage, send, reload } = usePagination(
+  (currentPage, currentPageSize) =>
+    http.Get<PageResult<ArticleItem>>('/article/page', {
+      params: { page: currentPage, pageSize: currentPageSize, keyword: keyword.value },
+    }),
+  {
+    initialPage: 1,
+    initialPageSize: 5,
+    data: response => response.list,
+    total: response => response.total,
+  },
+)
+
+// InformationCard 只要求部分字段，ArticleItem 是它的超集，直接传入即可
+const list = computed(() => data.value as ArticleItem[])
 
 const readHistory = () => {
   try {
@@ -51,6 +71,7 @@ const pushHistory = (value: string) => {
   writeHistory(next)
 }
 
+/** 执行搜索：先更新 keyword，再 reload 让分页回到第一页 */
 const runSearch = async (value: string) => {
   const trimmed = value.trim()
   if (!trimmed) {
@@ -60,14 +81,14 @@ const runSearch = async (value: string) => {
 
   keyword.value = trimmed
   pushHistory(trimmed)
-  loading.value = true
   searched.value = true
+  await reload()
+}
 
-  try {
-    list.value = await searchArticles(trimmed)
-  } finally {
-    loading.value = false
-  }
+/** z-paging 触底加载下一页 */
+const handleLoadMore = () => {
+  if (loading.value || isLastPage.value) return
+  void send(page.value + 1)
 }
 
 const handleSearch = () => {
@@ -96,7 +117,11 @@ onLoad(readHistory)
 </script>
 
 <template>
-  <z-paging :show-scrollbar="false">
+  <z-paging
+    :show-scrollbar="false"
+    :auto-clean-list-when-reload="false"
+    @complete="handleLoadMore"
+  >
     <template #top>
       <Navbar title="搜索" />
       <view class="search-page__bar">
@@ -105,7 +130,7 @@ onLoad(readHistory)
     </template>
 
     <view class="search-page">
-      <view v-if="loading" class="search-page__loading">
+      <view v-if="loading && !list.length" class="search-page__loading">
         <Loading />
       </view>
 
@@ -119,6 +144,15 @@ onLoad(readHistory)
             :item="item"
             @click="handleArticleClick"
           />
+
+          <view class="search-page__footer">
+            <text v-if="loading" class="search-page__tip">
+              加载中...
+            </text>
+            <text v-else-if="isLastPage" class="search-page__tip">
+              没有更多了
+            </text>
+          </view>
         </view>
       </template>
 
@@ -243,6 +277,17 @@ onLoad(readHistory)
       border: 1rpx solid var(--app-color-border);
       border-radius: 16rpx;
     }
+  }
+
+  &__footer {
+    padding: 8rpx 0 16rpx;
+    text-align: center;
+  }
+
+  &__tip {
+    font-size: 24rpx;
+    line-height: 1.5;
+    color: var(--app-color-text-tertiary);
   }
 }
 </style>

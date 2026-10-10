@@ -46,14 +46,60 @@ const AGREEMENT_CONTENT: Record<AgreementType, string> = {
   `,
 }
 
-const ARTICLE_POOL: ArticleItem[] = [
-  { id: 'a1', title: '初次使用必读：三分钟了解整体流程', time: '2026-05-16', category: '新手指南' },
-  { id: 'a2', title: '材料准备清单与常见退件原因', time: '2026-05-12', category: '材料准备' },
-  { id: 'a3', title: '在线提交后多久能收到反馈', time: '2026-05-08', category: '常见问题' },
-  { id: 'a4', title: '如何修改已提交的申请信息', time: '2026-04-28', category: '常见问题' },
-  { id: 'a5', title: '费用构成与支付方式说明', time: '2026-04-20', category: '费用说明' },
-  { id: 'a6', title: '进度状态的四种含义', time: '2026-04-11', category: '新手指南' },
-]
+const CATEGORY_POOL = ['新手指南', '材料准备', '常见问题', '费用说明', '办理流程', '政策解读'] as const
+
+const TITLE_POOL = [
+  '初次使用必读：三分钟了解整体流程',
+  '材料准备清单与常见退件原因',
+  '在线提交后多久能收到反馈',
+  '如何修改已提交的申请信息',
+  '费用构成与支付方式说明',
+  '进度状态的四种含义',
+  '线上办理需要准备哪些证件',
+  '审核不通过的常见原因汇总',
+  '补交材料的正确操作方式',
+  '办理期间可以修改哪些信息',
+  '电子材料是否需要盖章',
+  '不同办理渠道的差异对比',
+  '高峰期提交会不会影响进度',
+  '结果通知会通过哪些渠道发送',
+  '证书或结果单的领取方式',
+  '对办理结果有疑问如何申诉',
+  '代办服务与自行办理的取舍',
+  '材料上传失败的排查思路',
+  '办理流程图与时间轴说明',
+  '常见问题速查：材料篇',
+  '常见问题速查：流程篇',
+  '常见问题速查：费用篇',
+  '政策更新：2026 年办理须知',
+  '服务时间与节假日安排',
+  '跨地区办理是否需要额外材料',
+  '未成年人办理的特殊要求',
+  '企业办理与个人办理的区别',
+  '补办与更正的操作差异',
+  '信息填写错误如何修正',
+  '办理进度延迟时的自查步骤',
+] as const
+
+/** 构造足量的 mock 资讯，保证分页有翻页效果 */
+const buildArticlePool = (size = 30): ArticleItem[] => {
+  return Array.from({ length: size }, (_, index) => {
+    const title = TITLE_POOL[index % TITLE_POOL.length]!
+    const category = CATEGORY_POOL[index % CATEGORY_POOL.length]!
+    // 用固定基数构造递减日期，保证 mock 数据稳定可复现
+    const day = String(28 - (index % 28)).padStart(2, '0')
+    const month = String(6 - Math.floor(index / 28)).padStart(2, '0')
+
+    return {
+      id: `a${index + 1}`,
+      title: index < TITLE_POOL.length ? title : `${title}（${Math.floor(index / TITLE_POOL.length) + 1}）`,
+      time: `2026-${month}-${day}`,
+      category,
+    }
+  })
+}
+
+const ARTICLE_POOL = buildArticlePool()
 
 const MOCK_DELAY = 300
 
@@ -84,6 +130,44 @@ export const searchArticles = (keyword: string) => {
   )
 
   return wait(matched)
+}
+
+/** 分页响应结构，与后端常见格式一致（列表 + 总数） */
+export interface PageResult<T> {
+  list: T[]
+  total: number
+}
+
+const paginate = <T>(list: T[], page: number, pageSize: number): PageResult<T> => {
+  const start = (page - 1) * pageSize
+
+  return {
+    list: list.slice(start, start + pageSize),
+    total: list.length,
+  }
+}
+
+export interface ArticleQuery {
+  page: number
+  pageSize: number
+  /** 关键词，空字符串表示不过滤 */
+  keyword?: string
+}
+
+const filterArticles = (keyword?: string) => {
+  const trimmed = (keyword || '').trim().toLowerCase()
+  if (!trimmed) return ARTICLE_POOL
+
+  return ARTICLE_POOL.filter(item =>
+    item.title.toLowerCase().includes(trimmed) || item.category.toLowerCase().includes(trimmed),
+  )
+}
+
+/** 分页拉取资讯：收藏页与搜索页共用，配合 alova 的 usePagination 使用 */
+export function fetchArticlePage(query: ArticleQuery) {
+  const matched = filterArticles(query.keyword)
+
+  return wait(paginate(matched, query.page, query.pageSize))
 }
 
 /** 搜索页的热门关键词 */
