@@ -56,6 +56,9 @@ importers:
       destr:
         specifier: ^2.0.5
         version: 2.0.5
+      mp-html:
+        specifier: ^2.5.2
+        version: 2.5.2
       pinia:
         specifier: 2.3.1
         version: 2.3.1(typescript@5.8.3)(vue@3.5.13(typescript@5.8.3))
@@ -6024,6 +6027,9 @@ packages:
 
   module-alias@2.2.3:
     resolution: {integrity: sha512-23g5BFj4zdQL/b6tor7Ji+QY4pEfNH784BMslY9Qb0UnJWRAt+lQGLYmRaM0KDBwIG23ffEBELhZDP2rhi9f/Q==}
+
+  mp-html@2.5.2:
+    resolution: {integrity: sha512-45e8c32Qgux4YU4iC3qCSFsOh3y+RwPwZ+iz/vvLkDgSGWk+1zsL4WUzWWQc9w3AsAfkaD/QR0oIufIDngBmXA==}
 
   mrmime@2.0.1:
     resolution: {integrity: sha512-Y3wQdFg2Va6etvQ5I82yUhGdsKrcYox6p7FfL1LbK2J4V01F9TGlepTIhnK24t7koZibmg82KGglhA1XK5IsLQ==}
@@ -15116,6 +15122,8 @@ snapshots:
   modify-values@1.0.1: {}
 
   module-alias@2.2.3: {}
+
+  mp-html@2.5.2: {}
 
   mrmime@2.0.1: {}
 

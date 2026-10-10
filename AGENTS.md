@@ -176,6 +176,8 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 
 通用组件统一放在 `src/components/`，通过 `vite-plugin-uni-components` 自动引入，页面中直接使用组件名，无需手动 `import`。完整组件清单、props 与用法以 `src/components/README.md` 为准，不要在本文件重复维护组件列表。
 
+富文本渲染用 `mp-html`（已在 `pages.config.ts` 的 easycom 里注册，页面直接写 `<mp-html :content="html" />`，无需 import）。它渲染的是自建节点，**父页面的 scoped 样式匹配不进去**，排版要用 `tag-style` 传标签默认样式（内联样式里的 `rpx` 在 H5 端不会转换，统一用 px），正文的字号/行高/颜色靠外层容器继承。
+
 已有 composable：
 
 - `useTheme` — 主题色与明暗模式切换
