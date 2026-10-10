@@ -22,6 +22,7 @@
 | 组件 | 用途 | 主要入口 |
 | --- | --- | --- |
 | `ActionSheet` | 底部操作面板 | `v-model`、`actions`、`select` |
+| `AuthPhone` | 微信一键手机号授权弹窗 | `v-model`、`success`、`fail` |
 | `ConfirmDialog` | 确认弹窗 | `v-model`、`confirm`、`cancel` |
 | `DatePicker` | 年/月/日选择器 | `v-model`、`v-model:visible`、`confirm` |
 | `ExpandableText` | 长文本展开收起 | `content`、`threshold`、`lines` |
@@ -77,6 +78,57 @@ const handleSelect = (item: { name: string }) => {
 | `select` | 点击非禁用操作项后触发，参数为 `(item, index)` |
 | `cancel` | 点击取消按钮后触发 |
 | `close` | 面板关闭后触发 |
+
+## AuthPhone
+
+微信一键手机号授权弹窗。UI 承接 diy-mini 的 `auth` 组件，登录逻辑接入项目已有的 user store 与路由守卫回跳。
+
+组件只负责 UI 和微信侧取凭证，登录请求交给 `usePhoneAuth`：
+
+```vue
+<script setup lang="ts">
+import { usePhoneAuth } from '@/composables/usePhoneAuth'
+
+const { visible, loading, open, handleSuccess, handleFail } = usePhoneAuth()
+</script>
+
+<template>
+  <wd-button type="primary" block @click="open">
+    微信一键登录
+  </wd-button>
+  <AuthPhone v-model="visible" :loading="loading" @success="handleSuccess" @fail="handleFail" />
+</template>
+```
+
+常用参数：
+
+| 参数 | 说明 | 默认值 |
+| --- | --- | --- |
+| `modelValue` | 是否显示，配合 `v-model` 使用 | 必填 |
+| `title` | 弹窗标题 | `获得以下权限` |
+| `desc` | 权限说明文案 | `授权您的手机号` |
+| `confirmText` | 授权按钮文案 | `授权` |
+| `loading` | 登录请求中，禁用按钮防重复触发 | `false` |
+| `closeOnOverlay` | 点击遮罩是否关闭 | `true` |
+| `allowDevFallback` | 非微信端是否走开发态兜底 | `true` |
+
+事件：
+
+| 事件 | 说明 |
+| --- | --- |
+| `success` | 拿到授权凭证后触发，参数为 `PhoneAuthPayload`（`code`，旧基础库为 `encryptedData` + `iv`） |
+| `fail` | 授权失败触发，参数为 `{ reason, message }`，`reason` 取 `deny` / `unsupported` / `invalid` / `error` |
+| `close` | 弹窗关闭后触发 |
+
+平台差异：`open-type="getPhoneNumber"` 仅微信小程序可用。H5 等端默认走开发态兜底（回一个假的 `code`）以便调试完整登录链路，置 `:allow-dev-fallback="false"` 可改为直接提示不支持。
+
+登录实现默认走 `@/mocks/auth` 的 `mockLoginByPhoneAuth`，对接真实后端时注入接口即可：
+
+```ts
+import { loginByPhoneAuthApi } from '@/apis/auth'
+
+const { handleSuccess } = usePhoneAuth({ login: loginByPhoneAuthApi })
+```
 
 ## ConfirmDialog
 

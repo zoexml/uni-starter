@@ -1,4 +1,4 @@
-import type { RefreshTokenResult } from '@/types/user'
+import type { MockAuthSession, PhoneAuthPayload, RefreshTokenResult } from '@/types/user'
 import { http } from '@/utils/http'
 
 export function refreshTokenApi(refreshToken: string) {
@@ -15,6 +15,17 @@ export function loginApi(phone: string, verifyCode: string) {
     phone,
     verifyCode,
   }, {
+    meta: { authRole: 'login' },
+  })
+  return method
+}
+
+/**
+ * 微信一键手机号授权登录。
+ * payload 为 AuthPhone 组件回调出来的凭证，透传给服务端换取 session。
+ */
+export function loginByPhoneAuthApi(payload: PhoneAuthPayload) {
+  const method = http.Post<MockAuthSession>('/auth/login/phone', payload, {
     meta: { authRole: 'login' },
   })
   return method

@@ -1,4 +1,4 @@
-import type { MockAuthSession, MockVerifyCodeResult } from '@/types/user'
+import type { MockAuthSession, MockVerifyCodeResult, PhoneAuthPayload } from '@/types/user'
 
 export type { MockAuthSession, MockUserInfo, MockVerifyCodeResult } from '@/types/user'
 
@@ -85,6 +85,34 @@ export async function mockLoginByWechat(): Promise<MockAuthSession> {
       roleName: '微信用户',
       orgName: 'Mock 体验组织',
       openid: 'mock-openid',
+    },
+  })
+}
+
+/**
+ * 微信一键手机号授权登录。
+ * 真实环境下 `code` 需由服务端调用 phonenumber.getPhoneNumber 换取手机号，
+ * 模板里只校验凭证是否存在，然后返回一个固定的 mock 会话。
+ */
+export async function mockLoginByPhoneAuth(payload: PhoneAuthPayload): Promise<MockAuthSession> {
+  if (!payload?.code && !payload?.encryptedData) {
+    throw new Error('未获取到手机号授权凭证')
+  }
+
+  return wait({
+    token: createToken('mock_phone_auth_token'),
+    refreshToken: createToken('mock_phone_auth_refresh'),
+    roles: ['member', 'phone_auth'],
+    permissions: [...basePermissions, 'wechat:phone'],
+    userInfo: {
+      id: 'mock-phone-auth-user',
+      name: '微信手机号用户',
+      nickname: '微信手机号用户',
+      phone: '13800000000',
+      avatar: '/static/images/logo.svg',
+      roleName: '普通用户',
+      orgName: 'Mock 体验组织',
+      openid: 'mock-phone-auth-openid',
     },
   })
 }

@@ -13,9 +13,19 @@
 </route>
 
 <script lang="ts" setup>
-import { useShare } from '@/composables/useShare'
+import { usePhoneAuth } from '@/composables/usePhoneAuth'
+import { useUserStore } from '@/stores'
 
 useShare({ title: '组件示例' })
+
+const userStore = useUserStore()
+const {
+  visible: authVisible,
+  loading: authLoading,
+  open: openAuth,
+  handleSuccess: handleAuthSuccess,
+  handleFail: handleAuthFail,
+} = usePhoneAuth({ autoRedirect: false })
 
 const confirmVisible = shallowRef(false)
 const actionSheetVisible = shallowRef(false)
@@ -128,6 +138,20 @@ const handleDateConfirm = (value: string) => {
         </view>
         <ExpandableText :content="longText" :threshold="48" />
       </view>
+
+      <view class="demo-section">
+        <view class="demo-section__title">
+          微信手机号授权
+        </view>
+        <view class="demo-section__value">
+          当前状态：{{ userStore.isLogin ? '已登录' : '未登录' }}（示例页不自动回跳）
+        </view>
+        <view class="demo-section__actions">
+          <wd-button type="primary" block @click="openAuth">
+            打开手机号授权
+          </wd-button>
+        </view>
+      </view>
     </view>
 
     <ConfirmDialog
@@ -145,6 +169,7 @@ const handleDateConfirm = (value: string) => {
       @confirm="handleOptionConfirm"
     />
     <DatePicker v-model="selectedDate" v-model:visible="datePickerVisible" title="选择日期" @confirm="handleDateConfirm" />
+    <AuthPhone v-model="authVisible" :loading="authLoading" @success="handleAuthSuccess" @fail="handleAuthFail" />
     <FloatingService label="客服" @click="showToast('点击浮动客服')" />
   </z-paging>
 </template>
