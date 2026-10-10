@@ -1,7 +1,7 @@
 {
   "name": "uni-starter",
   "type": "module",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "基于 Vue3 + Vite + TypeScript + UnoCSS + Pinia 的 uni-app 启动模板",
   "keywords": [

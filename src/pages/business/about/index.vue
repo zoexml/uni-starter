@@ -12,6 +12,7 @@
 </route>
 
 <script lang="ts" setup>
+import pkg from '../../../../package.json'
 import { useTrackPageView } from '@/composables/useTracker'
 
 useShare({ title: '关于我们' })
@@ -19,8 +20,8 @@ useTrackPageView()
 
 const router = useRouter()
 
-// 模板占位版本号，接入构建流程后改为读取 package.json 或构建期注入的常量
-const APP_VERSION = '0.1.0'
+// 版本号直接读 package.json，与 manifest 的 versionName / versionCode 保持同源
+const APP_VERSION = pkg.version
 
 const APP_NAME = 'uni-starter'
 
