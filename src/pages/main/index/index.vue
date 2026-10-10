@@ -10,7 +10,6 @@
 </route>
 
 <script setup lang="ts">
-import { buildWebViewPageRoute } from '@/composables/useWebView'
 import { useTrackPageView } from '@/composables/useTracker'
 import { useUserStore } from '@/stores'
 
@@ -27,38 +26,25 @@ const greetingText = computed(() => userStore.isLogin
 const loginEntryText = computed(() => userStore.isLogin ? '进入用户中心' : '登录 / 注册')
 
 /**
- * 图标统一用 Wot UI 内置的 wd-icon（uiLib），不依赖 UnoCSS 图标集。
- * 之前用的 i-carbon-* 依赖 @iconify-json/carbon，在小程序端解析失败导致图标不显示。
+ * 能力直达：每条对应一个真实示例页，点了就走，不做纯说明性罗列。
+ * 首页不再另设「快捷入口」四格 —— 那块内容与 hero 的 CTA、「示例中心」入口重复。
+ * 图标统一用 Wot UI 内置的 wd-icon，不依赖 UnoCSS 图标集（i-carbon-* 在小程序端解析失败）。
  */
-const quickActions = [
-  { icon: 'user', label: '登录 / 我的', action: goLoginEntry },
-  { icon: 'code-block', label: 'Demo 页', action: goDemoPage },
-  { icon: 'apps', label: '示例中心', action: goExamplePage },
-  { icon: 'desktop', label: 'WebView', action: goWebViewDemo },
+const capabilities = [
+  { icon: 'apps', title: '组件与交互', desc: 'Wot UI 组件、反馈、选择器与卡片', routeName: 'example-demo' },
+  { icon: 'settings', title: '埋点上报', desc: '批量冲刷 + 失败恢复，开箱即用', routeName: 'example-tracker' },
+  { icon: 'folder', title: '文件上传', desc: '直传凭证、进度与头像裁剪', routeName: 'example-upload' },
+  { icon: 'link', title: 'WebView 桥接', desc: '统一白名单与前后端桥接协议', routeName: 'example-bridge' },
+  { icon: 'loading', title: '请求 loading', desc: '引用计数、延迟阈值与兜底关闭', routeName: 'example-loading' },
 ] as const
 
-const features = [
-  { icon: 'lock', title: 'Mock 登录注册', desc: '内置认证流程，替换真实接口即可' },
-  { icon: 'user-group', title: '用户中心与权限', desc: 'roles / permissions 权限判断' },
-  { icon: 'dashboard', title: '埋点上报', desc: '批量冲刷 + 失败恢复，开箱即用' },
-  { icon: 'public', title: 'WebView 容器', desc: '统一白名单与桥接协议' },
-] as const
-
-function goDemoPage() {
-  router.push({ name: 'example-demo' })
+function goCapability(routeName: typeof capabilities[number]['routeName']) {
+  router.push({ name: routeName })
 }
 
-function goExamplePage() {
+/** 完整示例清单在示例中心，首页只保留这一个汇总入口 */
+function goExampleCenter() {
   router.push({ name: 'example' })
-}
-
-function goWebViewDemo() {
-  router.push(
-    buildWebViewPageRoute({
-      title: '百度移动版',
-      url: 'https://m.baidu.com',
-    }),
-  )
 }
 
 function goLoginEntry() {
@@ -87,53 +73,30 @@ function goLoginEntry() {
         </view>
         <view class="hero-cta" @click="goLoginEntry">
           {{ loginEntryText }}
-          <wd-icon name="arrow-right" custom-style="font-size: 28rpx; color: #fff;" />
+          <wd-icon name="right" custom-style="font-size: 32rpx;" />
         </view>
         <view class="hero-decoration hero-decoration--a" />
         <view class="hero-decoration hero-decoration--b" />
       </view>
 
-      <!-- 快捷入口 -->
-      <view class="section-card">
-        <view class="section-head">
-          <view class="section-title">
-            快捷入口
-          </view>
-        </view>
-        <view class="quick-grid">
-          <view
-            v-for="item in quickActions"
-            :key="item.label"
-            class="quick-item"
-            hover-class="quick-item--active"
-            @click="item.action()"
-          >
-            <view class="quick-icon-wrap">
-              <wd-icon :name="item.icon" custom-style="font-size: 36rpx;" />
-            </view>
-            <view class="quick-label">
-              {{ item.label }}
-            </view>
-          </view>
-        </view>
-      </view>
-
-      <!-- 内置能力 -->
+      <!-- 能力直达：每条都能点，直接进对应示例页 -->
       <view class="section-card">
         <view class="section-head">
           <view class="section-title">
             内置能力
           </view>
-          <view class="section-more" @click="goExamplePage">
-            查看示例
-            <wd-icon name="caret-right" custom-style="font-size: 24rpx;" />
+          <view class="section-more" @click="goExampleCenter">
+            示例中心
+            <wd-icon name="right" custom-style="font-size: 28rpx; color: var(--app-color-text-tertiary);" />
           </view>
         </view>
         <view class="feature-list">
           <view
-            v-for="item in features"
+            v-for="item in capabilities"
             :key="item.title"
             class="feature-item"
+            hover-class="feature-item--active"
+            @click="goCapability(item.routeName)"
           >
             <view class="feature-icon-wrap">
               <wd-icon :name="item.icon" custom-style="font-size: 34rpx;" />
@@ -146,6 +109,7 @@ function goLoginEntry() {
                 {{ item.desc }}
               </view>
             </view>
+            <wd-icon name="right" custom-style="font-size: 32rpx; color: var(--app-color-text-tertiary);" />
           </view>
         </view>
       </view>
@@ -259,43 +223,6 @@ function goLoginEntry() {
     }
   }
 
-  .quick-grid {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20rpx;
-
-    .quick-item {
-      display: flex;
-      flex-direction: column;
-      gap: 14rpx;
-      align-items: center;
-      padding: 22rpx 0;
-      cursor: pointer;
-      border-radius: 16rpx;
-      transition: background-color 0.2s ease;
-
-      &--active {
-        background: var(--app-primary-soft);
-      }
-
-      .quick-icon-wrap {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 84rpx;
-        height: 84rpx;
-        color: var(--wot-primary-6);
-        background: var(--app-primary-soft);
-        border-radius: 50%;
-      }
-
-      .quick-label {
-        font-size: 23rpx;
-        color: var(--app-color-text-regular);
-      }
-    }
-  }
-
   .feature-list {
     display: flex;
     flex-direction: column;
@@ -306,8 +233,14 @@ function goLoginEntry() {
       gap: 20rpx;
       align-items: center;
       padding: 20rpx;
+      cursor: pointer;
       background: var(--app-color-surface-muted);
       border-radius: 16rpx;
+      transition: background-color 0.2s ease;
+
+      &--active {
+        background: var(--app-primary-soft);
+      }
 
       .feature-icon-wrap {
         display: flex;

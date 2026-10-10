@@ -7,6 +7,19 @@ import pkg from './package.json'
 const env = loadEnv(process.env.NODE_ENV!, path.resolve(process.cwd()))
 const { VITE_APP_TITLE, VITE_UNI_APPID, VITE_WX_APPID, VITE_APP_PUBLIC_BASE, VITE_FALLBACK_LOCALE } = env
 
+/**
+ * 微信小程序隐私协议检查开关（对应 app.json 的 `__usePrivacyCheck__`）。
+ *
+ * 关闭时微信不在运行时拦截隐私接口；开启后必须先到
+ * 「公众平台 → 设置 → 服务内容声明 → 用户隐私保护指引」声明对应收集类型，
+ * 否则 chooseImage / getLocation 等接口会直接 fail（api scope is not declared in the privacy agreement）。
+ * 需要开启时把这里改成 true，并确认后台已声明。
+ *
+ * 当前 @uni-helper/vite-plugin-uni-manifest 的类型未声明该字段，
+ * 单独声明后用展开的方式合并，避免对象字面量的多余属性检查报错。
+ */
+const mpWeixinPrivacyCheck = { __usePrivacyCheck__: false }
+
 export default defineManifestConfig({
   'name': VITE_APP_TITLE,
   'appid': VITE_UNI_APPID,
@@ -68,6 +81,8 @@ export default defineManifestConfig({
     darkmode: true,
     themeLocation: 'theme.json',
     optimization: { subPackages: true },
+    // 开启后隐私接口才会走 wx.onNeedPrivacyAuthorization 授权流程，详见 composables/usePrivacy.ts
+    ...mpWeixinPrivacyCheck,
   },
   'mp-alipay': {
     usingComponents: true,

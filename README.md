@@ -50,7 +50,7 @@ pnpm build
 
 - 基于 alova 的请求策略
 - worma 自动生成（基于 OpenAPI 规范）
-- 全局加载状态管理
+- 全局 loading：请求层按 `meta.loading` 开关接管，引用计数保证并发只显示一次、延迟阈值保证快请求不闪烁（见「全局 loading」）
 - 使用 alova 内置请求共享，避免重复请求
 - Token 自动注入，支持可选双 token 刷新
 - 需要重试的请求优先使用 alova 官方 `useRetriableRequest`
@@ -91,6 +91,16 @@ pnpm build
 - 分包预加载
 - 支持小程序和 H5 来自 [uni-ku/bundle-optimizer](https://github.com/uni-ku/bundle-optimizer)
 
+### 🔐 小程序隐私协议
+
+- 按微信官方《小程序隐私协议开发指南》实现，开关在 `manifest.config.ts` 的 `mp-weixin.__usePrivacyCheck__`（**默认关闭**：关闭时微信不做运行时拦截；开启前必须先在后台声明收集类型，见下方 ⚠️）
+- `usePrivacy` 统一处理三条链路：隐私接口被动触发授权弹窗、敏感操作前主动预检、授权状态查询
+- `PrivacyPopup` 全局挂载在 `App.ku.vue`，「同意」按钮使用 `open-type="agreePrivacyAuthorization"`，满足基础库的点击校验
+- 开启检查后，页面可在敏感操作前 `await requirePrivacyAuthorize()` 做预检（如手机号授权、选图），未同意时先弹隐私弹窗；关闭检查时该预检会直接返回 true
+- 非微信端（H5 / App / 其他小程序）全部降级为「视为已授权」，打开隐私政策时回退到本地协议页
+- ⚠️ 隐私接口（`chooseImage` / `chooseMedia` / `getLocation` 等）必须先在「公众平台 → 设置 → 服务内容声明 → 用户隐私保护指引」中声明对应收集类型，否则小程序端会直接报 `fail api scope is not declared in the privacy agreement`；H5 没有这一层，同一个接口两端表现不同
+- 示例页：`src/pages/business/example/privacy/index.vue`
+
 ### 🌐 WebView 容器
 
 - WebView 页面位于 `src/pages/business/webview/index.vue`。
@@ -122,9 +132,14 @@ pnpm build
 
 ### 工具函数
 
-- 缓存管理(默认7天)
+- 全局加载状态：`src/utils/loading.ts`（纯逻辑）+ `useLoading`（响应式封装）
 - 全局模板变量(支持ts类型定义)
-- 加密解密，md5，base64，aes
+
+接口缓存与加密解密**不预置实现**，按需引入即可：
+
+- 接口缓存优先用 alova 的 `cacheFor`（L1 内存 / L2 持久化，`l1Cache`、`l2Cache` 均可注入自定义适配器），不要另写一套 storage 缓存
+- base64 用 `uni.arrayBufferToBase64` / `uni.base64ToArrayBuffer`；
+  md5、aes 只在与后端约定的签名 / 加密传输场景使用，按需安装依赖（如 `spark-md5`、`crypto-js`），模板不预置以免每个项目都背这份体积
 
 ### HTTP 请求
 
@@ -171,6 +186,44 @@ const { data, loading, error } = useRetriableRequest(userRequest, {
 ```
 
 不要对非幂等请求默认开启重试，例如创建订单、支付、提交表单等操作应由业务显式确认是否可以重试。
+
+### 全局 loading
+
+请求层按 `meta.loading` 接管全局 loading，页面不需要手动 `uni.showLoading` / `uni.hideLoading`：
+
+```ts
+// 提交类请求：自定义文案
+http.Post('/order', payload, { meta: { loading: '提交中...' } })
+
+// 对象写法可配置阈值与遮罩
+http.Get('/report', { meta: { loading: { title: '生成中...', delay: 600, mask: false } } })
+```
+
+`meta.loading` 支持三种写法：`true`（默认文案）、字符串（自定义文案）、对象（`title` / `delay` / `mask`）。
+缺省不显示 —— 列表、首屏这类已有骨架屏或组件内 loading 的场景不要开启。
+
+实现拆成两层，与埋点一致：
+
+- `src/utils/loading.ts` — 纯工具层：引用计数、延迟显示、状态订阅，不依赖 Vue
+- `src/composables/useLoading.ts` — 响应式封装：`pendingCount` / `visible` / `title` 只读状态 + `withLoading`
+
+行为约定：
+
+- **引用计数**：并发请求只显示一次，最后一个请求结束才关闭
+- **延迟显示**：默认 400ms 内返回的请求不显示，避免页面切换、缓存命中时闪烁
+- **先释放再提示**：请求结束先关闭 loading 再 `uni.showToast`，避免 toast 被 `hideLoading` 一并关掉
+- **异常兜底**：401 跳登录页、App 退到后台时会 `forceCloseLoading()` 清空计数
+- 上传、下载请求同样支持 `meta.loading`；刷新 token 请求不走全局 loading
+
+非请求类异步任务用 `withLoading` 包裹，同样参与引用计数：
+
+```ts
+const { withLoading } = useLoading()
+
+await withLoading(() => exportReport(), { title: '导出中...' })
+```
+
+示例页：`src/pages/business/example/loading/index.vue`
 
 ### 全局错误处理与 Sentry
 

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { PhoneAuthFailPayload, PhoneAuthPayload } from '@/types/user'
+import type { PhoneAuthEventDetail } from '@/utils/phone-auth'
+import { parsePhoneAuthEvent } from '@/utils/phone-auth'
 
 interface Props {
   /** 非微信端是否允许走开发态兜底（便于在 H5 调试完整登录链路） */
@@ -43,28 +45,16 @@ const handleOverlayClick = () => {
   closePopup()
 }
 
-/** 微信侧授权回调：ok 时取凭证，其余（含用户拒绝）统一按取消处理 */
-const handleGetPhoneNumber = (event: any) => {
-  const detail = event?.detail ?? {}
-  const errMsg: string = detail.errMsg ?? ''
+/** 微信侧授权回调：解析逻辑与登录页共用（@/utils/phone-auth） */
+const handleGetPhoneNumber = (event: unknown) => {
+  const result = parsePhoneAuthEvent((event as { detail?: PhoneAuthEventDetail })?.detail)
 
-  if (!errMsg.includes(':ok')) {
-    fail('deny', '您已取消手机号授权')
+  if (!result.ok) {
+    fail(result.fail.reason, result.fail.message)
     return
   }
 
-  // 基础库 2.21.2+ 返回 code（推荐，服务端用 code 换手机号）；
-  // 更早版本只给 encryptedData + iv，需服务端配合 session_key 解密。
-  const payload: PhoneAuthPayload = detail.code
-    ? { code: detail.code }
-    : { encryptedData: detail.encryptedData, iv: detail.iv }
-
-  if (!payload.code && !payload.encryptedData) {
-    fail('invalid', '未获取到手机号授权凭证')
-    return
-  }
-
-  emit('success', payload)
+  emit('success', result.payload)
 }
 
 /** 非微信端没有 open-type="getPhoneNumber"，由 allowDevFallback 决定提示还是兜底 */

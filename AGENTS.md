@@ -88,6 +88,9 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 - Token 注入与刷新已通过 alova 的 `createServerTokenAuthentication` 实现：`assignToken` 注入 token，收到 401 时 `refreshTokenOnSuccess` 触发 `handleExpiredToken`，刷新失败才跳登录页
 - 认证模式由 `VITE_AUTH_MODE` 决定（`single` / `double`），接口元信息用 `meta.authRole` 区分是否需要登录
 - 所有页面 API 调用应使用 `http.get/post/put/delete` 或 alova hooks（`useRequest`、`usePagination` 等）
+- 请求失败提示由 `meta.toast` 控制，全局 loading 由 `meta.loading` 控制（`true` / 字符串 / `{ title, delay, mask }`），缺省都不触发；结束请求时先释放 loading 再 toast
+- mock 模式下响应由 `src/mocks/adapter.ts` 统一补 uniapp 响应结构与 `{ code, message, data }` 业务信封，handler 只返回业务数据；handler 直接返回 `{ code, message }` 时按自带信封处理（可用于演示错误码）
+- 写 mock handler 时注意取参：`@alova/mock` 把查询串放在 `query`，路径参数才在 `params`，用 adapter 里的 `readParam()` 取值，不要直接读 `params`
 
 ### 主题系统
 
@@ -104,6 +107,30 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 - 所有外部 WebView 统一通过 `src/pages/business/webview/index.vue` 公共页面打开，不为单个链接新增页面。
 - 页面跳转优先使用 `buildWebViewPageRoute({ title, url })` 配合 `uni-mini-router` 的 name 模式；无 router 上下文时可用 `openWebView({ title, url })`。当前页面路径常量为 `/pages/business/webview/index`。
 - 访问控制通过 `DEFAULT_WEBVIEW_ACCESS_RULES` 配置；默认公共规则允许 HTTPS 链接，特定业务域名规则应放在通配规则之前。
+
+### 小程序隐私授权
+
+- 入口：`src/composables/usePrivacy.ts` — `usePrivacy()` 提供 `visible` / `needAuthorization` / `privacyContractName` / `lastReferrer` 状态与 `requirePrivacyAuthorize()` / `openPrivacyContract()` / `refreshPrivacyState()` / `showDialog()` / `agree()` / `disagree()`
+- 弹窗：`src/components/PrivacyPopup/index.vue`，全局挂载在 `App.ku.vue`；「同意」按钮必须是 `<button open-type="agreePrivacyAuthorization">`，基础库会校验该按钮是否被真实点击过
+- 开关：`manifest.config.ts` 的 `mp-weixin.__usePrivacyCheck__`，**当前为 `false`（关闭）**：关闭时微信不在运行时拦截隐私接口；改为 `true` 前必须先在后台声明收集类型，否则 `chooseImage` 等会直接 fail（当前插件类型未声明该字段，用 `mpWeixinPrivacyCheck` 展开合并）
+- 注意：改完 `manifest.config.ts` 后第一次构建可能不生效（`src/manifest.json` 的写入晚于编译器读取），重新运行一次 `pnpm dev:mp-weixin` / `pnpm build:mp-weixin` 即可，可通过 `dist/build/mp-weixin/app.json` 是否含该字段确认
+- `wx.onNeedPrivacyAuthorization` 是覆盖式注册，只能注册一次，因此监听统一在 `usePrivacy` 内做模块级单例注册
+- 敏感操作前置预检：需要时在动作前 `await requirePrivacyAuthorize()`（会主动拉起隐私弹窗，所以只在开关打开时才加，否则会给不需要授权的场景强加一次弹窗）
+- 入口：登录页勾选项旁的《用户协议》《隐私政策》都跳本地协议详情页（`agreement-detail`，小程序内打开）；未勾选时「获取验证码」「手机号登录」「手机号一键登录」都会被拦下
+- `openPrivacyContract()` 打开的《隐私保护指引》由微信渲染、会跳出小程序页面栈（表现像外部浏览器），只用在隐私授权弹窗里做「查看指引」入口，不要拿它当业务侧的隐私政策页
+- 非微信端全部降级为「视为已授权」，`openPrivacyContract()` 回退到本地协议页 `/pages/business/agreement/detail?type=privacy`
+- 补充类型：`miniprogram-api-typings` 把 `onNeedPrivacyAuthorization` 的回调声明成了单参数，`usePrivacy` 内用 `WxPrivacyApi` 补了一份正确签名
+- **隐私接口必须先在后台声明**：开了 `__usePrivacyCheck__` 后，未在「公众平台 → 设置 → 服务内容声明 → 用户隐私保护指引」中声明对应收集类型的接口会被直接拦下，报 `xxx:fail api scope is not declared in the privacy agreement`。`chooseImage` / `chooseMedia` 要声明相册（拍照还要摄像头），`getLocation` 要声明位置。H5 没有这一层，所以同一个接口两端表现不同，排查时别只看 H5
+- 能力判断用「`wx` 上有没有这个接口」做特性检测，不要判断 `uniPlatform === 'mp-weixin'`：平台字符串一旦不符合预期，监听注册不上、弹窗不出现，而接口又被拦，表现就是「点了没反应」
+
+### 登录方式
+
+- 登录页当前只用**手机号验证码登录**（工具、真机都可用，链路完整）
+- **手机号一键登录**（原生 `button open-type="getPhoneNumber"`）由 `src/common/constants.ts` 的 `ENABLE_PHONE_AUTH` 控制，**默认关闭**：该组件要求小程序为非个人主体且已微信认证，否则点击只会拿到「没有权限」。资质到位后改成 `true`，登录页会自动渲染授权按钮（`#ifdef MP-WEIXIN` 内，非微信端不渲染）
+- 一键登录的 `event.detail` 解析抽在 `src/utils/phone-auth.ts`（`parsePhoneAuthEvent`），与 `AuthPhone` 组件共用；解析要区分「用户取消」（静默）与「其它失败」（透出原始 errMsg），否则无权限这类问题会被当成取消吞掉，表现为「点了没反应」
+- 登录动作复用 `usePhoneAuth`（换 session、写 store、埋点、回跳），默认走 mock，接后端时传 `usePhoneAuth({ login: loginByPhoneAuthApi })`
+- 不带「微信授权登录」：`wx.getUserInfo` / `wx.getUserProfile` 已不返回真实昵称头像，微信侧能拿到的只有 openid（后端 code2Session 换）与用户主动授权的手机号；需要昵称头像时用 `chooseAvatar` + `input type="nickname"` 让用户自己填
+- 非微信端无 `getPhoneNumber`，一键登录按钮通过 `#ifdef MP-WEIXIN` 只在小程序端渲染
 
 ### 分享/Share
 
@@ -135,7 +162,15 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 - 事件名约束：内置事件见 `TRACKER_EVENT_NAMES`（`page_view`/`user_login`/`user_logout`），`track` 同时接受任意自定义名
 - userId 惰性读取 `useUserStore()`，登录/登出无需手动调用 `setUserId`
 
-示例页面统一放在 `src/pages/business/example/` 目录（示例中心入口页 + `example/tracker` 埋点示例页 + `example/demo` 组件示例页，由 `example/index.vue` 汇总入口）。
+### 全局 loading
+
+- 纯工具层：`src/utils/loading.ts` — 引用计数、延迟显示（默认 400ms）、状态订阅，不依赖 Vue
+- 响应式封装：`src/composables/useLoading.ts` — 只读 `pendingCount` / `visible` / `title` + `withLoading`
+- 请求层接入：`src/utils/http.ts` 的 `meta.loading`（`true` / 字符串 / `{ title, delay, mask }`），缺省不触发
+- 兜底：401 跳登录、App 退到后台（`App.vue` 的 `onHide`）会调用 `forceCloseLoading()` 清空计数
+- 状态只有一份（在 utils 层），`useLoading` 通过 `subscribeLoadingState` 订阅，不要另起一份计数
+
+示例页面统一放在 `src/pages/business/example/` 目录（示例中心入口页 + `example/demo` 组件示例、`example/tracker` 埋点、`example/upload` 上传、`example/avatar` 头像裁剪、`example/form` 复杂表单、`example/bridge` 桥接、`example/loading` 请求 loading、`example/privacy` 隐私协议，由 `example/index.vue` 汇总入口）。
 
 ## 内置组件与 composable
 
@@ -148,6 +183,10 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 - `useShare` — 统一分享卡片（见「分享/Share」）
 - `useGlobalErrorHandling` — 全局错误处理
 - `useTracker` / `useTrackPageView` — 埋点上报（见「埋点/Analytics」）
+- `usePrivacy` — 微信小程序隐私授权（见「小程序隐私授权」）
+- `useLoading` — 全局 loading 状态与手动控制（见「全局 loading」）
+- `useUpload` — 文件直传封装（取凭证 → 上传 → 归一化结果）
+- `usePhoneAuth` / `useLoginRedirect` — 手机号授权登录与登录后回跳
 
 ## 编码约定
 

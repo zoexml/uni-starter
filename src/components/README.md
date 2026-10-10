@@ -32,6 +32,7 @@
 | `Loading` | 居中加载动画 | 直接使用 |
 | `Navbar` | Wot UI 导航栏封装 | `title`、`leftArrow` |
 | `OptionPicker` | 单列选项选择器 | `v-model`、`v-model:visible`、`options` |
+| `PrivacyPopup` | 微信隐私协议授权弹窗（全局挂载） | 无需传参，由 `usePrivacy` 驱动 |
 | `TouchDialog` | 可拖拽底部弹窗 | `visible`、`title`、`close` |
 
 ## ActionSheet
@@ -204,6 +205,49 @@ const { handleSuccess } = usePhoneAuth({ login: loginByPhoneAuthApi })
 | --- | --- |
 | `click` | 未发生拖动时点击按钮触发 |
 | `change` | 拖动结束后返回位置 |
+
+## PrivacyPopup
+
+微信小程序隐私协议授权弹窗，按官方《小程序隐私协议开发指南》实现。
+
+不需要在页面里手动引入或传参：组件挂在 `App.ku.vue` 根节点上，弹窗显示与否由
+`usePrivacy` 与 `wx.onNeedPrivacyAuthorization` 驱动，业务侧只在敏感操作前调用
+`await requirePrivacyAuthorize()` 即可。
+
+```vue
+<!-- App.ku.vue，已内置 -->
+<PrivacyPopup />
+```
+
+```ts
+// 业务侧：不在微信端或用户已同意时直接返回 true
+const { requirePrivacyAuthorize, openPrivacyContract } = usePrivacy()
+
+async function submitOrder() {
+  const authorized = await requirePrivacyAuthorize()
+  if (!authorized) {
+    throw new Error('用户未同意隐私保护指引')
+  }
+
+  // 继续后续业务
+}
+```
+
+常用参数：
+
+| 参数 | 说明 | 默认值 |
+| --- | --- | --- |
+| `title` | 弹窗标题 | `隐私保护指引` |
+| `desc` | 拿不到触发来源（referrer）时的兜底说明 | `为了向您提供相应服务，需要您阅读并同意隐私保护指引。` |
+
+行为说明：
+
+- 「同意」按钮在微信端是 `open-type="agreePrivacyAuthorization"` 的原生按钮，基础库会校验它是否被真实点击过
+- 点击遮罩等同「拒绝」，避免隐私接口永久 pending
+- 触发来源会自动映射文案（`getPhoneNumber` / `chooseImage` / `getLocation`），其余场景用 `desc`
+- 非微信端不参与授权流程，可用 `showDialog()` 预览 UI
+
+示例页：`src/pages/business/example/privacy/index.vue`
 
 ## TouchDialog
 

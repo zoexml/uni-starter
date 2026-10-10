@@ -70,25 +70,6 @@ export async function mockLoginByPhone(phone: string, verifyCode: string): Promi
   return wait(createPhoneUser(phone))
 }
 
-export async function mockLoginByWechat(): Promise<MockAuthSession> {
-  return wait({
-    token: createToken('mock_wechat_token'),
-    refreshToken: createToken('mock_wechat_refresh'),
-    roles: ['member', 'wechat_user'],
-    permissions: [...basePermissions, 'wechat:profile'],
-    userInfo: {
-      id: 'mock-wechat-user',
-      name: '微信用户',
-      nickname: '微信用户',
-      phone: '13800000000',
-      avatar: '/static/images/logo.svg',
-      roleName: '微信用户',
-      orgName: 'Mock 体验组织',
-      openid: 'mock-openid',
-    },
-  })
-}
-
 /**
  * 微信一键手机号授权登录。
  * 真实环境下 `code` 需由服务端调用 phonenumber.getPhoneNumber 换取手机号，

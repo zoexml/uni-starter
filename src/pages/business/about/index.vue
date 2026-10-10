@@ -18,8 +18,6 @@ import { useTrackPageView } from '@/composables/useTracker'
 useShare({ title: '关于我们' })
 useTrackPageView()
 
-const router = useRouter()
-
 // 版本号直接读 package.json，与 manifest 的 versionName / versionCode 保持同源
 const APP_VERSION = pkg.version
 
@@ -29,15 +27,6 @@ const APP_INTRO = [
   'uni-app 通用启动模板，内置请求层、状态管理、主题系统、埋点上报与 WebView 容器，帮助新项目跳过重复的基建搭建。',
   '组件、组合式逻辑与业务分包按职责分层，页面只负责编排，便于长期维护与多端一致性。',
 ]
-
-const links = [
-  { key: 'agreement', title: '用户协议', routeName: 'agreement' },
-  { key: 'privacy', title: '隐私政策', routeName: 'agreement' },
-]
-
-const goLink = (routeName: string) => {
-  router.push({ name: routeName })
-}
 </script>
 
 <template>
@@ -62,16 +51,6 @@ const goLink = (routeName: string) => {
           {{ paragraph }}
         </text>
       </view>
-
-      <wd-cell-group border custom-class="about-page__links">
-        <wd-cell
-          v-for="item in links"
-          :key="item.key"
-          :title="item.title"
-          is-link
-          @click="goLink(item.routeName)"
-        />
-      </wd-cell-group>
 
       <view class="about-page__footer">
         <text class="about-page__copyright">
@@ -131,13 +110,6 @@ const goLink = (routeName: string) => {
     & + & {
       margin-top: 20rpx;
     }
-  }
-
-  &__links {
-    margin-top: 24rpx;
-    overflow: hidden;
-    border: 1rpx solid var(--app-color-border);
-    border-radius: 16rpx;
   }
 
   &__footer {

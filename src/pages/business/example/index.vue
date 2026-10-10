@@ -70,27 +70,34 @@ const exampleItems: ExampleItem[] = [
     icon: 'link',
     routeName: 'example-bridge',
   },
+  {
+    key: 'loading',
+    title: '请求 loading 示例',
+    desc: 'meta.loading 全局 loading：引用计数、延迟阈值与兜底关闭',
+    icon: 'loading',
+    routeName: 'example-loading',
+  },
+  {
+    key: 'privacy',
+    title: '隐私协议示例',
+    desc: '微信隐私授权官方流程：授权状态、主动预检与隐私政策入口',
+    icon: 'lock',
+    routeName: 'example-privacy',
+  },
 ]
 
 const businessItems: ExampleItem[] = [
   {
     key: 'about',
     title: '关于我们',
-    desc: '应用信息、版本号与协议入口',
+    desc: '应用信息与版本号',
     icon: 'info',
     routeName: 'about',
   },
   {
-    key: 'agreement',
-    title: '协议与条款',
-    desc: '用户协议与隐私政策列表，点击进入富文本详情',
-    icon: 'file',
-    routeName: 'agreement',
-  },
-  {
     key: 'settings',
     title: '设置',
-    desc: '主题色、清除缓存、退出登录（需登录）',
+    desc: '主题色、清除缓存、协议与关于（需登录）',
     icon: 'settings',
     routeName: 'settings',
   },
@@ -152,7 +159,7 @@ const goExample = (item: ExampleItem) => {
             </view>
           </view>
           <view class="example-item__arrow">
-            <wd-icon name="arrow-right" custom-style="font-size: 28rpx" />
+            <wd-icon name="right" custom-style="font-size: 32rpx; color: var(--app-color-text-tertiary);" />
           </view>
         </view>
       </view>
@@ -179,7 +186,7 @@ const goExample = (item: ExampleItem) => {
             </view>
           </view>
           <view class="example-item__arrow">
-            <wd-icon name="arrow-right" custom-style="font-size: 28rpx" />
+            <wd-icon name="right" custom-style="font-size: 32rpx; color: var(--app-color-text-tertiary);" />
           </view>
         </view>
       </view>

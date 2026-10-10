@@ -22,5 +22,6 @@ export default {
     <wd-notify />
     <wd-toast />
     <wd-dialog />
+    <PrivacyPopup />
   </wd-config-provider>
 </template>

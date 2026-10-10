@@ -16,6 +16,7 @@ import type { ChatMessage, ChatSession } from '@/mocks/service'
 import type { UploadResult } from '@/types/upload'
 import { CHAT_SESSIONS, CHAT_WELCOME, mockSendMessage } from '@/mocks/service'
 import { useTrackPageView } from '@/composables/useTracker'
+import { getErrorMessage } from '@/utils'
 import { useUpload } from '@/composables/useUpload'
 
 useShare({ title: '客服会话' })
@@ -110,8 +111,9 @@ const handleSendImage = async () => {
 
     await uploadFile(path)
   } catch (error) {
-    const message = error instanceof Error ? error.message : ''
-    if (message && !message.includes('cancel')) {
+    // 同头像页：uni API 失败抛的是 { errMsg }，用 getErrorMessage 取文案，避免静默
+    const message = getErrorMessage(error, '发送图片失败')
+    if (!message.includes('cancel')) {
       uni.showToast({ title: message, icon: 'none' })
     }
   }
@@ -214,7 +216,7 @@ const handleQuickReply = (text: string) => {
         </view>
 
         <view class="service-input">
-          <wd-button custom-class="service-input__icon" :loading="imageUploading" @click="handleSendImage">
+          <wd-button :loading="imageUploading" @click="handleSendImage">
             <wd-icon v-if="!imageUploading" name="picture" custom-style="font-size: 32rpx" />
           </wd-button>
           <wd-input
@@ -228,7 +230,6 @@ const handleQuickReply = (text: string) => {
             type="primary"
             :disabled="!draft.trim()"
             :loading="sending"
-            custom-class="service-input__send"
             @click="handleSend"
           >
             发送

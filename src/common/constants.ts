@@ -38,6 +38,16 @@ export const themeColorOptions: ThemeColorOption[] = [
 ]
 
 export const DEFAULT_PRIMARY_COLOR = themeColorOptions[0].value
+
+/**
+ * 是否启用「手机号一键登录」（微信 getPhoneNumber 手机号快速验证组件）。
+ *
+ * 默认关闭：该组件要求小程序为**非个人主体且已微信认证**，否则用户点击会拿到
+ * 「没有权限」，页面上等于摆了一个点了没反应的按钮。资质到位后改成 `true`，
+ * 登录页即会渲染原生授权按钮（`#ifdef MP-WEIXIN` 内）。
+ * 未启用时，登录页只保留手机号验证码登录，链路完整可用。
+ */
+export const ENABLE_PHONE_AUTH = false
 export const DEFAULT_THEME_MODE: ThemeMode = 'light'
 export const DEFAULT_WOT_THEME_VARS: ConfigProviderThemeVars = {
   primary6: DEFAULT_PRIMARY_COLOR,

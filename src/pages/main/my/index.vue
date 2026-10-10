@@ -12,9 +12,7 @@
 </route>
 
 <script lang="ts" setup>
-import { useTheme } from '@/composables/useTheme'
 import { useTracker, useTrackPageView } from '@/composables/useTracker'
-import { buildWebViewPageRoute } from '@/composables/useWebView'
 import { mockLogout } from '@/mocks/auth'
 import { useUserStore } from '@/stores'
 
@@ -22,171 +20,94 @@ const { track } = useTracker()
 useShare({ title: '我的' })
 useTrackPageView()
 
-interface UserMenuItem {
+interface UserMenuEntry {
   key: string
   title: string
   desc: string
   icon: string
-  permission: string
+  routeName: string
+  /** 需要的权限码，缺省表示所有登录用户可见 */
+  permission?: string
+}
+
+interface UserMenuGroup {
+  key: string
+  title: string
+  items: UserMenuEntry[]
 }
 
 const userStore = useUserStore()
 const router = useRouter()
 
 const logoutLoading = shallowRef(false)
-const cacheSize = shallowRef('0KB')
-const { currentPrimaryColor, currentPrimaryColorLabel, setPrimaryColor, themeColorOptions } = useTheme()
 
 const userInfo = computed(() => userStore.userInfo)
 const isLogin = computed(() => userStore.isLogin)
-const roleText = computed(() => userStore.roles.length ? userStore.roles.join(' / ') : '未登录')
 const maskedPhone = computed(() => {
   const phone = userInfo.value?.phone
   if (!phone) return '未绑定手机号'
   return phone.replace(/^(\d{3})\d{4}(\d{4})$/, '$1****$2')
 })
 
-const menuItems = computed<UserMenuItem[]>(() => [
+/**
+ * 本页只做用户中心：内容入口 + 一个设置入口。
+ * 主题色、清缓存、协议、关于都收敛到设置页，避免同一功能两处维护、行为还不一致。
+ * 演示类入口（WebView、埋点、上传等）统一放示例中心，不混在用户菜单里。
+ */
+const menuGroups: UserMenuGroup[] = [
   {
-    key: 'settings',
-    title: '设置',
-    desc: '账号资料、通知偏好',
-    icon: 'settings',
-    permission: 'settings:view',
+    key: 'content',
+    title: '我的内容',
+    items: [
+      {
+        key: 'favorites',
+        title: '我的收藏',
+        desc: '收藏的资讯与内容',
+        icon: 'star',
+        routeName: 'favorites',
+        permission: 'profile:view',
+      },
+      {
+        key: 'service',
+        title: '客服会话',
+        desc: '在线咨询与消息记录',
+        icon: 'message',
+        routeName: 'service',
+      },
+    ],
   },
   {
-    key: 'theme',
-    title: '主题色',
-    desc: `当前 ${currentPrimaryColorLabel.value}`,
-    icon: 'brush',
-    permission: 'settings:view',
+    key: 'common',
+    title: '通用',
+    items: [
+      {
+        key: 'settings',
+        title: '设置',
+        desc: '主题色、清除缓存、协议与关于',
+        icon: 'settings',
+        routeName: 'settings',
+        permission: 'settings:view',
+      },
+    ],
   },
-  {
-    key: 'agreement',
-    title: '用户协议',
-    desc: '查看服务条款',
-    icon: 'edit',
-    permission: 'agreement:view',
-  },
-  {
-    key: 'privacy',
-    title: '隐私政策',
-    desc: '查看隐私说明',
-    icon: 'lock',
-    permission: 'agreement:view',
-  },
-  {
-    key: 'about',
-    title: '关于我们',
-    desc: '模板版本与项目介绍',
-    icon: 'info-circle',
-    permission: 'about:view',
-  },
-  {
-    key: 'webview',
-    title: 'WebView 示例',
-    desc: '打开外部网页容器',
-    icon: 'link',
-    permission: 'webview:view',
-  },
-  {
-    key: 'cache',
-    title: '清缓存',
-    desc: `当前约 ${cacheSize.value}`,
-    icon: 'delete',
-    permission: 'cache:clear',
-  },
-])
+]
 
-const visibleMenuItems = computed(() => menuItems.value.filter(item => userStore.hasPermission(item.permission)))
+/** 按权限过滤条目，整组都不可见时不渲染该分组 */
+const visibleMenuGroups = computed(() => userStore.isLogin
+  ? menuGroups
+      .map(group => ({
+        ...group,
+        items: group.items.filter(item => !item.permission || userStore.hasPermission(item.permission)),
+      }))
+      .filter(group => group.items.length > 0)
+  : [])
 
 function goLogin() {
   router.push({ name: 'login' })
 }
 
-function refreshCacheSize() {
-  try {
-    const storageInfo = uni.getStorageInfoSync()
-    cacheSize.value = `${storageInfo.currentSize}KB`
-  } catch {
-    cacheSize.value = '0KB'
-  }
-}
-
-function showTemplateModal(title: string, content: string) {
-  uni.showModal({
-    title,
-    content,
-    showCancel: false,
-  })
-}
-
-const handleThemeSelect = () => {
-  uni.showActionSheet({
-    itemList: themeColorOptions.map(item => item.label),
-    success: ({ tapIndex }) => {
-      const selectedTheme = themeColorOptions[tapIndex]
-      if (!selectedTheme) return
-
-      setPrimaryColor(selectedTheme.value)
-      uni.showToast({
-        title: `已切换为${selectedTheme.label}`,
-        icon: 'none',
-      })
-    },
-  })
-}
-
-function handleMenuClick(item: UserMenuItem) {
-  if (item.key === 'theme') {
-    handleThemeSelect()
-    return
-  }
-
-  if (item.key === 'webview') {
-    router.push(
-      buildWebViewPageRoute({
-        title: '百度移动版',
-        url: 'https://m.baidu.com',
-      }),
-    )
-    return
-  }
-
-  if (item.key === 'cache') {
-    handleClearCache()
-    return
-  }
-
-  const contentMap: Record<string, string> = {
-    settings: '这里是设置页模板入口，可扩展头像昵称编辑、通知设置、账号安全等能力。',
-    agreement: '这里是用户协议模板内容，实际项目可跳转协议详情页。',
-    privacy: '这里是隐私政策模板内容，实际项目可跳转隐私政策详情页。',
-    about: 'uni-starter 小程序模板，内置登录注册、用户中心、权限扩展基础能力。',
-  }
-
-  showTemplateModal(item.title, contentMap[item.key] || '功能开发中')
-}
-
-function handleClearCache() {
-  uni.showModal({
-    title: '清缓存',
-    content: '将清理本地业务缓存，并保留当前登录态。',
-    success: (res) => {
-      if (!res.confirm) return
-
-      try {
-        const storageInfo = uni.getStorageInfoSync()
-        storageInfo.keys
-          .filter(key => key !== 'user')
-          .forEach(key => uni.removeStorageSync(key))
-        refreshCacheSize()
-        uni.showToast({ title: '缓存已清理', icon: 'success' })
-      } catch {
-        uni.showToast({ title: '清理失败', icon: 'none' })
-      }
-    },
-  })
+function handleMenuClick(item: UserMenuEntry) {
+  router.push({ name: item.routeName })
 }
 
 async function handleLogout() {
@@ -208,8 +129,6 @@ async function handleLogout() {
     },
   })
 }
-
-onShow(refreshCacheSize)
 </script>
 
 <template>
@@ -220,95 +139,74 @@ onShow(refreshCacheSize)
 
     <view class="my-page">
       <view v-if="!isLogin" class="guest-panel">
-        <image class="guest-logo" src="/static/images/logo.svg" mode="aspectFit" />
-        <view class="guest-title">
+        <image class="guest-panel__logo" src="/static/images/logo.svg" mode="aspectFit" />
+        <view class="guest-panel__title">
           登录后体验完整模板功能
         </view>
-        <view class="guest-desc">
+        <view class="guest-panel__desc">
           支持手机号验证码登录兼注册、微信授权登录和本地 mock 权限数据。
         </view>
-        <wd-button custom-class="guest-button" type="primary" block @click="goLogin">
+        <wd-button custom-class="guest-panel__button" type="primary" block @click="goLogin">
           去登录 / 注册
         </wd-button>
       </view>
 
-      <view v-else class="profile-panel">
+      <template v-else>
         <view class="profile-card">
-          <image class="profile-avatar" :src="userInfo?.avatar" mode="aspectFill" />
-          <view class="profile-main">
-            <view class="profile-name">
+          <image class="profile-card__avatar" :src="userInfo?.avatar" mode="aspectFill" />
+          <view class="profile-card__main">
+            <view class="profile-card__name">
               {{ userInfo?.nickname || userInfo?.name }}
             </view>
-            <view class="profile-meta">
+            <view class="profile-card__meta">
               {{ maskedPhone }}
             </view>
-            <view class="profile-tags">
-              <text class="profile-tag">
-                {{ userInfo?.roleName }}
+            <view class="profile-card__tags">
+              <text class="profile-card__tag">
+                {{ userInfo?.roleName || '普通用户' }}
               </text>
-              <text class="profile-tag profile-tag--muted">
-                {{ userInfo?.orgName }}
+              <text v-if="userInfo?.orgName" class="profile-card__tag profile-card__tag--muted">
+                {{ userInfo.orgName }}
+              </text>
+              <text class="profile-card__tag profile-card__tag--muted">
+                权限码 {{ userStore.permissions.length }}
               </text>
             </view>
           </view>
         </view>
 
-        <view class="summary-grid">
-          <view class="summary-item">
-            <view class="summary-value">
-              {{ userStore.permissions.length }}
-            </view>
-            <view class="summary-label">
-              权限码
-            </view>
+        <view v-for="group in visibleMenuGroups" :key="group.key" class="menu-group">
+          <view class="menu-group__title">
+            {{ group.title }}
           </view>
-          <view class="summary-item">
-            <view class="summary-value">
-              {{ roleText }}
-            </view>
-            <view class="summary-label">
-              角色
-            </view>
-          </view>
-        </view>
-
-        <view class="menu-panel">
-          <view
-            v-for="item in visibleMenuItems"
-            :key="item.key"
-            class="menu-item"
-            @click="handleMenuClick(item)"
-          >
-            <view class="menu-icon">
-              <template v-if="item.key === 'theme'">
-                <view
-                  class="menu-color"
-                  :style="{ backgroundColor: currentPrimaryColor }"
-                />
-              </template>
-              <template v-else>
+          <view class="menu-group__list">
+            <view
+              v-for="item in group.items"
+              :key="item.key"
+              class="menu-item"
+              @click="handleMenuClick(item)"
+            >
+              <view class="menu-item__icon">
                 <!-- 用 custom-style 设字号：wd-icon 的 size 静态属性会被 UnoCSS attributify 当成 class 剥掉 -->
                 <wd-icon :name="item.icon" custom-style="font-size: 32rpx" />
-              </template>
-            </view>
-            <view class="menu-main">
-              <view class="menu-title">
-                {{ item.title }}
               </view>
-              <view class="menu-desc">
-                {{ item.desc }}
+              <view class="menu-item__main">
+                <view class="menu-item__title">
+                  {{ item.title }}
+                </view>
+                <view class="menu-item__desc">
+                  {{ item.desc }}
+                </view>
               </view>
-            </view>
-            <view class="menu-arrow">
-              <wd-icon name="arrow-right" custom-style="font-size: 28rpx" />
+              <wd-icon name="right" custom-style="font-size: 32rpx; color: var(--app-color-text-tertiary);" />
             </view>
           </view>
         </view>
 
-        <wd-button custom-class="logout-button" plain block type="danger" :loading="logoutLoading" @click="handleLogout">
+        <wd-button custom-class="my-page__logout" plain block type="danger" :loading="logoutLoading" @click="handleLogout">
           退出登录
         </wd-button>
-      </view>
+      </template>
     </view>
   </z-paging>
 </template>
@@ -320,218 +218,168 @@ onShow(refreshCacheSize)
 
   // 底部固定着自定义 tabbar，需要留出等高空间，否则最后一段内容会被遮挡
   padding-bottom: calc(32rpx + var(--app-tabbar-height) + env(safe-area-inset-bottom));
-  background: #f6f8f7;
+  background: var(--app-color-surface-muted);
 
-  .guest-panel,
-  .profile-panel {
+  // wd-button 是子组件，custom-class 在小程序端拿不到父级 scoped 标记，
+  // 间距必须用 :deep 编译成后代选择器才生效
+  :deep(.my-page__logout) {
+    margin-top: 48rpx;
+  }
+}
+
+.guest-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 72rpx 32rpx 40rpx;
+  background: var(--app-color-surface);
+  border: 1rpx solid var(--app-color-border);
+  border-radius: 16rpx;
+
+  &__logo {
+    width: 128rpx;
+    height: 128rpx;
+    margin-bottom: 28rpx;
+  }
+
+  &__title {
+    font-size: 36rpx;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--app-color-text);
+  }
+
+  &__desc {
+    max-width: 560rpx;
+    margin-top: 16rpx;
+    font-size: 26rpx;
+    line-height: 1.6;
+    color: var(--app-color-text-secondary);
+    text-align: center;
+  }
+
+  :deep(.guest-panel__button) {
+    margin-top: 40rpx;
+  }
+}
+
+.profile-card {
+  display: flex;
+  align-items: center;
+  padding: 32rpx;
+  background: var(--app-color-surface);
+  border: 1rpx solid var(--app-color-border);
+  border-radius: 16rpx;
+
+  &__avatar {
+    flex-shrink: 0;
+    width: 132rpx;
+    height: 132rpx;
+    margin-right: 28rpx;
+    overflow: hidden;
+    background: var(--app-color-surface-muted);
+    border-radius: 50%;
+  }
+
+  &__main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 38rpx;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--app-color-text);
+    white-space: nowrap;
+  }
+
+  &__meta {
+    margin-top: 8rpx;
+    font-size: 26rpx;
+    line-height: 1.5;
+    color: var(--app-color-text-secondary);
+  }
+
+  &__tags {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 12rpx;
+    margin-top: 16rpx;
   }
 
-  .guest-panel {
-    align-items: center;
-    padding: 72rpx 32rpx 40rpx;
-    background: #fff;
-    border: 1rpx solid #edf1ef;
+  &__tag {
+    padding: 4rpx 16rpx;
+    font-size: 22rpx;
+    line-height: 1.6;
+    color: var(--wot-primary-6);
+    background: var(--app-primary-soft);
+    border-radius: 8rpx;
+
+    &--muted {
+      color: var(--app-color-text-secondary);
+      background: var(--app-color-surface-muted);
+    }
+  }
+}
+
+.menu-group {
+  margin-top: 32rpx;
+
+  &__title {
+    padding: 0 8rpx 16rpx;
+    font-size: 26rpx;
+    color: var(--app-color-text-secondary);
+  }
+
+  &__list {
+    overflow: hidden;
+    background: var(--app-color-surface);
+    border: 1rpx solid var(--app-color-border);
     border-radius: 16rpx;
+  }
+}
 
-    .guest-logo {
-      width: 128rpx;
-      height: 128rpx;
-      margin-bottom: 28rpx;
-    }
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 32rpx;
 
-    .guest-title {
-      font-size: 36rpx;
-      font-weight: 700;
-      line-height: 1.35;
-      color: #17211d;
-    }
-
-    .guest-desc {
-      max-width: 560rpx;
-      margin-top: 16rpx;
-      font-size: 26rpx;
-      line-height: 1.6;
-      color: #66736e;
-      text-align: center;
-    }
-
-    :deep(.guest-button) {
-      margin-top: 40rpx;
-    }
+  & + & {
+    border-top: 1rpx solid var(--app-color-border);
   }
 
-  .profile-panel {
-    .profile-card {
-      display: flex;
-      align-items: center;
-      padding: 32rpx;
-      background: #fff;
-      border: 1rpx solid #edf1ef;
-      border-radius: 16rpx;
+  &__icon {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 64rpx;
+    height: 64rpx;
+    margin-right: 24rpx;
+    color: var(--wot-primary-6);
+    background: var(--app-primary-soft);
+    border-radius: 16rpx;
+  }
 
-      .profile-avatar {
-        flex-shrink: 0;
-        width: 132rpx;
-        height: 132rpx;
-        margin-right: 28rpx;
-        overflow: hidden;
-        background: #eef5f2;
-        border-radius: 50%;
-      }
+  &__main {
+    flex: 1;
+    min-width: 0;
+  }
 
-      .profile-main {
-        flex: 1;
-        min-width: 0;
+  &__title {
+    font-size: 30rpx;
+    line-height: 1.4;
+    color: var(--app-color-text);
+  }
 
-        .profile-name {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          font-size: 38rpx;
-          font-weight: 700;
-          line-height: 1.3;
-          color: #17211d;
-          white-space: nowrap;
-        }
-
-        .profile-meta {
-          margin-top: 8rpx;
-          font-size: 26rpx;
-          color: #66736e;
-        }
-
-        .profile-tags {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 12rpx;
-          margin-top: 18rpx;
-
-          .profile-tag {
-            max-width: 260rpx;
-            padding: 6rpx 14rpx;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: 22rpx;
-            line-height: 1.4;
-            color: var(--wot-primary-6);
-            white-space: nowrap;
-            background: var(--app-primary-soft);
-            border-radius: 999rpx;
-
-            &--muted {
-              color: #66736e;
-              background: #f0f3f2;
-            }
-          }
-        }
-      }
-    }
-
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20rpx;
-      margin-top: 24rpx;
-
-      .summary-item {
-        padding: 26rpx 28rpx;
-        background: #fff;
-        border: 1rpx solid #edf1ef;
-        border-radius: 16rpx;
-
-        .summary-value {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          font-size: 32rpx;
-          font-weight: 700;
-          line-height: 1.35;
-          color: #17211d;
-          white-space: nowrap;
-        }
-
-        .summary-label {
-          margin-top: 8rpx;
-          font-size: 24rpx;
-          color: #77827e;
-        }
-      }
-    }
-
-    .menu-panel {
-      margin-top: 24rpx;
-      overflow: hidden;
-      background: #fff;
-      border: 1rpx solid #edf1ef;
-      border-radius: 16rpx;
-
-      .menu-item {
-        display: flex;
-        align-items: center;
-        min-height: 112rpx;
-        padding: 20rpx 28rpx;
-        border-bottom: 1rpx solid #edf1ef;
-
-        &:last-child {
-          border-bottom: none;
-        }
-
-        .menu-icon {
-          display: flex;
-          flex-shrink: 0;
-          align-items: center;
-          justify-content: center;
-          width: 56rpx;
-          height: 56rpx;
-          margin-right: 20rpx;
-          color: var(--wot-primary-6);
-          background: var(--app-primary-soft);
-          border-radius: 50%;
-
-          .menu-color {
-            width: 30rpx;
-            height: 30rpx;
-            border: 4rpx solid #fff;
-            border-radius: 50%;
-            box-shadow: 0 0 0 1rpx var(--wot-primary-6);
-          }
-        }
-
-        .menu-main {
-          flex: 1;
-          min-width: 0;
-
-          .menu-title {
-            font-size: 30rpx;
-            font-weight: 600;
-            line-height: 1.35;
-            color: #17211d;
-          }
-
-          .menu-desc {
-            margin-top: 6rpx;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            font-size: 24rpx;
-            line-height: 1.35;
-            color: #77827e;
-            white-space: nowrap;
-          }
-        }
-
-        .menu-arrow {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-left: 20rpx;
-          color: #a8b2ae;
-        }
-      }
-    }
-
-    :deep(.logout-button) {
-      margin-top: 32rpx;
-    }
+  &__desc {
+    margin-top: 4rpx;
+    font-size: 24rpx;
+    line-height: 1.5;
+    color: var(--app-color-text-tertiary);
   }
 }
 </style>

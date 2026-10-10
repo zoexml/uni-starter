@@ -51,7 +51,8 @@
     "themeLocation": "theme.json",
     "optimization": {
       "subPackages": true
-    }
+    },
+    "__usePrivacyCheck__": false
   },
   "mp-alipay": {
     "usingComponents": true

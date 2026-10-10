@@ -11,23 +11,51 @@
 </route>
 
 <script lang="ts" setup>
-import { mockLoginByPhone, mockLoginByWechat, mockSendVerifyCode } from '@/mocks/auth'
-import { useTracker, useTrackPageView } from '@/composables/useTracker'
+import { mockLoginByPhone, mockSendVerifyCode } from '@/mocks/auth'
 import { useLoginRedirect } from '@/composables/useLoginRedirect'
+import { usePhoneAuth } from '@/composables/usePhoneAuth'
+import { useTracker, useTrackPageView } from '@/composables/useTracker'
 import { useUserStore } from '@/stores'
+import { ENABLE_PHONE_AUTH } from '@/common/constants'
+import { buildAgreementDetailRoute } from '@/utils/agreement'
+import { parsePhoneAuthEvent } from '@/utils/phone-auth'
+import type { PhoneAuthEventDetail } from '@/utils/phone-auth'
 
 const { track } = useTracker()
 useShare({ title: '登录注册' })
 useTrackPageView()
 
 const userStore = useUserStore()
+const router = useRouter()
 const { goAfterLogin } = useLoginRedirect()
+
+/**
+ * 手机号一键登录：走微信原生授权按钮（open-type="getPhoneNumber"），
+ * 拿到的 code 交给 usePhoneAuth 换 session —— 默认 mock，接后端时传
+ * `usePhoneAuth({ login: loginByPhoneAuthApi })` 即可。
+ */
+const {
+  loading: phoneAuthLoading,
+  handleSuccess: handlePhoneAuthSuccess,
+  handleFail: handlePhoneAuthFail,
+} = usePhoneAuth()
+
+/**
+ * 开发者工具不支持手机号快速验证组件，这里显式提示，
+ * 避免在小程序开发者工具里点了原生授权按钮"没反应"却不知道为什么。
+ */
+const isDevtools = (() => {
+  try {
+    return uni.getSystemInfoSync().platform === 'devtools'
+  } catch {
+    return false
+  }
+})()
 
 const phone = shallowRef('')
 const verifyCode = shallowRef('')
 const agreed = shallowRef(false)
 const loginLoading = shallowRef(false)
-const wechatLoading = shallowRef(false)
 const codeLoading = shallowRef(false)
 const countdown = shallowRef(0)
 
@@ -60,11 +88,14 @@ const startCountdown = (seconds = 60) => {
 
 const ensureAgreement = () => {
   if (agreed.value) return true
-  uni.showToast({ title: '请先阅读并同意用户协议', icon: 'none' })
+  uni.showToast({ title: '请先阅读并同意用户协议和隐私政策', icon: 'none' })
   return false
 }
 
 const handleSendCode = async () => {
+  // 发送验证码同样属于个人信息处理动作，未勾选时与登录按钮一样拦下
+  if (!ensureAgreement()) return
+
   if (!canSendCode.value) {
     uni.showToast({ title: '请输入正确的手机号', icon: 'none' })
     return
@@ -100,29 +131,25 @@ const handlePhoneLogin = async () => {
   }
 }
 
-const handleWechatLogin = async () => {
-  if (!ensureAgreement()) return
+/** 微信原生授权按钮的回调：解析 detail 后交给 usePhoneAuth 完成登录与回跳 */
+const handleGetPhoneNumber = (event: unknown) => {
+  const result = parsePhoneAuthEvent((event as { detail?: PhoneAuthEventDetail })?.detail)
 
-  try {
-    wechatLoading.value = true
-    const session = await mockLoginByWechat()
-    userStore.setLoginSession(session)
-    track('user_login', { method: 'wechat' })
-    uni.showToast({ title: '微信授权成功', icon: 'success' })
-    goAfterLogin()
-  } catch (error) {
-    uni.showToast({ title: error instanceof Error ? error.message : '微信授权失败', icon: 'none' })
-  } finally {
-    wechatLoading.value = false
+  if (!result.ok) {
+    handlePhoneAuthFail(result.fail)
+    return
   }
+
+  void handlePhoneAuthSuccess(result.payload)
 }
 
+/**
+ * 协议入口统一走本地协议详情页（富文本内容由内容层下发）：
+ * 小程序内打开、可返回，不用微信官方的 openPrivacyContract —— 那个页面由微信渲染，
+ * 会跳出小程序页面栈（表现上像外部浏览器），只适合在隐私授权弹窗里作为《隐私保护指引》入口。
+ */
 const openAgreement = (type: 'user' | 'privacy') => {
-  uni.showModal({
-    title: type === 'user' ? '用户协议' : '隐私政策',
-    content: '这里是模板协议内容，实际项目中可替换为协议详情页或富文本内容。',
-    showCancel: false,
-  })
+  router.push(buildAgreementDetailRoute(type))
 }
 
 onUnmounted(clearCountdown)
@@ -226,26 +253,50 @@ const statusBarTop = (() => {
           </text>
         </view>
 
-        <view class="login-alt">
-          <view class="login-alt__line" />
-          <text class="login-alt__text">
-            其他登录方式
-          </text>
-          <view class="login-alt__line" />
-        </view>
+        <!-- #ifdef MP-WEIXIN -->
+        <template v-if="ENABLE_PHONE_AUTH">
+          <view class="login-alt">
+            <view class="login-alt__line" />
+            <text class="login-alt__text">
+              其他登录方式
+            </text>
+            <view class="login-alt__line" />
+          </view>
 
-        <view
-          class="login-wechat"
-          hover-class="login-wechat--hover"
-          :hover-stay-time="80"
-          @click="handleWechatLogin"
-        >
-          <wd-loading v-if="wechatLoading" :size="16" color="#07c160" />
-          <wd-icon v-else name="message" custom-style="font-size: 32rpx; color: #07c160;" />
-          <text class="login-wechat__text">
-            微信授权登录
+          <!--
+          微信原生授权按钮：用户点一下即授权，比"手机号+验证码"少两步。
+          open-type 按钮的点击拦不住，所以未勾选协议时渲染普通按钮给出提示。
+        -->
+          <button
+            v-if="agreed"
+            class="login-phone-auth"
+            open-type="getPhoneNumber"
+            :disabled="phoneAuthLoading"
+            @getphonenumber="handleGetPhoneNumber"
+          >
+            <wd-loading v-if="phoneAuthLoading" :size="16" color="#07c160" />
+            <wd-icon v-else name="mobile" custom-style="font-size: 32rpx; color: #07c160;" />
+            <text class="login-phone-auth__text">
+              手机号一键登录
+            </text>
+          </button>
+          <view
+            v-else
+            class="login-phone-auth"
+            hover-class="login-phone-auth--hover"
+            :hover-stay-time="80"
+            @click="ensureAgreement()"
+          >
+            <wd-icon name="mobile" custom-style="font-size: 32rpx; color: #07c160;" />
+            <text class="login-phone-auth__text">
+              手机号一键登录
+            </text>
+          </view>
+          <text v-if="isDevtools" class="login-phone-auth__hint">
+            开发者工具不支持手机号授权，请用真机调试测试
           </text>
-        </view>
+        </template>
+        <!-- #endif -->
 
         <view class="login-agreement">
           <wd-checkbox v-model="agreed" custom-class="login-agreement__check" />
@@ -502,25 +553,44 @@ const statusBarTop = (() => {
   }
 }
 
-.login-wechat {
+// 手机号一键登录：可能是原生 button（微信端），需要覆盖小程序默认背景/边框/::after
+.login-phone-auth {
   display: flex;
   align-items: center;
   justify-content: center;
   height: 96rpx;
+  padding: 0;
+  font-size: 30rpx;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--app-color-text-regular);
   background: #fff;
   border: 1rpx solid var(--app-color-border);
   border-radius: 999rpx;
+
+  &::after {
+    border: 0;
+  }
 
   &--hover {
     background: var(--app-color-surface-muted);
   }
 
+  &[disabled] {
+    color: var(--app-color-text-disabled);
+  }
+
   &__text {
     margin-left: 12rpx;
-    font-size: 30rpx;
-    font-weight: 500;
-    line-height: 1.4;
-    color: var(--app-color-text-regular);
+  }
+
+  &__hint {
+    display: block;
+    margin-top: 16rpx;
+    font-size: 22rpx;
+    line-height: 1.5;
+    color: var(--app-color-text-placeholder);
+    text-align: center;
   }
 }
 
@@ -529,7 +599,8 @@ const statusBarTop = (() => {
   align-items: flex-start;
   margin-top: 36rpx;
 
-  &__check {
+  // wd-checkbox 是子组件，custom-class 在小程序端匹配不到父级 scoped 选择器，用 :deep
+  :deep(.login-agreement__check) {
     flex-shrink: 0;
     margin-top: 2rpx;
   }

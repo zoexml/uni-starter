@@ -120,3 +120,21 @@ export const textImageConvert = (platform: string, content?: string): any => {
       return content.replace(/(<img[^>]+)(>)/gi, '$1 width="100%" height="auto"$2')
   }
 }
+
+/**
+ * 统一提取错误文案。
+ *
+ * uni 的 API 失败（如 `chooseImage`、`uploadFile`）抛出的是 `{ errMsg }` 普通对象而非 Error，
+ * 只判断 `instanceof Error` 会拿不到文案，失败就变成"点了没反应"，很难排查。
+ */
+export function getErrorMessage(error: unknown, fallback = '操作失败'): string {
+  if (error instanceof Error) return error.message || fallback
+  if (typeof error === 'string') return error || fallback
+  if (error && typeof error === 'object') {
+    const { errMsg, message } = error as { errMsg?: unknown, message?: unknown }
+    if (typeof errMsg === 'string' && errMsg) return errMsg
+    if (typeof message === 'string' && message) return message
+  }
+
+  return fallback
+}

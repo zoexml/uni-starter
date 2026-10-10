@@ -13,6 +13,7 @@
 
 <script lang="ts" setup>
 import type { UploadResult } from '@/types/upload'
+import { getErrorMessage } from '@/utils'
 import { useTrackPageView } from '@/composables/useTracker'
 import { useUpload } from '@/composables/useUpload'
 
@@ -50,8 +51,9 @@ const handlePickImage = async () => {
     pickedImage.value = path
     cropperVisible.value = true
   } catch (error) {
-    const message = error instanceof Error ? error.message : ''
-    if (message && !message.includes('cancel')) {
+    // 用户主动取消不打扰；其余失败（含隐私授权未通过）都要提示出来，否则表现为"点了没反应"
+    const message = getErrorMessage(error, '选择图片失败')
+    if (!message.includes('cancel')) {
       uni.showToast({ title: message, icon: 'none' })
     }
   }
