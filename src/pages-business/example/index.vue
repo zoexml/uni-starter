@@ -12,7 +12,6 @@
 </route>
 
 <script lang="ts" setup>
-import { useShare } from '@/composables/useShare'
 import { useTrackPageView } from '@/composables/useTracker'
 
 useShare({ title: '示例中心' })
@@ -45,6 +44,44 @@ const exampleItems: ExampleItem[] = [
   },
 ]
 
+const businessItems: ExampleItem[] = [
+  {
+    key: 'about',
+    title: '关于我们',
+    desc: '应用信息、版本号与协议入口',
+    icon: 'info',
+    routeName: 'about',
+  },
+  {
+    key: 'agreement',
+    title: '协议与条款',
+    desc: '用户协议与隐私政策列表，点击进入富文本详情',
+    icon: 'file',
+    routeName: 'agreement',
+  },
+  {
+    key: 'settings',
+    title: '设置',
+    desc: '主题色、清除缓存、退出登录（需登录）',
+    icon: 'settings',
+    routeName: 'settings',
+  },
+  {
+    key: 'favorites',
+    title: '我的收藏',
+    desc: '收藏列表与空态，复用 InformationCard（需登录）',
+    icon: 'star',
+    routeName: 'favorites',
+  },
+  {
+    key: 'search',
+    title: '搜索',
+    desc: '搜索框、历史记录、热门关键词与结果列表',
+    icon: 'search-line',
+    routeName: 'search',
+  },
+]
+
 const goExample = (item: ExampleItem) => {
   router.push({ name: item.routeName })
 }
@@ -68,7 +105,8 @@ const goExample = (item: ExampleItem) => {
           @click="goExample(item)"
         >
           <view class="example-item__icon">
-            <wd-icon :name="item.icon" size="32rpx" />
+            <!-- 用 custom-style 设字号：wd-icon 的 size 静态属性会被 UnoCSS attributify 当成 class 剥掉 -->
+            <wd-icon :name="item.icon" custom-style="font-size: 32rpx" />
           </view>
           <view class="example-item__main">
             <view class="example-item__title">
@@ -79,7 +117,34 @@ const goExample = (item: ExampleItem) => {
             </view>
           </view>
           <view class="example-item__arrow">
-            <wd-icon name="arrow-right" size="28rpx" />
+            <wd-icon name="arrow-right" custom-style="font-size: 28rpx" />
+          </view>
+        </view>
+      </view>
+
+      <view class="example-section">
+        <view class="example-section__title">
+          通用业务页
+        </view>
+        <view
+          v-for="item in businessItems"
+          :key="item.key"
+          class="example-item"
+          @click="goExample(item)"
+        >
+          <view class="example-item__icon">
+            <wd-icon :name="item.icon" custom-style="font-size: 32rpx" />
+          </view>
+          <view class="example-item__main">
+            <view class="example-item__title">
+              {{ item.title }}
+            </view>
+            <view class="example-item__desc">
+              {{ item.desc }}
+            </view>
+          </view>
+          <view class="example-item__arrow">
+            <wd-icon name="arrow-right" custom-style="font-size: 28rpx" />
           </view>
         </view>
       </view>
@@ -98,6 +163,10 @@ const goExample = (item: ExampleItem) => {
     background: #fff;
     border: 1rpx solid #edf1ef;
     border-radius: 16rpx;
+
+    & + & {
+      margin-top: 24rpx;
+    }
 
     &__title {
       padding: 24rpx 28rpx 8rpx;
