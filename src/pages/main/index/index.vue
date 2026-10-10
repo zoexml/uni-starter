@@ -26,18 +26,22 @@ const greetingText = computed(() => userStore.isLogin
 
 const loginEntryText = computed(() => userStore.isLogin ? '进入用户中心' : '登录 / 注册')
 
+/**
+ * 图标统一用 Wot UI 内置的 wd-icon（uiLib），不依赖 UnoCSS 图标集。
+ * 之前用的 i-carbon-* 依赖 @iconify-json/carbon，在小程序端解析失败导致图标不显示。
+ */
 const quickActions = [
-  { icon: 'i-carbon-user-avatar', label: '登录 / 我的', action: goLoginEntry },
-  { icon: 'i-carbon-code', label: 'Demo 页', action: goDemoPage },
-  { icon: 'i-carbon-grid', label: '示例中心', action: goExamplePage },
-  { icon: 'i-carbon-application-web', label: 'WebView', action: goWebViewDemo },
+  { icon: 'user', label: '登录 / 我的', action: goLoginEntry },
+  { icon: 'code-block', label: 'Demo 页', action: goDemoPage },
+  { icon: 'apps', label: '示例中心', action: goExamplePage },
+  { icon: 'desktop', label: 'WebView', action: goWebViewDemo },
 ] as const
 
 const features = [
-  { icon: 'i-carbon-locked', title: 'Mock 登录注册', desc: '内置认证流程，替换真实接口即可' },
-  { icon: 'i-carbon-user-role', title: '用户中心与权限', desc: 'roles / permissions 权限判断' },
-  { icon: 'i-carbon-analytics', title: '埋点上报', desc: '批量冲刷 + 失败恢复，开箱即用' },
-  { icon: 'i-carbon-earth', title: 'WebView 容器', desc: '统一白名单与桥接协议' },
+  { icon: 'lock', title: 'Mock 登录注册', desc: '内置认证流程，替换真实接口即可' },
+  { icon: 'user-group', title: '用户中心与权限', desc: 'roles / permissions 权限判断' },
+  { icon: 'dashboard', title: '埋点上报', desc: '批量冲刷 + 失败恢复，开箱即用' },
+  { icon: 'public', title: 'WebView 容器', desc: '统一白名单与桥接协议' },
 ] as const
 
 function goDemoPage() {
@@ -83,7 +87,7 @@ function goLoginEntry() {
         </view>
         <view class="hero-cta" @click="goLoginEntry">
           {{ loginEntryText }}
-          <view class="hero-cta-icon i-carbon-arrow-right" />
+          <wd-icon name="arrow-right" custom-style="font-size: 28rpx; color: #fff;" />
         </view>
         <view class="hero-decoration hero-decoration--a" />
         <view class="hero-decoration hero-decoration--b" />
@@ -105,7 +109,7 @@ function goLoginEntry() {
             @click="item.action()"
           >
             <view class="quick-icon-wrap">
-              <view class="quick-icon" :class="item.icon" />
+              <wd-icon :name="item.icon" custom-style="font-size: 36rpx;" />
             </view>
             <view class="quick-label">
               {{ item.label }}
@@ -122,7 +126,7 @@ function goLoginEntry() {
           </view>
           <view class="section-more" @click="goExamplePage">
             查看示例
-            <view class="section-more-icon i-carbon-chevron-right" />
+            <wd-icon name="caret-right" custom-style="font-size: 24rpx;" />
           </view>
         </view>
         <view class="feature-list">
@@ -132,7 +136,7 @@ function goLoginEntry() {
             class="feature-item"
           >
             <view class="feature-icon-wrap">
-              <view class="feature-icon" :class="item.icon" />
+              <wd-icon :name="item.icon" custom-style="font-size: 34rpx;" />
             </view>
             <view class="feature-body">
               <view class="feature-title">
@@ -202,11 +206,6 @@ function goLoginEntry() {
       cursor: pointer;
       background: #fff;
       border-radius: 44rpx;
-
-      .hero-cta-icon {
-        width: 28rpx;
-        height: 28rpx;
-      }
     }
 
     .hero-decoration {
@@ -256,11 +255,6 @@ function goLoginEntry() {
         font-size: 24rpx;
         color: var(--app-color-text-tertiary);
         cursor: pointer;
-
-        .section-more-icon {
-          width: 24rpx;
-          height: 24rpx;
-        }
       }
     }
   }
@@ -290,14 +284,9 @@ function goLoginEntry() {
         justify-content: center;
         width: 84rpx;
         height: 84rpx;
+        color: var(--wot-primary-6);
         background: var(--app-primary-soft);
         border-radius: 50%;
-
-        .quick-icon {
-          width: 40rpx;
-          height: 40rpx;
-          color: var(--wot-primary-6);
-        }
       }
 
       .quick-label {
@@ -327,14 +316,9 @@ function goLoginEntry() {
         justify-content: center;
         width: 72rpx;
         height: 72rpx;
+        color: var(--wot-primary-6);
         background: var(--app-primary-soft);
         border-radius: 16rpx;
-
-        .feature-icon {
-          width: 34rpx;
-          height: 34rpx;
-          color: var(--wot-primary-6);
-        }
       }
 
       .feature-body {
