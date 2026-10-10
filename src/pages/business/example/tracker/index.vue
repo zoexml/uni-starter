@@ -13,10 +13,20 @@
 
 <script lang="ts" setup>
 import { useTracker, useTrackPageView } from '@/composables/useTracker'
+import { registerTrackerAdapter } from '@/utils/tracker'
+import { createConsoleTrackerAdapter } from '@/utils/tracker-console-adapter'
 
 useShare({ title: '埋点示例' })
 useTrackPageView()
 const { flush, isEnabled, isFlushing, lastEvent, queueSize, track } = useTracker()
+
+/**
+ * 演示自定义适配器：注册一个控制台适配器，
+ * 之后每次 flush 的批次都会额外打到控制台（不影响内置 HTTP 适配器）。
+ * 接神策 / 友盟时把 createConsoleTrackerAdapter 换成对应实现即可。
+ */
+const consoleAdapter = createConsoleTrackerAdapter()
+registerTrackerAdapter(consoleAdapter)
 
 const lastEventText = computed(() => {
   const event = lastEvent.value
@@ -35,6 +45,16 @@ const handleTrack = () => {
 const handleFlush = () => {
   void flush()
 }
+
+const handleTrackWithConsole = () => {
+  track('adapter_demo_event', { source: 'console-adapter' })
+  void flush()
+}
+
+onUnmounted(() => {
+  // 注册表是模块级的，示例页离开时关掉输出即可，无需注销（注销会影响其它适配器）
+  consoleAdapter.setEnabled(false)
+})
 </script>
 
 <template>
@@ -92,6 +112,20 @@ const handleFlush = () => {
           </wd-button>
           <wd-button plain block @click="handleFlush">
             手动上报
+          </wd-button>
+        </view>
+      </view>
+
+      <view class="tracker-section">
+        <view class="tracker-section__title">
+          自定义适配器
+        </view>
+        <view class="tracker-section__desc">
+          本页已注册一个控制台适配器：触发事件并手动上报后，控制台会打印该批次。接三方平台（神策 / 友盟等）时实现 TrackerAdapter 并 registerTrackerAdapter 即可，队列与重试逻辑无需重写。
+        </view>
+        <view class="tracker-section__actions">
+          <wd-button plain block @click="handleTrackWithConsole">
+            触发事件并输出批次
           </wd-button>
         </view>
       </view>
