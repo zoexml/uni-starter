@@ -28,6 +28,15 @@ const { currentPrimaryColorLabel, setPrimaryColor, themeColorOptions } = useThem
 const logoutLoading = shallowRef(false)
 const cacheSize = shallowRef('0KB')
 
+/**
+ * 清缓存时保留的 key，避免把用户数据一起清掉：
+ * - user：user store 的持久化数据（登录态）
+ * - app-theme-primary-color：主题色（useTheme）
+ * - search-history：搜索页历史记录
+ * - tracker_queue：埋点失败待重试队列
+ */
+const PRESERVED_STORAGE_KEYS = ['user', 'app-theme-primary-color', 'search-history', 'tracker_queue']
+
 const readCacheSize = () => {
   try {
     const { currentSize } = uni.getStorageInfoSync()
@@ -52,12 +61,21 @@ const handleThemeChange = () => {
 const handleClearCache = () => {
   uni.showModal({
     title: '清除缓存',
-    content: '将清除本地缓存的接口数据与临时文件，不会影响登录状态。',
+    content: '将清除接口数据与临时文件等缓存，登录状态、主题色和搜索历史会保留。',
     success: ({ confirm }) => {
       if (!confirm) return
-      uni.clearStorageSync()
-      readCacheSize()
-      uni.showToast({ title: '已清除', icon: 'success' })
+
+      try {
+        const { keys } = uni.getStorageInfoSync()
+        keys
+          .filter(key => !PRESERVED_STORAGE_KEYS.includes(key))
+          .forEach(key => uni.removeStorageSync(key))
+
+        readCacheSize()
+        uni.showToast({ title: '已清除', icon: 'success' })
+      } catch {
+        uni.showToast({ title: '清除失败', icon: 'none' })
+      }
     },
   })
 }
