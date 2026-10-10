@@ -15,7 +15,6 @@
 </route>
 
 <script lang="ts" setup>
-import { useShare } from '@/composables/useShare'
 import { useTrackPageView } from '@/composables/useTracker'
 import { useWebView } from '@/composables/useWebView'
 

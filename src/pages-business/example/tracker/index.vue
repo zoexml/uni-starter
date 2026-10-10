@@ -12,7 +12,6 @@
 </route>
 
 <script lang="ts" setup>
-import { useShare } from '@/composables/useShare'
 import { useTracker, useTrackPageView } from '@/composables/useTracker'
 
 useShare({ title: '埋点示例' })
