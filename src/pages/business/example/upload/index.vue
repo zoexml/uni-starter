@@ -12,67 +12,67 @@
 </route>
 
 <script lang="ts" setup>
-import type { UploadResult, UploadTask } from '@/types/upload'
-import { useTracker, useTrackPageView } from '@/composables/useTracker'
+import type { UploadFileItem, UploadMethod } from '@wot-ui/ui/components/wd-upload/types'
+import { useTrackPageView } from '@/composables/useTracker'
 import { useUpload } from '@/composables/useUpload'
 
 useShare({ title: '上传示例' })
 useTrackPageView()
 
-const { track } = useTracker()
-
 /**
- * 默认走模板 mock 凭证，直传地址为空时会自动走本地模拟上传。
- * 接真实后端时改为：useUpload({ getSignature: fetchUploadSignatureApi })
+ * 组件式上传：wd-upload 负责选图、列表、进度与失败态，
+ * 真正的上传动作通过 uploadMethod 交给 useUpload，
+ * 这样签名获取、直传、错误提示仍复用同一套封装。
  */
-const { tasks, uploading, uploadFile, uploadFiles, reset, maxSize, formatSize } = useUpload({
-  onSuccess: (result: UploadResult) => {
-    track('upload_success', { size: result.fileSize })
-    uni.showToast({ title: '上传成功', icon: 'success' })
-  },
+const { uploading, uploadFile, formatSize } = useUpload({
   onError: (error: Error) => {
     uni.showToast({ title: error.message || '上传失败', icon: 'none' })
   },
 })
 
-/** 用静态资源模拟「选中的文件」，方便在开发工具里直接跑通流程 */
-const demoFilePaths = [
-  '/static/images/logo.svg',
-  '/static/images/vite.png',
-]
+/** wd-upload 的文件列表（v-model 双向绑定） */
+const fileList = ref<UploadFileItem[]>([])
 
-const handlePickImage = async () => {
+const MAX_SIZE = 5 * 1024 * 1024
+
+/** 桥接 useUpload：把组件的回调风格转成 Promise 风格 */
+const handleUpload: UploadMethod = async (uploadFileItem, _formData, options) => {
   try {
-    const res = await uni.chooseImage({ count: 1, sizeType: ['compressed'] })
-    const path = res.tempFilePaths?.[0]
-    if (!path) return
+    const result = await uploadFile(uploadFileItem.url, { source: 'wd-upload' })
 
-    await uploadFile(path)
+    // 告诉组件上传成功，组件会把状态置为 success 并显示 url
+    options.onSuccess(
+      { statusCode: 200, data: JSON.stringify(result.response ?? {}) } as UniApp.UploadFileSuccessCallbackResult,
+      uploadFileItem,
+      {},
+    )
   } catch (error) {
-    // 用户取消选图也会走到这里，非报错时不打扰
-    const message = error instanceof Error ? error.message : ''
-    if (message && !message.includes('cancel')) {
-      uni.showToast({ title: message, icon: 'none' })
-    }
+    options.onError(
+      { errMsg: error instanceof Error ? error.message : '上传失败' } as UniApp.GeneralCallbackResult,
+      uploadFileItem,
+      {},
+    )
   }
 }
 
-const handleUploadDemoFile = () => uploadFile(demoFilePaths[0])
+/** 选图前的本地校验，避免把明显不合规的文件送去上传 */
+const handleBeforeUpload = ({ files }: { files: Record<string, any>[] }) => {
+  for (const file of files) {
+    const size = Number(file.size ?? 0)
+    if (size > MAX_SIZE) {
+      uni.showToast({ title: `${file.name || '文件'} 超过 ${formatSize(MAX_SIZE)}`, icon: 'none' })
+      return false
+    }
+  }
 
-const handleUploadBatch = async () => {
-  const { success, failed } = await uploadFiles(demoFilePaths)
-
-  uni.showToast({
-    title: `成功 ${success.length} 个，失败 ${failed.length} 个`,
-    icon: 'none',
-  })
+  return true
 }
 
-const statusText: Record<UploadTask['status'], string> = {
-  pending: '等待中',
-  uploading: '上传中',
-  success: '已完成',
-  failed: '失败',
+/** 统计上传成功的数量，便于展示 */
+const finishedCount = computed(() => fileList.value.filter(item => item.status === 'success').length)
+
+const handleRemove = () => {
+  uni.showToast({ title: '已移除该文件', icon: 'none' })
 }
 </script>
 
@@ -85,60 +85,38 @@ const statusText: Record<UploadTask['status'], string> = {
     <view class="upload-page">
       <view class="upload-card">
         <view class="upload-card__title">
-          useUpload
+          wd-upload + useUpload
         </view>
         <view class="upload-card__desc">
-          取直传凭证 → uni.uploadFile 直传对象存储 → 统一归一化结果。
-          默认走 mock 凭证，返回空 uploadUrl 时自动走本地模拟上传。
+          组件负责选图、文件列表、进度与失败态；上传动作通过 uploadMethod 交给
+          useUpload 统一处理签名获取与直传，业务字段可放在第二个参数里一起提交。
         </view>
         <view class="upload-card__meta">
-          单文件上限 {{ formatSize(maxSize) }}，仅微信小程序端能上报真实进度。
+          单文件上限 {{ formatSize(MAX_SIZE) }}，已成功 {{ finishedCount }} 个。
         </view>
       </view>
 
-      <view class="upload-actions">
-        <wd-button type="primary" block :loading="uploading" @click="handlePickImage">
-          选择图片上传
-        </wd-button>
-        <wd-button plain block :loading="uploading" @click="handleUploadDemoFile">
-          上传示例文件
-        </wd-button>
-        <wd-button plain block :loading="uploading" @click="handleUploadBatch">
-          批量上传（串行）
-        </wd-button>
-        <wd-button plain block type="danger" :disabled="uploading" @click="reset">
-          清空任务列表
-        </wd-button>
+      <view class="upload-card">
+        <wd-upload
+          v-model="fileList"
+          image
+          :limit="5"
+          :disabled="uploading"
+          :upload-method="handleUpload"
+          :before-upload="handleBeforeUpload"
+          @remove="handleRemove"
+        />
       </view>
 
-      <view v-if="tasks.length" class="upload-section">
+      <view class="upload-section">
         <view class="upload-section__title">
-          上传任务
+          关键参数
         </view>
-
-        <view v-for="(task, index) in tasks" :key="task.path + index" class="upload-task">
-          <view class="upload-task__head">
-            <text class="upload-task__name">
-              {{ task.fileName }}
-            </text>
-            <text class="upload-task__status" :class="`upload-task__status--${task.status}`">
-              {{ statusText[task.status] }}
-            </text>
-          </view>
-
-          <wd-progress :percentage="task.progress" :show-value="true" />
-
-          <text v-if="task.message" class="upload-task__message">
-            {{ task.message }}
-          </text>
-          <text v-else-if="task.url" class="upload-task__url">
-            {{ task.url }}
-          </text>
+        <view class="upload-section__desc">
+          image 开启图片选择；limit 限制数量；before-upload 在选图后、上传前做本地校验；
+          uploadMethod 接管上传实现，调用 options.onSuccess / onError / onProgress
+          把结果回传组件，组件据此更新状态与进度。
         </view>
-      </view>
-
-      <view v-else class="upload-empty">
-        <wd-empty title="暂无上传任务" />
       </view>
     </view>
   </z-paging>
@@ -180,13 +158,6 @@ const statusText: Record<UploadTask['status'], string> = {
   }
 }
 
-.upload-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 20rpx;
-  margin-bottom: 24rpx;
-}
-
 .upload-section {
   padding: 32rpx;
   background: var(--app-color-surface);
@@ -194,80 +165,17 @@ const statusText: Record<UploadTask['status'], string> = {
   border-radius: 16rpx;
 
   &__title {
-    margin-bottom: 24rpx;
+    margin-bottom: 16rpx;
     font-size: 30rpx;
     font-weight: 600;
     line-height: 1.35;
     color: var(--app-color-text);
   }
-}
 
-.upload-task {
-  padding: 24rpx;
-  background: var(--app-color-surface-muted);
-  border-radius: 12rpx;
-
-  & + & {
-    margin-top: 20rpx;
+  &__desc {
+    font-size: 24rpx;
+    line-height: 1.6;
+    color: var(--app-color-text-secondary);
   }
-
-  &__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16rpx;
-  }
-
-  &__name {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 26rpx;
-    color: var(--app-color-text-regular);
-    white-space: nowrap;
-  }
-
-  &__status {
-    flex-shrink: 0;
-    margin-left: 16rpx;
-    font-size: 22rpx;
-    color: var(--app-color-text-tertiary);
-
-    &--uploading {
-      color: var(--wot-primary-6);
-    }
-
-    &--success {
-      color: #07c160;
-    }
-
-    &--failed {
-      color: var(--app-color-danger);
-    }
-  }
-
-  &__message {
-    display: block;
-    margin-top: 12rpx;
-    font-size: 22rpx;
-    line-height: 1.5;
-    color: var(--app-color-danger);
-  }
-
-  &__url {
-    display: block;
-    margin-top: 12rpx;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 22rpx;
-    line-height: 1.5;
-    color: var(--app-color-text-tertiary);
-    white-space: nowrap;
-  }
-}
-
-.upload-empty {
-  padding: 80rpx 0;
 }
 </style>
