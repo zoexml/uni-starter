@@ -11,7 +11,6 @@
 </route>
 
 <script setup lang="ts">
-import { useShare } from '@/composables/useShare'
 import { useTrackPageView } from '@/composables/useTracker'
 
 useShare({ title: '发现' })
@@ -41,6 +40,9 @@ useTrackPageView()
 .placeholder-page {
   min-height: 100%;
   padding: 32rpx;
+
+  // 底部固定着自定义 tabbar，需要留出等高空间，否则最后一段内容会被遮挡
+  padding-bottom: calc(32rpx + var(--app-tabbar-height) + env(safe-area-inset-bottom));
   background: #f6f8f7;
 
   .placeholder-card {

@@ -12,7 +12,6 @@
 </route>
 
 <script lang="ts" setup>
-import { useShare } from '@/composables/useShare'
 import { useTheme } from '@/composables/useTheme'
 import { useTracker, useTrackPageView } from '@/composables/useTracker'
 import { buildWebViewPageRoute } from '@/composables/useWebView'
@@ -288,7 +287,8 @@ onShow(refreshCacheSize)
                 />
               </template>
               <template v-else>
-                <wd-icon :name="item.icon" size="32rpx" />
+                <!-- 用 custom-style 设字号：wd-icon 的 size 静态属性会被 UnoCSS attributify 当成 class 剥掉 -->
+                <wd-icon :name="item.icon" custom-style="font-size: 32rpx" />
               </template>
             </view>
             <view class="menu-main">
@@ -300,7 +300,7 @@ onShow(refreshCacheSize)
               </view>
             </view>
             <view class="menu-arrow">
-              <wd-icon name="arrow-right" size="28rpx" />
+              <wd-icon name="arrow-right" custom-style="font-size: 28rpx" />
             </view>
           </view>
         </view>
@@ -317,6 +317,9 @@ onShow(refreshCacheSize)
 .my-page {
   min-height: 100%;
   padding: 32rpx;
+
+  // 底部固定着自定义 tabbar，需要留出等高空间，否则最后一段内容会被遮挡
+  padding-bottom: calc(32rpx + var(--app-tabbar-height) + env(safe-area-inset-bottom));
   background: #f6f8f7;
 
   .guest-panel,

@@ -6,7 +6,6 @@ import { customTabbarEnable, needHideNativeTabbar, tabbarCacheEnable } from './c
 import { isPageTabbar, tabbarList, tabbarStore } from './store'
 
 // #ifdef MP-WEIXIN
-// 将自定义节点设置成虚拟的（去掉自定义组件包裹层），更加接近Vue组件的表现，能更好的使用flex属性
 defineOptions({
   virtualHost: true,
 })
@@ -15,9 +14,9 @@ defineOptions({
 const { currentPrimaryColor } = useTheme()
 const isCurrentTabbarPage = shallowRef(false)
 
-/**
- * 中间的鼓包tabbarItem的点击事件
- */
+const INACTIVE_COLOR = '#666'
+const TABBAR_ICON_CLASS = 'wd-tabbar-item__body-icon'
+
 const handleClickBulge = () => {
   uni.showToast({
     title: '点击了中间的鼓包tabbarItem',
@@ -25,26 +24,31 @@ const handleClickBulge = () => {
   })
 }
 
-const handleClick = (index: number) => {
-  // 点击原来的不做操作
-  if (index === tabbarStore.curIdx) {
+const handleChange = (event: { value: number | string }) => {
+  const index = Number(event.value)
+  const item = tabbarList[index]
+
+  if (!item || index === tabbarStore.curIdx) {
     return
   }
-  if (tabbarList[index].isBulge) {
+
+  if (item.isBulge) {
     handleClickBulge()
     return
   }
-  const url = tabbarList[index].pagePath
+
   tabbarStore.setCurIdx(index)
+
   if (tabbarCacheEnable) {
-    uni.switchTab({ url })
+    uni.switchTab({ url: item.pagePath })
   } else {
-    uni.navigateTo({ url })
+    uni.navigateTo({ url: item.pagePath })
   }
 }
 
 const getCurrentPagePath = () => {
   const currentPage = getCurrentPages().at(-1)
+
   if (!currentPage?.route) return ''
 
   return currentPage.route.startsWith('/') ? currentPage.route : `/${currentPage.route}`
@@ -78,155 +82,76 @@ onLoad(() => {
 
 onShow(updateCurrentTabbarState)
 
-const inactiveColor = '#666'
-const isActiveTabbarItem = (index: number) => {
-  return tabbarStore.curIdx === index
+const isImageMode = (item: CustomTabBarItem) => item.iconType === 'image'
+
+const getIconByActive = (item: CustomTabBarItem, active: boolean) => {
+  return active && item.iconActive ? item.iconActive : item.icon
 }
 
-const getColorByIndex = (index: number) => {
-  return isActiveTabbarItem(index) ? currentPrimaryColor.value : inactiveColor
-}
-
-const getImageByIndex = (index: number, item: CustomTabBarItem) => {
-  if (!item.iconActive) {
-    console.warn('image 模式下，需要配置 iconActive (高亮时的图片），否则无法切换高亮图片')
-    return item.icon
-  }
-  return tabbarStore.curIdx === index ? item.iconActive : item.icon
-}
-
-const getImageMaskStyle = (item: CustomTabBarItem) => {
-  const icon = item.iconActive || item.icon
-
-  return [
-    `background-color: ${currentPrimaryColor.value}`,
-    `-webkit-mask-image: url(${icon})`,
-    `mask-image: url(${icon})`,
-  ].join(';')
+const getIconColor = (active: boolean) => {
+  return active ? currentPrimaryColor.value : INACTIVE_COLOR
 }
 </script>
 
 <template>
-  <view v-if="customTabbarEnable && isCurrentTabbarPage" class="h-50px pb-safe">
-    <view class="border-and-fixed bg-white" @touchmove.stop.prevent>
-      <view class="h-50px flex items-center">
-        <view
-          v-for="(item, index) in tabbarList" :key="index"
-          class="flex flex-1 flex-col items-center justify-center"
-          :style="{ color: getColorByIndex(index) }"
-          @click="handleClick(index)"
-        >
-          <view v-if="item.isBulge" class="relative">
-            <!-- 中间一个鼓包tabbarItem的处理 -->
-            <view class="bulge">
-              <!-- TODO 2/2: 中间鼓包tabbarItem配置：通常是一个图片，或者icon，点击触发业务逻辑 -->
-              <!-- 常见的是：扫描按钮、发布按钮、更多按钮等 -->
-              <image class="mt-6rpx h-200rpx w-200rpx" src="/static/tabbar/scan.png" />
-            </view>
-          </view>
-          <view v-else class="relative px-3 text-center">
-            <template v-if="item.iconType === 'uniUi'">
-              <uni-icons :type="item.icon" size="20" :color="getColorByIndex(index)" />
-            </template>
-            <template v-if="item.iconType === 'uiLib'">
-              <wd-icon :name="item.icon" :color="getColorByIndex(index)" size="20" />
-            </template>
-            <template v-if="item.iconType === 'unocss' || item.iconType === 'iconfont'">
-              <view :class="item.icon" class="text-20px" />
-            </template>
-            <template v-if="item.iconType === 'image'">
-              <view class="tabbar-image-icon-wrap">
-                <view
-                  v-if="isActiveTabbarItem(index)"
-                  class="tabbar-image-icon tabbar-image-icon--active"
-                  :style="getImageMaskStyle(item)"
-                >
-                  <image :src="getImageByIndex(index, item)" mode="scaleToFill" class="tabbar-image-icon-fallback" />
-                </view>
-                <image
-                  v-else
-                  :src="getImageByIndex(index, item)"
-                  mode="scaleToFill"
-                  class="tabbar-image-icon"
-                />
-              </view>
-            </template>
-            <view class="mt-2px text-12px">
-              {{ item.text }}
-            </view>
-            <!-- 角标显示 -->
-            <view v-if="item.badge">
-              <template v-if="item.badge === 'dot'">
-                <view class="absolute right-0 top-0 h-2 w-2 rounded-full bg-#f56c6c" />
-              </template>
-              <template v-else>
-                <view class="center absolute top-0 box-border h-5 min-w-5 rounded-full bg-#f56c6c px-1 text-center text-xs text-white -right-3">
-                  {{ item.badge > 99 ? '99+' : item.badge }}
-                </view>
-              </template>
-            </view>
-          </view>
+  <wd-tabbar
+    v-if="customTabbarEnable && isCurrentTabbarPage"
+    :model-value="tabbarStore.curIdx"
+    bordered safe-area-inset-bottom placeholder fixed
+    :active-color="currentPrimaryColor"
+    :inactive-color="INACTIVE_COLOR"
+    @change="handleChange"
+  >
+    <wd-tabbar-item
+      v-for="(item, index) in tabbarList"
+      :key="index"
+      :name="index"
+      :title="item.text"
+      :value="typeof item.badge === 'number' ? item.badge : undefined"
+      :is-dot="item.badge === 'dot'"
+    >
+      <template #icon="{ active }">
+        <view v-if="item.isBulge" class="tabbar-bulge">
+          <image class="tabbar-bulge-image" src="/static/tabbar/scan.png" mode="scaleToFill" />
         </view>
-      </view>
 
-      <view class="pb-safe" />
-    </view>
-  </view>
+        <wd-icon
+          v-else-if="item.iconType === 'uiLib' || !item.iconType"
+          :name="item.icon"
+          :color="getIconColor(active)"
+          :custom-class="TABBAR_ICON_CLASS"
+        />
+
+        <view
+          v-else-if="item.iconType === 'unocss' || item.iconType === 'iconfont'"
+          :class="[item.icon, TABBAR_ICON_CLASS]"
+          :style="{ color: getIconColor(active) }"
+        />
+
+        <image
+          v-else-if="isImageMode(item)"
+          :src="getIconByActive(item, active)"
+          class="tabbar-image-icon"
+          mode="scaleToFill"
+        />
+      </template>
+    </wd-tabbar-item>
+  </wd-tabbar>
 </template>
 
 <style scoped lang="scss">
-.border-and-fixed {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  box-sizing: border-box;
-  border-top: 1px solid #eee;
+.tabbar-bulge {
+  position: relative;
 
-  .bulge {
-    position: absolute;
-    top: -20px;
-    left: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 250rpx;
-    height: 250rpx;
-    background-color: #fff;
-    border-radius: 50%;
-    box-shadow: inset 0 0 0 1px #fefefe;
-    transform: translateX(-50%) scale(0.5) translateY(-33%);
-    transform-origin: top center;
-
-    &:active {
-      opacity: 0.8;
-    }
+  .tabbar-bulge-image {
+    width: 100rpx;
+    height: 100rpx;
+    margin-top: 3rpx;
   }
+}
 
-  .tabbar-image-icon-wrap {
-    display: flex;
-    justify-content: center;
-    height: 20px;
-  }
-
-  .tabbar-image-icon {
-    width: 20px;
-    height: 20px;
-  }
-
-  .tabbar-image-icon--active {
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 20px 20px;
-    mask-repeat: no-repeat;
-    mask-position: center;
-    mask-size: 20px 20px;
-
-    .tabbar-image-icon-fallback {
-      width: 20px;
-      height: 20px;
-      opacity: 0;
-    }
-  }
+.tabbar-image-icon {
+  width: 24px;
+  height: 24px;
 }
 </style>

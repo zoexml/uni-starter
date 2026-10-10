@@ -17,6 +17,11 @@ page {
   --app-color-surface-muted: #f6f8f7;
   --app-color-overlay: rgb(0 0 0 / 45%);
   --app-color-danger: #cf3d32;
+  /**
+   * 自定义 tabbar 的高度。必须与 wd-tabbar 的 --wot-tabbar-height 保持一致，
+   * 页面根容器用它留出底部空间，否则内容会被固定在底部的 tabbar 遮挡。
+   */
+  --app-tabbar-height: 50px;
 }
 
 view,

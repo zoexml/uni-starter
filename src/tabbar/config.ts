@@ -23,11 +23,11 @@ export const TABBAR_STRATEGY_MAP = {
 // 如果是使用 NO_TABBAR(0)，nativeTabbarList 和 customTabbarList 都不生效(里面的配置不用管)
 // 如果是使用 NATIVE_TABBAR(1)，只需要配置 nativeTabbarList，customTabbarList 不生效
 // 如果是使用 CUSTOM_TABBAR(2,3)，只需要配置 customTabbarList，nativeTabbarList 不生效
-export const selectedTabbarStrategy = TABBAR_STRATEGY_MAP.NATIVE_TABBAR
+export const selectedTabbarStrategy = TABBAR_STRATEGY_MAP.CUSTOM_TABBAR_WITH_CACHE
 
 type NativeTabBarItem = TabBar['list'][number]
 
-// TODO: 2/3. 使用 NATIVE_TABBAR 时，更新下面的 tabbar 配置
+// TODO: 2/3. 使用 NATIVE_TABBAR 时，更新下面的 tabbar 配置（当前使用自定义 tabbar，无需修改）
 export const nativeTabbarList: NativeTabBarItem[] = [
   {
     text: '首页',
@@ -35,12 +35,14 @@ export const nativeTabbarList: NativeTabBarItem[] = [
     iconPath: 'static/tabs/home-default.png',
     selectedIconPath: 'static/tabs/home-active.png',
   },
-  // {
-  //   text: '关于',
-  //   pagePath: 'pages/about/about',
-  //   iconPath: 'static/tabbar/example.png',
-  //   selectedIconPath: 'static/tabbar/exampleHL.png',
-  // },
+  {
+    text: '发现',
+    pagePath: 'pages/discover/index',
+  },
+  {
+    text: '消息',
+    pagePath: 'pages/message/index',
+  },
   {
     text: '我的',
     pagePath: 'pages/my/index',
@@ -63,12 +65,24 @@ export const customTabbarList: CustomTabBarItem[] = [
   //   text: '关于',
   //   pagePath: 'pages/about/about',
   //   // 注意 unocss 图标需要如下处理：（二选一）
-  //   // 1）在fg-tabbar.vue页面上引入一下并注释掉（见tabbar/index.vue代码第2行）
+  //   // 1）在tabbar/index.vue页面上引入一下并注释掉（见tabbar/index.vue代码）
   //   // 2）配置到 unocss.config.ts 的 safelist 中
   //   iconType: 'unocss',
   //   icon: 'i-carbon-code',
   //   // badge: 10,
   // },
+  {
+    pagePath: 'pages/discover/index',
+    text: '发现',
+    iconType: 'uiLib',
+    icon: 'compass',
+  },
+  {
+    pagePath: 'pages/message/index',
+    text: '消息',
+    iconType: 'uiLib',
+    icon: 'message',
+  },
   {
     pagePath: 'pages/my/index',
     text: '我的',
