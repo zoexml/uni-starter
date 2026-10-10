@@ -5,6 +5,8 @@ export const WEBVIEW_BRIDGE_SOURCE = 'uni-starter-webview'
 export const WEBVIEW_BRIDGE_VERSION = 1
 export const WEBVIEW_PAGE_PATH = '/pages/business/webview/index'
 export const WEBVIEW_INIT_QUERY_KEY = '__uniStarterBridge'
+/** 桥接日志保留条数，避免长时间停留后无限增长 */
+const BRIDGE_LOG_MAX = 30
 
 export const WEBVIEW_BRIDGE_METHODS = [
   'setTitle',
@@ -30,6 +32,19 @@ export interface WebViewAccessRule {
 export interface OpenWebViewOptions {
   title?: string
   url: string
+  /** 传入 1 时容器页展示桥接环境与调用日志面板 */
+  debug?: boolean
+}
+
+/** 桥接调用日志条目，用于调试面板与示例页展示 */
+export interface BridgeLogEntry {
+  id: string
+  method: string
+  params?: Record<string, unknown>
+  status: 'success' | 'error'
+  errorCode?: string
+  errorMessage?: string
+  time: number
 }
 
 export interface WebViewRouteLocation {
@@ -309,6 +324,10 @@ export const buildWebViewPageParams = (options: OpenWebViewOptions) => {
     params.title = encodeURIComponent(options.title)
   }
 
+  if (options.debug) {
+    params.debug = '1'
+  }
+
   return params
 }
 
@@ -560,6 +579,26 @@ export const useWebView = () => {
   const activeRule = shallowRef<WebViewAccessRule | null>(null)
   const activeUrl = shallowRef<NormalizedWebViewUrl | null>(null)
   const redirectedToLogin = shallowRef(false)
+
+  /**
+   * 桥接调用日志：网页侧调 bridge 时原生侧的执行记录。
+   * 桥接是黑盒，出问题时没有日志基本无法定位，示例页与调试面板都依赖它。
+   */
+  const bridgeLogs = shallowRef<BridgeLogEntry[]>([])
+
+  const pushBridgeLog = (entry: Omit<BridgeLogEntry, 'id' | 'time'>) => {
+    const log: BridgeLogEntry = {
+      ...entry,
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      time: Date.now(),
+    }
+
+    bridgeLogs.value = [log, ...bridgeLogs.value].slice(0, BRIDGE_LOG_MAX)
+  }
+
+  const clearBridgeLogs = () => {
+    bridgeLogs.value = []
+  }
 
   const hasError = computed(() => Boolean(errorTitle.value))
   const isH5 = computed(() => getRuntimePlatform() === 'h5')
@@ -829,6 +868,12 @@ export const useWebView = () => {
     try {
       const data = await executeBridgeMethod(normalized.value)
 
+      pushBridgeLog({
+        method: normalized.value.method,
+        params: normalized.value.params,
+        status: 'success',
+      })
+
       if (respond) {
         respond(createBridgeResponse(normalized.value.id, true, data))
       }
@@ -836,6 +881,14 @@ export const useWebView = () => {
       const bridgeError = typeof error === 'object' && error && 'code' in error && 'message' in error
         ? error as BridgeRuntimeError
         : createBridgeError('EXECUTION_FAILED', error instanceof Error ? error.message : '桥接调用失败。')
+
+      pushBridgeLog({
+        method: normalized.value.method,
+        params: normalized.value.params,
+        status: 'error',
+        errorCode: bridgeError.code,
+        errorMessage: bridgeError.message,
+      })
 
       if (respond) {
         respond(createBridgeResponse(normalized.value.id, false, undefined, bridgeError))
@@ -902,6 +955,8 @@ export const useWebView = () => {
 
   return {
     bridgeEnv,
+    bridgeLogs,
+    clearBridgeLogs,
     errorMessage,
     errorTitle,
     handleFrameError,
