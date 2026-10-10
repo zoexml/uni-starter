@@ -47,7 +47,7 @@ export async function mockFetchUploadSignature(params: UploadSignatureParams): P
     formData: {
       key: `mock/${Date.now()}-${params.fileName}`,
     },
-    // 无后端时给一个可直接访问的占位图，保证示例页能预览上传结果
-    publicUrl: '/static/images/logo.svg',
+    // 不返回 publicUrl：mock 场景下 useUpload 会回退到本地临时路径，
+    // 这样各端都能直接预览；真实环境请返回对象存储的可访问地址
   })
 }

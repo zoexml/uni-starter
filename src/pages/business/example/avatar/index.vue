@@ -43,7 +43,8 @@ const cropperRef = shallowRef<{ resetImg: () => void, setRotate: (angle: number)
 const handlePickImage = async () => {
   try {
     const res = await uni.chooseImage({ count: 1, sizeType: ['original', 'compressed'] })
-    const path = res.tempFilePaths?.[0]
+    const picked = res.tempFilePaths
+    const path = Array.isArray(picked) ? picked[0] : picked
     if (!path) return
 
     pickedImage.value = path

@@ -60,7 +60,7 @@ function resolvePublicUrl(publicUrl?: string, formData?: Record<string, string>,
 
 /** 无后端时的模拟上传：按步进推进度后返回签名里的占位地址 */
 function mockUploadTask(signature: UploadSignature, task: UploadTask, onProgress?: (task: UploadTask) => void) {
-  return new Promise<UploadResult>((resolve, reject) => {
+  return new Promise<UploadResult>((resolve) => {
     const timer = setInterval(() => {
       task.progress = Math.min(100, task.progress + MOCK_PROGRESS_STEP)
       task.status = task.progress >= 100 ? 'success' : 'uploading'
@@ -69,12 +69,9 @@ function mockUploadTask(signature: UploadSignature, task: UploadTask, onProgress
       if (task.progress < 100) return
 
       clearInterval(timer)
-      const url = resolvePublicUrl(signature.publicUrl, signature.formData, task.fileName)
-
-      if (!url) {
-        reject(new Error('上传成功但未拿到可访问地址，请检查签名接口是否返回 publicUrl'))
-        return
-      }
+      // 没有后端时回退到本地临时路径：它在各端都能直接用于 <image src> 预览，
+      // 不能用 /static/xxx 这类本地绝对路径，小程序端会加载失败
+      const url = resolvePublicUrl(signature.publicUrl, signature.formData, task.fileName) || task.path
 
       resolve({ url, fileName: task.fileName, fileSize: task.fileSize, response: signature })
     }, MOCK_PROGRESS_INTERVAL)
