@@ -85,7 +85,8 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 基于 `alova` + `@alova/adapter-uniapp` + `alova/vue` 构建：
 
 - 响应拦截器统一处理 HTTP 状态码和业务错误码（`{ code, message, data }` 格式），自动 `uni.showToast`
-- Token 注入和刷新逻辑已预留但被注释，需对接真实后端后启用
+- Token 注入与刷新已通过 alova 的 `createServerTokenAuthentication` 实现：`assignToken` 注入 token，收到 401 时 `refreshTokenOnSuccess` 触发 `handleExpiredToken`，刷新失败才跳登录页
+- 认证模式由 `VITE_AUTH_MODE` 决定（`single` / `double`），接口元信息用 `meta.authRole` 区分是否需要登录
 - 所有页面 API 调用应使用 `http.get/post/put/delete` 或 alova hooks（`useRequest`、`usePagination` 等）
 
 ### 主题系统
@@ -156,7 +157,7 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 - Props 和 emits 必须类型明确
 - SCSS 必须使用嵌套选择器（`&`），禁止平铺顶层类名
 - 请求层复用现有 alova 模式，不引入新的 HTTP 客户端
-- 平台差异逻辑优先复用 `src/utils/platform.ts`
+- 平台差异逻辑优先复用 `src/utils/tracker.ts` 导出的 `getRuntimePlatform()`（`src/utils/platform.ts` 已废弃删除）
 - 跨页面或跨功能共享状态使用 Pinia；能用 `computed` 推导的状态不要重复存储
 - 避免小需求做大重构
 
