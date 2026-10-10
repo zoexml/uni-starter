@@ -8,7 +8,7 @@ import VueHook from 'alova/vue'
 import { useUserStore } from '@/stores'
 import { ResultEnum, ShowMessage } from '../common/enum'
 
-const LOGIN_PAGE = '/pages/login/index'
+const LOGIN_PAGE = '/pages/main/login/index'
 const REQUEST_TIMEOUT = 5000
 
 type AuthMode = 'single' | 'double'

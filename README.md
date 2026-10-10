@@ -83,8 +83,9 @@ pnpm build
 
 ### 📦 分包优化
 
-- 通用业务分包放在 `src/pages-business/`，当前包含 `webview` 和 `example`（示例中心，含组件示例与埋点示例）。
-- `vite.config.ts` 通过 `UniPages({ subPackages: ['src/pages-business'] })` 注册分包目录。
+- 所有页面统一收敛在 `src/pages/` 下：主包为 `src/pages/main/`（首页、发现、消息、我的、登录），业务二级页面统一放在 `src/pages/business/` 这一个分包里（`about`、`agreement`、`example`、`favorites`、`search`、`settings`、`webview`）。
+- `vite.config.ts` 通过 `UniPages({ dir: 'src/pages/main', subPackages: ['src/pages/business'] })` 注册主包与分包目录；新增业务页面直接放进 `src/pages/business/` 即可，需要独立分包时再往 `subPackages` 数组里加一项。
+- 注意 `dir` 与 `subPackages` 不能互相包含（uni-pages 扫描主包与分包时共用同一份 `exclude`），所以主包页面必须放在独立子目录里。
 - 异步跨包调用
 - 组件异步加载
 - 分包预加载
@@ -92,7 +93,7 @@ pnpm build
 
 ### 🌐 WebView 容器
 
-- WebView 页面位于 `src/pages-business/webview/index.vue`。
+- WebView 页面位于 `src/pages/business/webview/index.vue`。
 - WebView 相关常量、白名单校验、桥接协议和容器状态统一维护在 `src/composables/useWebView.ts`。
 - 所有外部 WebView 都统一通过该公共页面打开；页面内只传 `title` 和 `url`，不要为单个链接新增页面。
 - 路由跳转优先使用 `buildWebViewPageRoute({ title, url })` 配合 `uni-mini-router` 的 name 模式；无 router 上下文时可用 `openWebView({ title, url })`。

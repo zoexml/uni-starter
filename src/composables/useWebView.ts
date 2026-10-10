@@ -1,9 +1,9 @@
 import { useUserStore } from '@/stores'
-import { isTabbarPath } from '@/tabbar/config'
+import { isTabbarPath, switchToHomeTab } from '@/tabbar/config'
 
 export const WEBVIEW_BRIDGE_SOURCE = 'uni-starter-webview'
 export const WEBVIEW_BRIDGE_VERSION = 1
-export const WEBVIEW_PAGE_PATH = '/pages-business/webview/index'
+export const WEBVIEW_PAGE_PATH = '/pages/business/webview/index'
 export const WEBVIEW_INIT_QUERY_KEY = '__uniStarterBridge'
 
 export const WEBVIEW_BRIDGE_METHODS = [
@@ -622,7 +622,7 @@ export const useWebView = () => {
 
         redirectedToLogin.value = true
         uni.redirectTo({
-          url: `/pages/login/index?redirect=${encodeURIComponent(redirect)}`,
+          url: `/pages/main/login/index?redirect=${encodeURIComponent(redirect)}`,
         })
         return
       }
@@ -690,9 +690,7 @@ export const useWebView = () => {
 
   const close = () => {
     uni.navigateBack({
-      fail: () => {
-        uni.switchTab({ url: '/pages/index/index' })
-      },
+      fail: switchToHomeTab,
     })
   }
 
@@ -704,9 +702,14 @@ export const useWebView = () => {
       throw createBridgeError('INVALID_PARAMS', 'navigate 缺少有效的 url 参数。')
     }
 
-    if (rawUrl.startsWith('/pages/') || rawUrl.startsWith('/pages-business/')) {
+    // 所有页面都收敛在 src/pages/ 下，主包以 /pages/main/ 开头，分包为 /pages/business/xxx
+    if (rawUrl.startsWith('/pages/')) {
       if (isTabbarPath(rawUrl)) {
-        uni.switchTab({ url: rawUrl as '/pages/index/index' | '/pages/my/index' })
+        // 网页侧可能传入已失效的旧路径，切换失败时兜底回首页
+        uni.switchTab({
+          url: rawUrl as '/pages/main/index/index' | '/pages/main/my/index',
+          fail: switchToHomeTab,
+        })
       } else {
         uni.navigateTo({ url: rawUrl })
       }

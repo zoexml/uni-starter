@@ -25,19 +25,19 @@ const resolveCurrentPagePath = (): string => {
     const currentPage = pages.at(-1)
 
     if (!currentPage) {
-      return '/pages/index/index'
+      return '/pages/main/index/index'
     }
 
     const page = currentPage as { route?: string, $page?: { fullPath?: string } }
     const path = page.$page?.fullPath || page.route
 
     if (!path) {
-      return '/pages/index/index'
+      return '/pages/main/index/index'
     }
 
     return path.startsWith('/') ? path : `/${path}`
   } catch {
-    return '/pages/index/index'
+    return '/pages/main/index/index'
   }
 }
 

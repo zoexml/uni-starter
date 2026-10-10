@@ -31,21 +31,21 @@ type NativeTabBarItem = TabBar['list'][number]
 export const nativeTabbarList: NativeTabBarItem[] = [
   {
     text: '首页',
-    pagePath: 'pages/index/index',
+    pagePath: 'pages/main/index/index',
     iconPath: 'static/tabs/home-default.png',
     selectedIconPath: 'static/tabs/home-active.png',
   },
   {
     text: '发现',
-    pagePath: 'pages/discover/index',
+    pagePath: 'pages/main/discover/index',
   },
   {
     text: '消息',
-    pagePath: 'pages/message/index',
+    pagePath: 'pages/main/message/index',
   },
   {
     text: '我的',
-    pagePath: 'pages/my/index',
+    pagePath: 'pages/main/my/index',
     iconPath: 'static/tabs/my-default.png',
     selectedIconPath: 'static/tabs/my-active.png',
   },
@@ -56,14 +56,14 @@ export const nativeTabbarList: NativeTabBarItem[] = [
 export const customTabbarList: CustomTabBarItem[] = [
   {
     text: '首页',
-    pagePath: 'pages/index/index',
+    pagePath: 'pages/main/index/index',
     iconType: 'uiLib',
     icon: 'home',
     // badge: 'dot',
   },
   // {
   //   text: '关于',
-  //   pagePath: 'pages/about/about',
+  //   pagePath: 'pages/about/index',
   //   // 注意 unocss 图标需要如下处理：（二选一）
   //   // 1）在tabbar/index.vue页面上引入一下并注释掉（见tabbar/index.vue代码）
   //   // 2）配置到 unocss.config.ts 的 safelist 中
@@ -72,19 +72,19 @@ export const customTabbarList: CustomTabBarItem[] = [
   //   // badge: 10,
   // },
   {
-    pagePath: 'pages/discover/index',
+    pagePath: 'pages/main/discover/index',
     text: '发现',
     iconType: 'uiLib',
     icon: 'compass',
   },
   {
-    pagePath: 'pages/message/index',
+    pagePath: 'pages/main/message/index',
     text: '消息',
     iconType: 'uiLib',
     icon: 'message',
   },
   {
-    pagePath: 'pages/my/index',
+    pagePath: 'pages/main/my/index',
     text: '我的',
     iconType: 'uiLib',
     icon: 'user',
@@ -93,14 +93,14 @@ export const customTabbarList: CustomTabBarItem[] = [
   // 其他类型演示
   // 1、uiLib
   // {
-  //   pagePath: 'pages/index/index',
+  //   pagePath: 'pages/main/index/index',
   //   text: '首页',
   //   iconType: 'uiLib',
   //   icon: 'home',
   // },
   // 2、iconfont
   // {
-  //   pagePath: 'pages/index/index',
+  //   pagePath: 'pages/main/index/index',
   //   text: '首页',
   //   // 注意 iconfont 图标需要额外加上 'iconfont'，如下
   //   iconType: 'iconfont',
@@ -108,7 +108,7 @@ export const customTabbarList: CustomTabBarItem[] = [
   // },
   // 3、image
   // {
-  //   pagePath: 'pages/index/index',
+  //   pagePath: 'pages/main/index/index',
   //   text: '首页',
   //   // 使用 ‘image’时，需要配置 icon + iconActive 2张图片
   //   iconType: 'image',
@@ -124,6 +124,11 @@ export const TABBAR_PATHS = Array.from(new Set(tabbarPagePaths.map(pagePath => `
 export function isTabbarPath(path: string) {
   const normalizedPath = path.split('?')[0]
   return TABBAR_PATHS.includes(normalizedPath)
+}
+
+/** 兜底回首页 tab，页面路径失效或 navigateBack 无页面栈时使用 */
+export function switchToHomeTab() {
+  uni.switchTab({ url: '/pages/main/index/index' })
 }
 
 /**

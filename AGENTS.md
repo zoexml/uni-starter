@@ -31,8 +31,8 @@ pnpm api                     # 根据 worma 配置生成接口代码
 ## 目录结构
 
 - `src/main.ts` / `src/App.vue` — 应用入口与根组件
-- `src/pages/` — 主包页面
-- `src/pages-business/` — 通用业务分包页面
+- `src/pages/main/` — 主包页面（index、discover、message、my、login）
+- `src/pages/business/` — 业务分包页面（about、agreement、example、favorites、search、settings、webview）
 - `src/layouts/` — 布局组件
 - `src/components/` — 通用组件（自动引入，清单见 `src/components/README.md`）
 - `src/composables/` — 组合式逻辑
@@ -67,7 +67,11 @@ pnpm api                     # 根据 worma 配置生成接口代码
 
 路由表通过 `uni-read-pages-vite` 读取后以 `ROUTES` 全局常量注入，供 `uni-mini-router` 使用。
 
-通用业务分包目录为 `src/pages-business/`，在 `vite.config.ts` 的 `UniPages({ subPackages: ['src/pages-business'] })` 中注册。不要再新增或引用旧的 `src/pages-sub/` 目录。
+页面目录全部收敛在 `src/pages/` 下：主包为 `src/pages/main/`，业务二级页面统一放在 `src/pages/business/` 这一个分包目录，在 `vite.config.ts` 的 `UniPages({ dir: 'src/pages/main', subPackages: ['src/pages/business'] })` 中注册。新增业务页面直接放进 `src/pages/business/`；只有在页面体积较大或发布前会整体删除（如示例中心）时，才新增独立分包目录并往 `subPackages` 追加一项。不要再新增 `src/pages-xxx/` 这类平级目录，也不要引用旧的 `src/pages-sub/`、`src/pages-business/`。
+
+注意 `dir` 与 `subPackages` 不能互相包含：`uni-pages` 扫描主包与分包时共用同一份 `exclude`，所以主包页面必须放在独立子目录，不能直接把分包放进 `src/pages/` 根下。
+
+页面路径由文件位置推导，因此调整目录会同步改变路由路径（`/pages/index/index` → `/pages/main/index/index`）。改动目录时必须同步检查：`vite.config.ts` 的 `homePage`/`subPackages`、`src/tabbar/config.ts` 的 `pagePath`、`src/router/index.ts` 的登录页与兜底路径、`src/utils/http.ts` 的 `LOGIN_PAGE`、`src/composables/useWebView.ts` 的 `WEBVIEW_PAGE_PATH` 与内部路径白名单。
 
 ### 状态管理
 
@@ -93,11 +97,11 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 
 ### WebView 容器
 
-- 页面入口：`src/pages-business/webview/index.vue`
+- 页面入口：`src/pages/business/webview/index.vue`
 - 统一逻辑入口：`src/composables/useWebView.ts`
 - `useWebView.ts` 同时维护 WebView 页面路径、访问白名单、URL 构造、桥接 payload 校验和容器运行时状态，避免在 `utils` 和 `composables` 两处维护同一套逻辑。
-- 所有外部 WebView 统一通过 `src/pages-business/webview/index.vue` 公共页面打开，不为单个链接新增页面。
-- 页面跳转优先使用 `buildWebViewPageRoute({ title, url })` 配合 `uni-mini-router` 的 name 模式；无 router 上下文时可用 `openWebView({ title, url })`。当前页面路径常量为 `/pages-business/webview/index`。
+- 所有外部 WebView 统一通过 `src/pages/business/webview/index.vue` 公共页面打开，不为单个链接新增页面。
+- 页面跳转优先使用 `buildWebViewPageRoute({ title, url })` 配合 `uni-mini-router` 的 name 模式；无 router 上下文时可用 `openWebView({ title, url })`。当前页面路径常量为 `/pages/business/webview/index`。
 - 访问控制通过 `DEFAULT_WEBVIEW_ACCESS_RULES` 配置；默认公共规则允许 HTTPS 链接，特定业务域名规则应放在通配规则之前。
 
 ### 分享/Share
@@ -130,7 +134,7 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 - 事件名约束：内置事件见 `TRACKER_EVENT_NAMES`（`page_view`/`user_login`/`user_logout`），`track` 同时接受任意自定义名
 - userId 惰性读取 `useUserStore()`，登录/登出无需手动调用 `setUserId`
 
-示例页面统一放在 `src/pages-business/example/` 分包（示例中心入口页 + `example/tracker` 埋点示例页 + `example/demo` 组件示例页，由 `example/index.vue` 汇总入口）。
+示例页面统一放在 `src/pages/business/example/` 目录（示例中心入口页 + `example/tracker` 埋点示例页 + `example/demo` 组件示例页，由 `example/index.vue` 汇总入口）。
 
 ## 内置组件与 composable
 
@@ -148,7 +152,7 @@ Pinia + `pinia-plugin-persistedstate`，使用 `uni.getStorageSync`/`uni.setStor
 
 - Vue SFC 使用 `<script setup lang="ts">`，块顺序：`<script>` → `<template>` → `<style>`
 - 页面组件负责编排，可复用 UI 放 `src/components/`，可复用逻辑放 `src/composables/`
-- 主包页面放 `src/pages/`，通用业务分包页面放 `src/pages-business/`
+- 主包页面放 `src/pages/main/`，业务分包页面放 `src/pages/<业务名>/` 并在 `vite.config.ts` 的 `subPackages` 注册
 - Props 和 emits 必须类型明确
 - SCSS 必须使用嵌套选择器（`&`），禁止平铺顶层类名
 - 请求层复用现有 alova 模式，不引入新的 HTTP 客户端

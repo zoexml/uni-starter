@@ -34,7 +34,7 @@ function createLoginRedirect(to: GuardRoute) {
   const query = redirect ? { redirect: encodeURIComponent(redirect) } : undefined
 
   return {
-    path: '/pages/login/index',
+    path: '/pages/main/login/index',
     query,
   }
 }
@@ -60,7 +60,7 @@ router.beforeEach((to, from, next) => {
   if (requiredPermissions.length > 0 && !hasRoutePermission) {
     uni.showToast({ title: '暂无访问权限', icon: 'none' })
 
-    const fallbackPath = userStore.isLogin ? '/pages/index/index' : '/pages/login/index'
+    const fallbackPath = userStore.isLogin ? '/pages/main/index/index' : '/pages/main/login/index'
     next(isTabbarPath(getCleanPath(fallbackPath)) ? { path: fallbackPath, navType: 'pushTab' } : { path: fallbackPath })
     return
   }

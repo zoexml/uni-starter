@@ -49,9 +49,16 @@ export default async ({ command, mode }: ConfigEnv) => {
         exclude: ['**/components/**/**.*', '**/C/**.*'],
         routeBlockLang: 'json5', // 虽然设了默认值，但是vue文件还是要加上 lang="json5", 这样才能很好地格式化
         // homePage 通过 vue 文件的 route-block 的type="home"来设定
-        homePage: 'pages/index/index',
-        // pages 目录为 src/pages，分包目录不能配置在pages目录下
-        subPackages: ['src/pages-business'], // 是个数组，可以配置多个，但是不能为pages里面的目录
+        homePage: 'pages/main/index/index',
+        /**
+         * 所有页面统一收敛在 src/pages/ 下：
+         * - 主包：src/pages/main
+         * - 分包：src/pages/business，业务二级页面（about、agreement、favorites、search、settings、webview、example）都在这一个分包里
+         * 新增业务页面直接放进 src/pages/business/ 即可；确实需要独立分包时（体积大、发布前会整体删除等），再往 subPackages 里加一项
+         * 注意 `dir` 与 `subPackages` 不能互相包含（uni-pages 扫描时共用同一份 exclude）
+         */
+        dir: 'src/pages/main',
+        subPackages: ['src/pages/business'],
         dts: 'src/types/uni-pages.d.ts',
       }),
       // https://github.com/uni-helper/vite-plugin-uni-layouts
