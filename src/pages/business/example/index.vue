@@ -42,6 +42,34 @@ const exampleItems: ExampleItem[] = [
     icon: 'settings',
     routeName: 'example-tracker',
   },
+  {
+    key: 'upload',
+    title: '文件上传示例',
+    desc: 'useUpload 演示：取直传凭证、uni.uploadFile 直传、进度与批量上传',
+    icon: 'folder',
+    routeName: 'example-upload',
+  },
+  {
+    key: 'form',
+    title: '复杂表单示例',
+    desc: 'validateForm 声明式校验：动态增删项与数组字段校验',
+    icon: 'edit',
+    routeName: 'example-form',
+  },
+  {
+    key: 'avatar',
+    title: '头像上传示例',
+    desc: 'wd-img-cropper 裁剪 + useUpload：选图 → 裁剪 → 上传链路',
+    icon: 'camera',
+    routeName: 'example-avatar',
+  },
+  {
+    key: 'bridge',
+    title: 'WebView 桥接示例',
+    desc: '网页调用原生能力的协议说明与桥接调用日志面板',
+    icon: 'link',
+    routeName: 'example-bridge',
+  },
 ]
 
 const businessItems: ExampleItem[] = [
@@ -79,6 +107,13 @@ const businessItems: ExampleItem[] = [
     desc: '搜索框、历史记录、热门关键词与结果列表',
     icon: 'search-line',
     routeName: 'search',
+  },
+  {
+    key: 'service',
+    title: '客服会话',
+    desc: '会话列表、消息收发与快捷回复，衔接 FloatingService 入口',
+    icon: 'message',
+    routeName: 'service',
   },
 ]
 
