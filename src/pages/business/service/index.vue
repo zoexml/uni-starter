@@ -124,7 +124,8 @@ const handleQuickReply = (text: string) => {
 
 <template>
   <view class="service-page">
-    <Navbar title="客服会话" :left-arrow="Boolean(!activeSession)" @click-left="handleBack" />
+    <!-- 始终显示返回箭头：列表态返回上一页，会话态返回会话列表 -->
+    <Navbar title="客服会话" left-arrow @click-left="handleBack" />
 
     <view class="service-body">
       <!-- 会话列表 -->
